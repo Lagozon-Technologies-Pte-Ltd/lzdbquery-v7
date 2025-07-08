@@ -85,19 +85,19 @@ from io import StringIO
 # from langchain.chains import create_sql_query_chain
 # from langchain_openai import ChatOpenAI
 # from langchain_community.tools.sql_database.tool import QuerySQLDataBaseTool
-from langchain.memory import ChatMessageHistory
+# from langchain.memory import ChatMessageHistory
 from operator import itemgetter
-from google.oauth2 import service_account
+# from google.oauth2 import service_account
 import json
 from urllib.parse import quote_plus
 
 
 from operator import itemgetter
 
-from langchain_core.output_parsers import StrOutputParser
+# from langchain_core.output_parsers import StrOutputParser
 
-from langchain_core.runnables import RunnablePassthrough
-from langchain_openai import ChatOpenAI
+# from langchain_core.runnables import RunnablePassthrough
+# from langchain_openai import ChatOpenAI
 
 
 
