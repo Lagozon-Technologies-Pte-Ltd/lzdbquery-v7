@@ -1,0 +1,219 @@
+[
+  {
+    "name": "adv_db_database",
+    "value": "adventureworks",
+    "slotSetting": false
+  },
+  {
+    "name": "adv_db_schema",
+    "value": "production",
+    "slotSetting": false
+  },
+  {
+    "name": "adv_db_schema_hr",
+    "value": "humanresources",
+    "slotSetting": false
+  },
+  {
+    "name": "adv_db_schema_pe",
+    "value": "person",
+    "slotSetting": false
+  },
+  {
+    "name": "adv_db_schema_purchase",
+    "value": "purchasing",
+    "slotSetting": false
+  },
+  {
+    "name": "adv_db_schema_sales",
+    "value": "sales",
+    "slotSetting": false
+  },
+  {
+    "name": "AZURE_CONTAINER_NAME",
+    "value": "mazdmdpcnt01",
+    "slotSetting": false
+  },
+  {
+    "name": "AZURE_DEPLOYMENT_NAME",
+    "value": "gpt-4.1-mini",
+    "slotSetting": false
+  },
+  {
+    "name": "AZURE_EMBEDDING_DEPLOYMENT_NAME",
+    "value": "text-embedding-3-small",
+    "slotSetting": false
+  },
+  {
+    "name": "AZURE_OPENAI_API_KEY",
+    "value": "",
+    "slotSetting": false
+  },
+  {
+    "name": "AZURE_OPENAI_API_VERSION",
+    "value": "2024-12-01-preview",
+    "slotSetting": false
+  },
+  {
+    "name": "AZURE_OPENAI_ENDPOINT",
+    "value": "https://southindia.api.cognitive.microsoft.com/",
+    "slotSetting": false
+  },
+  {
+    "name": "AZURE_STORAGE_CONNECTION_STRING",
+    "value": 
+	"DefaultEndpointsProtocol=https;AccountName=mazdmdpsa01;AccountKey=6gB9vXqEKGnYw2DvhyyBQ81RphjoPPQz5i/r2k3zYwin61aAz7aJ9b0QVypaP7XGK0nLNK5rTXVo
++ASte1HJOW==; EndpointSuffix=core.windows.net",
+    "slotSetting": false
+  },
+  {
+    "name": "Chroma_Query_Examples",
+    "value": "/home/chroma_db/Chroma_Query_Examples",
+    "slotSetting": false
+  },
+  {
+    "name": "Chroma_Schema_Metadata",
+    "value": "/home/chroma_db/Chroma_Schema_Metadata",
+    "slotSetting": false
+  },
+  {
+    "name": "dataset_id",
+    "value": "prateekproject-450509.MH_RO_DATA",
+    "slotSetting": false
+  },
+  {
+    "name": "db_database",
+    "value": "postgres",
+    "slotSetting": false
+  },
+  {
+    "name": "db_host",
+    "value": "postgresql1.postgres.database.azure.com",
+    "slotSetting": false
+  },
+  {
+    "name": "db_password",
+    "value": "do_not_use",
+    "slotSetting": false
+  },
+  {
+    "name": "db_port",
+    "value": "5432",
+    "slotSetting": false
+  },
+  {
+    "name": "db_tables",
+    "value": "[\"mh_ad_ai_dimension\",\"mh_model_master\",\"mh_ro_hdr_details\",\"mh_ro_parts\",\"mh_ro_labour\", \"mh_cust_verbatim\"]",
+    "slotSetting": false
+  },
+  {
+    "name": "db_user",
+    "value": "admin",
+    "slotSetting": false
+  },
+  {
+    "name": "fetch_semantic_schema",
+    "value": "True",
+    "slotSetting": false
+  },
+  {
+    "name": "GOOGLE_CREDENTIALS_CLIENT_EMAIL",
+    "value": "bqserviceacc@prateekproject-450509.iam.gserviceaccount.com",
+    "slotSetting": false
+  },
+  {
+    "name": "GOOGLE_CREDENTIALS_CLIENT_ID",
+    "value": "113170843501102392568",
+    "slotSetting": false
+  },
+  {
+    "name": "GOOGLE_CREDENTIALS_PRIVATE_KEY_ID",
+    "value": "ed95d3833a3389da07659457b8c0f89d57a1aff4",
+    "slotSetting": false
+  },
+  {
+    "name": "GOOGLE_CREDENTIALS_PROJECT_ID",
+    "value": "prateekproject-450509",
+    "slotSetting": false
+  },
+  {
+    "name": "GOOGLE_CREDENTIALS_TYPE",
+    "value": "service_account",
+    "slotSetting": false
+  },
+  {
+    "name": "key_parameters",
+    "value": "Dealer Zone,Year,Month,Product,VIN,Customer Feedback,Repair Order Number,Feedback Category,Service Date",
+    "slotSetting": false
+  },
+  {
+    "name": "OPENAI_API_TYPE",
+    "value": "azure",
+    "slotSetting": false
+  },
+  {
+    "name": "Question_dropdown",
+    "value": "Choose from frequently asked Questions or Enter your own Questions",
+    "slotSetting": false
+  },
+  {
+    "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
+    "value": "1",
+    "slotSetting": false
+  },
+  {
+    "name": "SQL_DB_DRIVER",
+    "value": "ODBC Driver 18 for SQL Server",
+    "slotSetting": false
+  },
+  {
+    "name": "SQL_DB_NAME",
+    "value": "mazdmdpdb1",
+    "slotSetting": false
+  },
+  {
+    "name": "SQL_DB_PASSWORD",
+    "value": "",
+    "slotSetting": false
+  },
+  {
+    "name": "SQL_DB_PORT",
+    "value": "1433",
+    "slotSetting": false
+  },
+  {
+    "name": "SQL_DB_SERVER",
+    "value": "http://mazdmdpsrvrl.database.windows.net",
+    "slotSetting": false
+  },
+  {
+    "name": "SQL_DB_USER",
+    "value": "mdpuser1",
+    "slotSetting": false
+  },
+  {
+    "name": "SQL_MAX_OVERFLOW",
+    "value": "10",
+    "slotSetting": false
+  },
+  {
+    "name": "SQL_POOL_SIZE",
+    "value": "50",
+    "slotSetting": false
+  },
+  {
+    "name": "subject_areas1",
+    "value": "Demo, Finance,Customer Support",
+    "slotSetting": false
+  },
+  {
+    "name": "System_Maintenance",
+    "value": "N",
+    "slotSetting": false
+  },
+  {
+    "name": "WEBSITE_HTTPLOGGING_RETENTION_DAYS",
+    "value": "7",
+    "slotSetting": false
+  }
+]

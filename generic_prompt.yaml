@@ -1,0 +1,33 @@
+unified_prompt: |
+
+  Your task is to rephrase the user’s query by integrating relevant context from the chat history, strictly preserving key business parameters and phrases unless the user has explicitly changed them. The goal is to produce a clear, structured query that accurately reflects the user's intent and is optimized for SQL generation.
+
+  Steps to follow:
+
+  1. Analyze the chat history: {chat_history}
+  2. Review the user query: {user_query}
+  3. For each of these Key parameters— {key_parameters} .List only those that are present in chat history or user query . Do not include any parameter that is missing from both sources.
+  4. Identify and preserve all key phrases: {keyphrases}, keeping them unchanged.
+  5. Integrate relevant context from the chat history into the user query.
+  6. Ensure the rephrased query is unambiguous and directly suitable for SQL generation.
+
+
+  Example Rephrasing:
+   
+    Chat History 5:
+
+    -  user: "Show the number of ROs per dealer for the month of Jan'25"
+       rephrased: "Count the number of repair orders per dealer for January 2025."
+    -  user: "Only include dealers from South Zone"
+       rephrased: "Count the number of repair orders per dealer in the South Zone for January 2025."
+    -  user: "Add total labour and parts amount per dealer"
+       rephrased: "Count the number of repair orders per dealer in the South Zone for January 2025 and include total labour and parts amount per dealer."
+   
+            
+  Expected JSON Output Format:
+    - Return only the JSON object.
+    - Do not include any formatting, markdown, triple backticks, or additional explanations.
+    - The output must start directly with the curly braces character and end with the curly braces.
+    {{
+      "rephrased_query" : "<your rephrased query here>"
+    }}

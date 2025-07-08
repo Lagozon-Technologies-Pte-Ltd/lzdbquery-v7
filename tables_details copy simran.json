@@ -1,0 +1,1264 @@
+{
+  "tables": [
+    {
+      "table_name": "MH_MODEL_MASTER",
+      "table_description": "Contains vehicle model master data",
+      "columns": [
+        {
+          "column_name": "MODL_CD",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Model Code"
+        },
+        {
+          "column_name": "MODL_DESC",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Model Description"
+        },
+        {
+          "column_name": "MODL_GROP_CD",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Model Group Code"
+        },
+        {
+          "column_name": "VARNT_CD",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Variant Code"
+        },
+        {
+          "column_name": "SEAT_CAPCTY",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Seat Capacity"
+        },
+        {
+          "column_name": "MODL_INVC_DESC",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Model Invoice Description"
+        },
+        {
+          "column_name": "FAMLY_CD",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Family Code"
+        },
+        {
+          "column_name": "COLR_CD",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Color Code"
+        },
+        {
+          "column_name": "PRODCT_DIVSN",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Product Division"
+        },
+        {
+          "column_name": "BATCH",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Batch"
+        },
+        {
+          "column_name": "OEM_MODL_CD",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "OEM Model Code"
+        },
+        {
+          "column_name": "SAL_MODL_GROP",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Sales Model Group"
+        },
+        {
+          "column_name": "MODL_GROP_ORDR_BY",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Model Group Order By"
+        },
+        {
+          "column_name": "SEGMNT_CD",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Segment Code"
+        },
+        {
+          "column_name": "VARNT_DESC",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Variant Description"
+        },
+        {
+          "column_name": "FAMLY_DESC",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Family Description"
+        },
+        {
+          "column_name": "ACTV_IND",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Active Indicator"
+        },
+        {
+          "column_name": "MODL_GROP_DESC",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Model Group Description"
+        },
+        {
+          "column_name": "FUEL_TYPE",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Fuel Type"
+        },
+        {
+          "column_name": "EMISSION",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Emission"
+        },
+        {
+          "column_name": "DRIV",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Drive"
+        },
+        {
+          "column_name": "TRIM_LEVL",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Trim Level"
+        },
+        {
+          "column_name": "TRANSMISSION",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Transmission"
+        }
+      ]
+    },
+    {
+      "table_name": "MH_AD_AI_DIMENSION",
+      "table_description": "Contains dealer and sales hierarchy dimension data",
+      "columns": [
+        {
+          "column_name": "delr_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Dealer Name"
+        },
+        {
+          "column_name": "prodct_divsn",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Product Division"
+        },
+        {
+          "column_name": "actv_ind",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Active Indicator"
+        },
+        {
+          "column_name": "parnt_grop",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Parent Group Code"
+        },
+        {
+          "column_name": "PARENT_GROUP_NAME",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Parent Group Name"
+        },
+        {
+          "column_name": "loctn_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Location Name"
+        },
+        {
+          "column_name": "loctn_cd",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Location Code"
+        },
+        {
+          "column_name": "delr_cd",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Dealer Code"
+        },
+        {
+          "column_name": "area_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Area Name"
+        },
+        {
+          "column_name": "zone_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Zone Name"
+        },
+        {
+          "column_name": "asm_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "ASM Name"
+        },
+        {
+          "column_name": "ccm_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "CCM Name"
+        },
+        {
+          "column_name": "rsm_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "RSM Name"
+        },
+        {
+          "column_name": "rccm_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "RCCM Name"
+        },
+        {
+          "column_name": "zonal_head_sales",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Zonal Head Sales"
+        },
+        {
+          "column_name": "zonal_head_cc",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Zonal Head Customer Care"
+        }
+      ]
+    },
+    {
+      "table_name": "MH_CUST_VERBATIM",
+      "table_description": "Contains customer issue verbatim related to repair orders data",
+      "columns": [
+        {
+          "column_name": "ro_number",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "RO Number"
+        },
+        {
+          "column_name": "sv_ro_hdr_sk",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Service RO Header SK"
+        },
+        {
+          "column_name": "demanded_verbatim",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Demanded Verbatim"
+        },
+        {
+          "column_name": "verbatim_group",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Verbatim Group"
+        },
+        {
+          "column_name": "verbatim_code",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Verbatim Code"
+        },
+        {
+          "column_name": "cust_verbtm_desc",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Customer Verbatim Description"
+        },
+        {
+          "column_name": "verbatim_group_desc",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Verbatim Group Description"
+        }
+      ]
+    },
+    {
+      "table_name": "MH_RO_LABOUR",
+      "table_description": "Contains OEM and Local Labor consumed in repair orders data",
+      "columns": [
+        {
+          "column_name": "sv_ro_hdr_sk",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Service RO Header SK"
+        },
+        {
+          "column_name": "sv_ro_bill_hdr_sk",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Service RO Bill Header SK"
+        },
+        {
+          "column_name": "sv_ro_bill_labr_dtl_sk",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Service RO Bill Labour Detail SK"
+        },
+        {
+          "column_name": "standrd_hrs",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Standard Hours"
+        },
+        {
+          "column_name": "sv_labr_mst_sk",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Service Labour Master SK"
+        },
+        {
+          "column_name": "labr_desc",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Labour Description"
+        },
+        {
+          "column_name": "labr_tax",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Labour Tax"
+        },
+        {
+          "column_name": "labrAmount",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Labour Amount"
+        },
+        {
+          "column_name": "labr_rate",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Labour Rate"
+        },
+        {
+          "column_name": "labr_charg_hrs",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Labour Charged Hours"
+        },
+        {
+          "column_name": "labr_discnt_amnt",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Labour Discount Amount"
+        },
+        {
+          "column_name": "labr_totl_amnt",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Labour Total Amount"
+        },
+        {
+          "column_name": "totalBillAmount",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Total Bill Amount"
+        },
+        {
+          "column_name": "labour_billable_type_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Labour Billable Type Name"
+        },
+        {
+          "column_name": "labour_type_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Labour Type Name"
+        },
+        {
+          "column_name": "labour_group_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Labour Group Name"
+        }
+      ]
+    },
+    {
+      "table_name": "MH_RO_PARTS",
+      "table_description": "Contains OEM and Local Parts consumed in repair orders data",
+      "columns": [
+        {
+          "column_name": "sv_ro_hdr_sk",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Service RO Header SK"
+        },
+        {
+          "column_name": "sv_ro_bill_hdr_sk",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Service RO Bill Header SK"
+        },
+        {
+          "column_name": "sv_ro_bill_part_dtl_sk",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Service RO Bill Part Detail SK"
+        },
+        {
+          "column_name": "part_code",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Part Code"
+        },
+        {
+          "column_name": "part_desc",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Part Description"
+        },
+        {
+          "column_name": "part_quantity",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Part Quantity"
+        },
+        {
+          "column_name": "part_rate",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Part Rate"
+        },
+        {
+          "column_name": "partamount",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Part Amount"
+        },
+        {
+          "column_name": "part_tax",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Part Tax"
+        },
+        {
+          "column_name": "part_discnt_amnt",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Part Discount Amount"
+        },
+        {
+          "column_name": "part_totl_amnt",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Part Total Amount"
+        },
+        {
+          "column_name": "oem_part_ind",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "OEM Part Indicator"
+        },
+        {
+          "column_name": "abc_ind",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "ABC Indicator"
+        },
+        {
+          "column_name": "hml_ind",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "HML Indicator"
+        },
+        {
+          "column_name": "landed_cost",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Landed Cost"
+        },
+        {
+          "column_name": "ris_ind",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "RIS Indicator"
+        },
+        {
+          "column_name": "purchs_pric",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Purchase Price"
+        },
+        {
+          "column_name": "selng_pric",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Selling Price"
+        },
+        {
+          "column_name": "mrp",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "MRP"
+        },
+        {
+          "column_name": "hsn",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "HSN"
+        },
+        {
+          "column_name": "net_delr_pric",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Net Dealer Price"
+        },
+        {
+          "column_name": "discnt_rate",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Discount Rate"
+        },
+        {
+          "column_name": "gndp",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "GNDP"
+        },
+        {
+          "column_name": "ndp",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "NDP"
+        },
+        {
+          "column_name": "bill_share",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Bill Share"
+        },
+        {
+          "column_name": "total_bill_amount",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Total Bill Amount"
+        },
+        {
+          "column_name": "part_category_description",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Part Category Description"
+        },
+        {
+          "column_name": "part_billable_type_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Part Billable Type Name"
+        },
+        {
+          "column_name": "discount_type_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Discount Type Name"
+        },
+        {
+          "column_name": "product_division_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Product Division Name"
+        },
+        {
+          "column_name": "part_type_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Part Type Name"
+        },
+        {
+          "column_name": "part_category_group",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Part Category Group"
+        },
+        {
+          "column_name": "common_part_category",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Common Part Category"
+        },
+        {
+          "column_name": "category1",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Category1"
+        }
+      ]
+    },
+    {
+      "table_name": "MH_RO_HDR_DETAILS",
+      "table_description": "Contains Repair Order header details",
+      "columns": [
+        {
+          "column_name": "RO_CANCL_DATE",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "RO Cancel Date"
+        },
+        {
+          "column_name": "SPOT_CARE_APPL_FL",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Spot Care Applied Flag"
+        },
+        {
+          "column_name": "VEHCL_TOE_IND",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Vehicle TOE Indicator"
+        },
+        {
+          "column_name": "VIN",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "VIN"
+        },
+        {
+          "column_name": "RO_DATE",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "RO Date"
+        },
+        {
+          "column_name": "RO_DATETIME",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "description": "RO DateTime"
+        },
+        {
+          "column_name": "BILL_DATE",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "Bill Date"
+        },
+        {
+          "column_name": "BILL_DATETIME",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "description": "Bill DateTime"
+        },
+        {
+          "column_name": "RO_CLOSED_DATE",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "RO Closed Date"
+        },
+        {
+          "column_name": "RO_STATS",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "RO Status"
+        },
+        {
+          "column_name": "ODMTR_REDNG",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Odometer Reading"
+        },
+        {
+          "column_name": "SV_APNTMNT_HDR_SK",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Service Appointment Header SK"
+        },
+        {
+          "column_name": "RO_BILL_DATE",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "RO Bill Date"
+        },
+        {
+          "column_name": "CANCL_DATE",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "Cancel Date"
+        },
+        {
+          "column_name": "SV_RO_HDR_SK",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Service RO Header SK"
+        },
+        {
+          "column_name": "PARNT_GROP",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Parent Group"
+        },
+        {
+          "column_name": "LOCTN_CD",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Location Code"
+        },
+        {
+          "column_name": "RO_ID",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "RO ID"
+        },
+        {
+          "column_name": "PARTS_TOTL_AMNT",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Parts Total Amount"
+        },
+        {
+          "column_name": "LABR_TOTL_AMNT",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Labour Total Amount"
+        },
+        {
+          "column_name": "DOC_AMNT",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Document Amount"
+        },
+        {
+          "column_name": "PARTS_BASC_AMNT",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Parts Basic Amount"
+        },
+        {
+          "column_name": "LABR_BASC_AMNT",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Labour Basic Amount"
+        },
+        {
+          "column_name": "SA_EMPLY_NAME",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Service Advisor Employee Name"
+        },
+        {
+          "column_name": "PROMSD_DELVRY_DATE",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "Promised Delivery Date"
+        },
+        {
+          "column_name": "REVSD_PROMSD_DELVRY_DATE",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "Revised Promised Delivery Date"
+        },
+        {
+          "column_name": "REVST_IND",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Revisit Indicator"
+        },
+        {
+          "column_name": "MODL_CD",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Model Code"
+        },
+        {
+          "column_name": "SV_RO_BILL_HDR_SK",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Service RO Bill Header SK"
+        },
+        {
+          "column_name": "ONLNE_PAYMNT_FLG",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Online Payment Flag"
+        },
+        {
+          "column_name": "SEGMNT_CD",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Segment Code"
+        },
+        {
+          "column_name": "EXPRS_SERVC_IND",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Express Service Indicator"
+        },
+        {
+          "column_name": "CHAS_NUMBR",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Chassis Number"
+        },
+        {
+          "column_name": "KEY_ACNT_SEGMNT",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Key Account Segment"
+        },
+        {
+          "column_name": "GOVT_VEHCL",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Government Vehicle"
+        },
+        {
+          "column_name": "COLR_CD",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Color Code"
+        },
+        {
+          "column_name": "OEM_MODL_CD",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "OEM Model Code"
+        },
+        {
+          "column_name": "PRODCT_DIVSN",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Product Division"
+        },
+        {
+          "column_name": "PART_CHARG_AMNT",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Part Charge Amount"
+        },
+        {
+          "column_name": "LABR_CHARG_AMNT",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Labour Charge Amount"
+        },
+        {
+          "column_name": "SDD_FLAG",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "SDD Flag"
+        },
+        {
+          "column_name": "RO_GT_72",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": " Value of column SV_RO_HDR_SK is stored in this column for those ROs where it took more than 72 hours for repair"
+        },
+        {
+          "column_name": "RO_LT_ET_72",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Value of column SV_RO_HDR_SK is stored in this column for those ROs where it took less Than or equal to 72 hours for repair"
+        },
+        {
+          "column_name": "RO_LT_ET_48",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Value of column SV_RO_HDR_SK is stored in this column for those ROs where it took less Than or equal to 48 hours for repair"
+        },
+        {
+          "column_name": "RO_LT_ET_24",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Value of column SV_RO_HDR_SK is stored in this column for those ROs where it took less Than or equal to 24 hours for repair"
+        },
+        {
+          "column_name": "RO_CLOSE_DIFF",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "RO Close Difference"
+        },
+        {
+          "column_name": "TEA_FLAG",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "TEA Flag"
+        },
+        {
+          "column_name": "CEA_FLAG",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "CEA Flag"
+        },
+        {
+          "column_name": "FLAG_MTRAQ",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "MTRAQ Flag"
+        },
+        {
+          "column_name": "M1_M2_M3_M4",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "M1 M2 M3 M4"
+        },
+        {
+          "column_name": "KEY",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Key"
+        },
+        {
+          "column_name": "RO_KEY",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "RO Key"
+        },
+        {
+          "column_name": "KEY_EMP",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Key Employee"
+        },
+        {
+          "column_name": "KEY_BAY",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Key Bay"
+        },
+        {
+          "column_name": "RO_Day_Closed",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "RO Day Closed"
+        },
+        {
+          "column_name": "ORGNL_WARNTY_START_DATE",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "Original Warranty Start Date"
+        },
+        {
+          "column_name": "RSA_REGSTRTN_STATS",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "RSA Registration Status"
+        },
+        {
+          "column_name": "MAX_TO_DAYS_FRM_DOS",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Max TO Days from DOS"
+        },
+        {
+          "column_name": "Arrived_date_for_Eligibility",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "Arrived Date for Eligibility"
+        },
+        {
+          "column_name": "RSA_Registartion_Flag",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "RSA Registration Flag"
+        },
+        {
+          "column_name": "RSA_EXPRY_DATE",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "RSA Expiry Date"
+        },
+        {
+          "column_name": "Eligible_Vehicle_Flag",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Eligible Vehicle Flag"
+        },
+        {
+          "column_name": "ORGNL_WARNTY_EXPRY_DATE",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "Original Warranty Expiry Date"
+        },
+        {
+          "column_name": "ORGNL_WARNTY_EXPRY_KM",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Original Warranty Expiry KM"
+        },
+        {
+          "column_name": "Warranty_Flag",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Warranty Flag"
+        },
+        {
+          "column_name": "VALID_TO",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "Valid To"
+        },
+        {
+          "column_name": "Shield_validity_Flag",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Shield Validity Flag"
+        },
+        {
+          "column_name": "SCHEME_EXP_DATE",
+          "data_type": "DATE",
+          "nullable": true,
+          "description": "Scheme Expiry Date"
+        },
+        {
+          "column_name": "Shield_Registration_Flag",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Shield Registration Flag"
+        },
+        {
+          "column_name": "MRP",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "MRP"
+        },
+        {
+          "column_name": "NDP",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "NDP"
+        },
+        {
+          "column_name": "PART_QTY",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Part Quantity"
+        },
+        {
+          "column_name": "Ageing_Bucket",
+          "data_type": "NUMERIC",
+          "nullable": true,
+          "description": "Ageing Bucket"
+        },
+        {
+          "column_name": "BROUGHT_BY_NAME",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Brought By Name"
+        },
+        {
+          "column_name": "VEHICLE_BROUGHT_BY",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Vehicle Brought By"
+        },
+        {
+          "column_name": "SA_FEEDBCK_STATS",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Service Advisor Feedback Status"
+        },
+        {
+          "column_name": "ACCESORIES_FLAG",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Accessories Flag"
+        },
+        {
+          "column_name": "DIV_KEY",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Division Key"
+        },
+        {
+          "column_name": "REG_NUMBR",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Registration Number"
+        },
+        {
+          "column_name": "RO_REMRKS",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "RO Remarks"
+        },
+        {
+          "column_name": "BAY_ACTV_IND",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Bay Active Indicator"
+        },
+        {
+          "column_name": "APPL_TO",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Applied To"
+        },
+        {
+          "column_name": "WARRANTY_AGEING_RO",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Warranty Ageing RO"
+        },
+        {
+          "column_name": "WARRANTY_AGEING_TDAY",
+          "data_type": "INTEGER",
+          "nullable": true,
+          "description": "Warranty Ageing Today"
+        },
+        {
+          "column_name": "SERVC_TYPE_DESC",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Service Type Description"
+        },
+        {
+          "column_name": "SERV_CATGRY_DESC",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Service Category Description"
+        },
+        {
+          "column_name": "MODL_COLR_KEY",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Model Color Key"
+        },
+        {
+          "column_name": "ro_source_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "RO Source Name"
+        },
+        {
+          "column_name": "service_type_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Service Type Name"
+        },
+        {
+          "column_name": "repair_order_same_day_delay_reason",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Repair Order Same Day Delay Reason"
+        },
+        {
+          "column_name": "estimation_variation_reason",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Estimation Variation Reason"
+        },
+        {
+          "column_name": "repair_order_cancel_reason",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Repair Order Cancel Reason"
+        },
+        {
+          "column_name": "repair_order_delay_reason",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Repair Order Delay Reason"
+        },
+        {
+          "column_name": "pendency_reason",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Pendency Reason"
+        },
+        {
+          "column_name": "time_revision_approval_reason",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Time Revision Approval Reason"
+        },
+        {
+          "column_name": "cost_revision_approval_reason",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Cost Revision Approval Reason"
+        },
+        {
+          "column_name": "pickup_type_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Pickup Type Name"
+        },
+        {
+          "column_name": "drop_type_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Drop Type Name"
+        },
+        {
+          "column_name": "ro_doc_type_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "RO Document Type Name"
+        },
+        {
+          "column_name": "bill_type_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Bill Type Name"
+        },
+        {
+          "column_name": "service_campaign_type_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Service Campaign Type Name"
+        },
+        {
+          "column_name": "tech_employee_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Technician Employee Name"
+        },
+        {
+          "column_name": "product_division_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Product Division Name"
+        },
+        {
+          "column_name": "taxi_indicator",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Taxi Indicator"
+        },
+        {
+          "column_name": "bay_type_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Bay Type Name"
+        },
+        {
+          "column_name": "revist_flag",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Revisit Flag"
+        },
+        {
+          "column_name": "repeat_repair_flag",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Repeat Repair Flag"
+        },
+        {
+          "column_name": "service_group",
+          "data_type": "STRING",
+          "nullable": true,
+          "description": "Service Group"
+        }
+      ]
+    }
+  ]
+}
