@@ -63,10 +63,14 @@ async def lifespan(app: FastAPI):
 
     # Azure SQL DB
     engine = create_engine(
+      
+
         SQL_DATABASE_URL,
         pool_size=int(SQL_POOL_SIZE),
         max_overflow=int(SQL_MAX_OVERFLOW),
-        echo=False
+        echo=False,
+        pool_recycle=1200,  # Recycle every 20 minutes
+        pool_pre_ping=True  # Validate connection before using
     )
     app.state.engine = engine
     app.state.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
