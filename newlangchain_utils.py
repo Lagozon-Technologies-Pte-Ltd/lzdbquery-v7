@@ -653,3 +653,4 @@ def find_relationships_for_tables(table_names, json_file_path):
                 related.append(rel)
         all_related[table_name] = related
     return all_related
+

@@ -13,7 +13,7 @@
       "source": "MH_AD_AI_DIMENSION",
       "target": "MH_RO_HDR_DETAILS",
       "source_key":  ["parnt_grop", "loctn_cd", "prodct_divsn"],
-      "target_key": ["DIV_KEY"],
+      "target_key":  ["parnt_grop", "loctn_cd", "prodct_divsn"],
       "description": "Dealer Master to Repair Order or RO Header Details (composite key)"
     },
     {

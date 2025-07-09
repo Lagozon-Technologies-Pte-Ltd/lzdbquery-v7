@@ -850,6 +850,7 @@ async def submit_query(
         # Rest of your code remains the same...
         # Step 2: Invoke LangChain
         try:
+            print(f"type of chosen table: {type(chosen_tables)}")
             relationships = find_relationships_for_tables(chosen_tables , 'table_relation.json')
             table_details = get_table_details(table_name=chosen_tables)
             examples = get_examples(llm_reframed_query, current_question_type)
