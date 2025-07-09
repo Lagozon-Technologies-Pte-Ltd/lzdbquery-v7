@@ -2,11 +2,11 @@ import pandas as pd
 import os, json
 import configure
 from operator import itemgetter
-from langchain.chains.openai_tools import create_extraction_chain_pydantic 
+# from langchain.chains.openai_tools import create_extraction_chain_pydantic 
 from pydantic import BaseModel, Field
-from langchain_openai import ChatOpenAI 
+# from langchain_openai import ChatOpenAI 
 from openai import AzureOpenAI
-from langchain_openai import AzureChatOpenAI
+# from langchain_openai import AzureChatOpenAI
 import platform
 
 
@@ -15,13 +15,13 @@ AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
 AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION', "2024-02-01")
 AZURE_DEPLOYMENT_NAME = os.environ.get('AZURE_DEPLOYMENT_NAME')
 
-llm = AzureChatOpenAI(
-    openai_api_version=AZURE_OPENAI_API_VERSION,
-    azure_deployment=AZURE_DEPLOYMENT_NAME,
-    azure_endpoint=AZURE_OPENAI_ENDPOINT,
-    api_key=AZURE_OPENAI_API_KEY,
-    temperature=0
-)
+# llm = AzureChatOpenAI(
+#     openai_api_version=AZURE_OPENAI_API_VERSION,
+#     azure_deployment=AZURE_DEPLOYMENT_NAME,
+#     azure_endpoint=AZURE_OPENAI_ENDPOINT,
+#     api_key=AZURE_OPENAI_API_KEY,
+#     temperature=0
+# )
 
 from typing import List
 
@@ -114,7 +114,9 @@ def get_table_details(table_name=None):
                 if is_fk: flags.append("FK")
                 if nullable: flags.append("NULLABLE")
                 flag_str = " [" + ", ".join(flags) + "]" if flags else ""
-                table_details += f"  - {col_name} ({data_type}){flag_str}: {description}\n"
+                examples = col.get('examples', None)
+                example_str = f" Example: {examples}" if examples is not None else "no example for this column"
+                table_details += f"  - {col_name} ({data_type}){flag_str}: {example_str} {description} \n"
         else:
             table_details += "  No column details found.\n"
         table_details += "\n"

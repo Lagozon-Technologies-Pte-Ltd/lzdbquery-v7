@@ -85,19 +85,19 @@ from io import StringIO
 # from langchain.chains import create_sql_query_chain
 # from langchain_openai import ChatOpenAI
 # from langchain_community.tools.sql_database.tool import QuerySQLDataBaseTool
-from langchain.memory import ChatMessageHistory
+# from langchain.memory import ChatMessageHistory
 from operator import itemgetter
-from google.oauth2 import service_account
+# from google.oauth2 import service_account
 import json
 from urllib.parse import quote_plus
 
 
 from operator import itemgetter
 
-from langchain_core.output_parsers import StrOutputParser
+# from langchain_core.output_parsers import StrOutputParser
 
-from langchain_core.runnables import RunnablePassthrough
-from langchain_openai import ChatOpenAI
+# from langchain_core.runnables import RunnablePassthrough
+# from langchain_openai import ChatOpenAI
 
 
 
@@ -456,7 +456,7 @@ def get_chain(question, selected_database, table_details, selected_business_rule
 
     return json_output, final_prompt1
 
-def invoke_chain(question, messages, selected_model, selected_subject, selected_database, table_info, selected_business_rule, question_type, relationships, examples):
+def invoke_chain(db,question, messages, selected_model, selected_subject, selected_database, table_info, selected_business_rule, question_type, relationships, examples):
     logger.info(f"Submit query, now in invoke chain functin in newlangchain_utils, parameters are: {question, messages, selected_model, selected_subject, selected_database}")
     response = None
     SQL_Statement = None
@@ -496,8 +496,7 @@ def invoke_chain(question, messages, selected_model, selected_subject, selected_
         #     print(table)
         #     break 
         if selected_database == "Azure SQL":
-            db = get_sql_db()
-            logger.info("submit query --> invoke_chain : connection successul to azure SQL DB.")
+            # db = get_sql_db()
 
             result = db.execute(query)
             logger.info(f"submit query --> invoke_chain : result after executing \n{query} : \n{result}")
@@ -654,3 +653,4 @@ def find_relationships_for_tables(table_names, json_file_path):
                 related.append(rel)
         all_related[table_name] = related
     return all_related
+

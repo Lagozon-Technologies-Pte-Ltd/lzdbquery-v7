@@ -9,10 +9,6 @@
     "query": "SELECT DISTINCT [rohdr].[ro_id], [rohdr].[chas_numbr], [rohdr].[oem_modl_cd] FROM MH_RO_HDR_DETAILS AS [rohdr]"
     },
     {
-    "input": "List all active dealers under the North Zone with their sales and service email IDs, mobile numbers, and location codes.",
-    "query": "SELECT DISTINCT [ad].[delr_name], [ad].[delr_sals_email], [ad].[delr_serv_email], [ad].[delr_mobl_sal], [ad].[delr_mobl_srv], [ad].[loctn_cd] FROM [MH_AD_AI_DIMENSION] AS [ad] WHERE [ad].[zone_name] COLLATE SQL_Latin1_General_CP1_CI_AS = 'North Zone' AND [ad].[actv_ind] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y'"
-    },
-    {
     "input": "List all repair orders from January 2025 where the vehicle had a no government tag and was not serviced under the ‘Repair’ category.",
     "query": "SELECT DISTINCT [rohdr].[RO_ID] FROM [MH_RO_HDR_DETAILS] AS [rohdr] WHERE [rohdr].[RO_DATE] >= '2025-01-01' AND [rohdr].[RO_DATE] < '2025-02-01' AND [rohdr].[govt_vehcl] COLLATE SQL_Latin1_General_CP1_CI_AS <> 'Y' AND [rohdr].[serv_catgry_desc] COLLATE SQL_Latin1_General_CP1_CI_AS <> 'Repair'"
     },
@@ -22,7 +18,7 @@
     },
     {
     "input": "How many repeat repairs and revisits were done in 2024, and what models are they most associated with?",
-    "query": "SELECT DISTINCT rohdr.[MODL_CD], mm.[MODL_DESC], COUNT(*) AS [Repeat_Revisit_Count] FROM MH_RO_HDR_DETAILS rohdr INNER JOIN MH_MODEL_MASTER mm ON rohdr.[MODL_CD] = mm.[MODL_CD] WHERE rohdr.[RO_DATE] BETWEEN '2024-01-01' AND '2024-12-31' AND rohdr.[REPEAT_REPAIR_FLAG] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' AND rohdr.[REVIST_FLAG] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' GROUP BY rohdr.[MODL_CD], mm.[MODL_DESC] HAVING COUNT(*) > 1 ORDER BY [Repeat_Revisit_Count] DESC"
+    "query": "SELECT DISTINCT rohdr.[MODL_CD], mm.[MODL_DESC], COUNT() AS [Repeat_Revisit_Count] FROM MH_RO_HDR_DETAILS rohdr INNER JOIN MH_MODEL_MASTER mm ON rohdr.[MODL_CD] = mm.[MODL_CD] WHERE rohdr.[RO_DATE] BETWEEN '2024-01-01' AND '2024-12-31' AND rohdr.[REPEAT_REPAIR_FLAG] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' AND rohdr.[REVIST_FLAG] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' GROUP BY rohdr.[MODL_CD], mm.[MODL_DESC] HAVING COUNT() > 1 ORDER BY [Repeat_Revisit_Count] DESC"
     },
     {
     "input": "What is the total revenue generated from service ROs in the South Zone during Q1 2025, broken down by model group?",
@@ -50,15 +46,11 @@
     },
     {
     "input": "What are the most frequently occurring customer complaint groups in repeat repair cases from 2024?",
-    "query": "SELECT TOP 10 cv.[verbatim_group], COUNT(*) AS [complaint_count] FROM [MH_RO_HDR_DETAILS] AS rohdr INNER JOIN [MH_CUST_VERBATIM] AS cv ON rohdr.[sv_ro_hdr_sk] = cv.[sv_ro_hdr_sk] WHERE rohdr.[repeat_repair_flag] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' AND rohdr.[ro_date] BETWEEN '2024-01-01' AND '2024-12-31' GROUP BY cv.[verbatim_group] ORDER BY COUNT(*) DESC"
+    "query": "SELECT TOP 10 cv.[verbatim_group], COUNT() AS [complaint_count] FROM [MH_RO_HDR_DETAILS] AS rohdr INNER JOIN [MH_CUST_VERBATIM] AS cv ON rohdr.[sv_ro_hdr_sk] = cv.[sv_ro_hdr_sk] WHERE rohdr.[repeat_repair_flag] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' AND rohdr.[ro_date] BETWEEN '2024-01-01' AND '2024-12-31' GROUP BY cv.[verbatim_group] ORDER BY COUNT() DESC"
     },
     {
     "input": "Give me a summary of all customer verbatims related to 'delay in service' or 'vehicle not ready' across top 10 dealers.",
-    "query": "SELECT TOP 10 ad.[delr_name], COUNT(*) AS [Repeat_Repair_Count], STRING_AGG(cv.[cust_verbtm_desc], '; ') AS [Customer_Verbatims] FROM MH_RO_HDR_DETAILS rohdr INNER JOIN MH_CUST_VERBATIM cv ON rohdr.[sv_ro_hdr_sk] = cv.[sv_ro_hdr_sk] INNER JOIN MH_AD_AI_DIMENSION ad ON rohdr.[loctn_cd] = ad.[loctn_cd] WHERE rohdr.[repeat_repair_flag] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' AND (cv.[cust_verbtm_desc] COLLATE SQL_Latin1_General_CP1_CI_AS LIKE '%delay in service%' OR cv.[cust_verbtm_desc] COLLATE SQL_Latin1_General_CP1_CI_AS LIKE '%vehicle not ready%') AND rohdr.[ro_date] BETWEEN '2024-01-01' AND '2024-12-31' GROUP BY ad.[delr_name] ORDER BY COUNT(*) DESC"
-    },
-    {
-    "input": "List all active dealers under the North Zone with their sales and service email IDs, mobile numbers, and location codes.",
-    "query": "SELECT DISTINCT [ad].[delr_name], [ad].[delr_sals_email], [ad].[delr_serv_email], [ad].[delr_mobl_sal], [ad].[delr_mobl_srv], [ad].[loctn_cd] FROM [MH_AD_AI_DIMENSION] AS [ad] WHERE [ad].[zone_name] COLLATE SQL_Latin1_General_CP1_CI_AS = 'North Zone' AND [ad].[actv_ind] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y'"
+    "query": "SELECT TOP 10 ad.[delr_name], COUNT() AS [Repeat_Repair_Count], STRING_AGG(cv.[cust_verbtm_desc], '; ') AS [Customer_Verbatims] FROM MH_RO_HDR_DETAILS rohdr INNER JOIN MH_CUST_VERBATIM cv ON rohdr.[sv_ro_hdr_sk] = cv.[sv_ro_hdr_sk] INNER JOIN MH_AD_AI_DIMENSION ad ON rohdr.[loctn_cd] = ad.[loctn_cd] WHERE rohdr.[repeat_repair_flag] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' AND (cv.[cust_verbtm_desc] COLLATE SQL_Latin1_General_CP1_CI_AS LIKE '%delay in service%' OR cv.[cust_verbtm_desc] COLLATE SQL_Latin1_General_CP1_CI_AS LIKE '%vehicle not ready%') AND rohdr.[ro_date] BETWEEN '2024-01-01' AND '2024-12-31' GROUP BY ad.[delr_name] ORDER BY COUNT() DESC"
     },
     {
     "input": "What are the top 5 models by billing revenue (parts + labour) for Petrol vehicles in 2024?",
@@ -71,5 +63,17 @@
     {
     "input": "Give the model-wise breakdown of service revenue grouped by family and model group for all Diesel vehicles.",
     "query": "SELECT DISTINCT mm.[FAMLY_CD], mm.[MODL_GROP_CD], ROUND(SUM(TRY_CAST(rohdr.[parts_totl_amnt] AS FLOAT) + TRY_CAST(rohdr.[labr_totl_amnt] AS FLOAT)), 1) AS [Service_Revenue] FROM MH_RO_HDR_DETAILS AS rohdr INNER JOIN MH_MODEL_MASTER AS mm ON rohdr.[MODL_CD] = mm.[MODL_CD] WHERE mm.[FUEL_TYPE] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Diesel' GROUP BY mm.[FAMLY_CD], mm.[MODL_GROP_CD] ORDER BY mm.[FAMLY_CD], mm.[MODL_GROP_CD]"
-    } 
+    } ,
+    {
+    "input": "Repair order details including model family, dealer information, and labor items for RO25D000189",
+    "query":"SELECT [rohdr].[RO_ID], [mm].[famly_desc] AS [model_family], [ad].[delr_name] AS [dealer_name], [ad].[loctn_name] AS [dealer_location], [rohdr].[RO_BILL_DATE] AS [ro_bill_date], [lab].[labr_desc] AS [labour_description], [lab].[labr_totl_amnt] AS [labour_total_amount] FROM [MH_RO_HDR_DETAILS] AS [rohdr] LEFT JOIN [MH_MODEL_MASTER] AS [mm] ON [rohdr].[modl_cd] = [mm].[modl_cd] LEFT JOIN [MH_AD_AI_DIMENSION] AS [ad] ON [rohdr].[loctn_cd] = [ad].[loctn_cd] AND [rohdr].[parnt_grop] = [ad].[parnt_grop] AND [rohdr].[prodct_divsn] = [ad].[prodct_divsn] LEFT JOIN [MH_RO_LABOUR] AS [lab] ON [rohdr].[sv_ro_hdr_sk] = [lab].[sv_ro_hdr_sk] WHERE [rohdr].[RO_ID] COLLATE SQL_Latin1_General_CP1_CI_AS = 'RO25D000730'"
+    },
+    {
+    "input": "Repair order summary including VIN, model family, dealer zone/area, and financial totals for RO25D000670",
+    "query":"SELECT [rohdr].[RO_ID], [rohdr].[VIN] AS [vehicle_vin], [mm].[famly_desc] AS [model_family], [ad].[zone_name] AS [dealer_zone], [ad].[area_name] AS [dealer_area], [rohdr].[PARTS_TOTL_AMNT] AS [total_parts_amount], [rohdr].[LABR_TOTL_AMNT] AS [total_labour_amount], [rohdr].[RO_BILL_DATE] AS [bill_date] FROM [MH_RO_HDR_DETAILS] AS [rohdr] LEFT JOIN [MH_MODEL_MASTER] AS [mm] ON [rohdr].[modl_cd] = [mm].[modl_cd] LEFT JOIN [MH_AD_AI_DIMENSION] AS [ad] ON [rohdr].[loctn_cd] = [ad].[loctn_cd] AND [rohdr].[parnt_grop] = [ad].[parnt_grop] AND [rohdr].[prodct_divsn] = [ad].[prodct_divsn] WHERE [rohdr].[RO_ID] COLLATE SQL_Latin1_General_CP1_CI_AS = 'RO25D000730'"
+    } ,
+    {
+    "input": "Show the number of repair orders processed by each active dealer in march 2025, along with their zone and location information, sorted by repair volume in descending order.",
+    "query":"SELECT [ad].[delr_name] AS [DealerName], [ad].[loctn_name] AS [LocationName], [ad].[zone_name] AS [Zone], COUNT([ro].[RO_ID]) AS [January2025_ROs] FROM [MH_AD_AI_DIMENSION] AS [ad] LEFT JOIN [MH_RO_HDR_DETAILS] AS [ro] ON [ad].[loctn_cd] = [ro].[loctn_cd] AND [ad].[parnt_grop] = [ro].[parnt_grop] AND [ad].[prodct_divsn] = [ro].[prodct_divsn] WHERE [ad].[delr_actv_ind] = 'Y' AND [ro].[RO_DATE] BETWEEN '2025-01-01' AND '2025-01-31' GROUP BY [ad].[delr_name], [ad].[loctn_name], [ad].[zone_name] ORDER BY [January2025_ROs] DESC"
+    }
 ]

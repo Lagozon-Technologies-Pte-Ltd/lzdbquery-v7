@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Form, HTTPException, Query, UploadFile, File
+from fastapi import FastAPI, Form, HTTPException, Query, UploadFile, File,Depends
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
@@ -32,6 +32,11 @@ from SM_examples import get_examples
 # Configure logging
 # logging.basicConfig(level=logging.INFO)
 from logger_custom import logger
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
+from dependencies import  get_db
+from contextlib import asynccontextmanager
+
 class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Log the request details
@@ -44,33 +49,45 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         logging.info(f"Response status: {response.status_code}")
         
         return response
-# Logging configuration
-# LOGGING_CONFIG = {
-#     "version": 1,
-#     "disable_existing_loggers": False,
-#     "formatters": {
-#         "default": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"},
-#         "json": {"format": '{"timestamp": "%(asctime)s", "logger": "%(name)s", "level": "%(levelname)s", "message": "%(message)s"}'}
-#     },
-#     "handlers": {
-#         "console": {"class": "logging.StreamHandler", "formatter": "default"},
-#         "file": {"class": "logging.FileHandler", "filename": "app.log", "formatter": "json"}
-#     },
-#     "loggers": {
-#         "uvicorn": {"handlers": ["console"], "level": "INFO", "propagate": False},
-#         "app": {"handlers": ["console", "file"], "level": "DEBUG", "propagate": False}
-#     },
-#     "root": {
-#         "handlers": ["console"],
-#         "level": "INFO"
-#     }
-# }
-# dictConfig(LOGGING_CONFIG)
-# logger = logging.getLogger("app")
 
 load_dotenv()  # Load environment variables from .env file
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Azure OpenAI LLM
+    # app.state.azure_openai_client = AzureOpenAI(
+    #     azure_deployment=os.environ["AZURE_DEPLOYMENT_NAME"],
+    #     api_key=os.environ["AZURE_OPENAI_API_KEY"],
+    #     api_version=os.environ.get("AZURE_OPENAI_API_VERSION", "2024-02-01"),
+    #     azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"]
+    # )
 
-app = FastAPI()
+    # Azure SQL DB
+    engine = create_engine(
+        SQL_DATABASE_URL,
+        pool_size=int(SQL_POOL_SIZE),
+        max_overflow=int(SQL_MAX_OVERFLOW),
+        echo=False
+    )
+    app.state.engine = engine
+    app.state.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+    # # Azure Redis Cache (async)
+    # app.state.redis_client = redis.Redis(
+    #     host=os.environ["REDIS_HOST"],
+    #     port=int(os.environ.get("REDIS_PORT", 6380)),
+    #     password=os.environ["REDIS_KEY"],
+    #     ssl=True,
+    #     decode_responses=True,
+    #     max_connections=20
+    # )
+
+    yield
+
+    engine.dispose()
+
+
+app = FastAPI(lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
 app.add_middleware(LoggingMiddleware)
 # Set up static files and templates
@@ -675,7 +692,9 @@ async def submit_query(
     user_query: str = Form(...),
     page: int = Query(1),
     records_per_page: int = Query(10),
-    model: Optional[str] = Form(AZURE_DEPLOYMENT_NAME)
+    model: Optional[str] = Form(AZURE_DEPLOYMENT_NAME),
+    db: Session = Depends(get_db),
+
 ):
     logger.info(f"Received /submit request with query: {user_query}, section: {section}, database: {database}")
     
@@ -831,6 +850,7 @@ async def submit_query(
         # Rest of your code remains the same...
         # Step 2: Invoke LangChain
         try:
+            print(f"type of chosen table: {type(chosen_tables)}")
             relationships = find_relationships_for_tables(chosen_tables , 'table_relation.json')
             table_details = get_table_details(table_name=chosen_tables)
             examples = get_examples(llm_reframed_query, current_question_type)
@@ -838,6 +858,7 @@ async def submit_query(
             logger.info(f"messages in session just before invoke chain: {request.session['messages']}")
 
             response, chosen_tables, tables_data, final_prompt = invoke_chain(
+                db,
                 llm_reframed_query,  # Using the reframed query here
                 request.session['messages'],
                 model,
