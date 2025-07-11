@@ -1,7 +1,7 @@
 import os, ast
 import pandas as pd
 # from google.cloud import bigquery
-import datetime
+import datetime, yaml
 from dotenv import load_dotenv
 # from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder,FewShotChatMessagePromptTemplate,PromptTemplate # type: ignore
 import pandas as pd
@@ -364,14 +364,8 @@ def get_chain(question, selected_database, table_details, selected_business_rule
     # )
     
     business_glossary = get_business_glossary_text()
-    formatted_relationships = []
-    for table, rels in relationships.items():
-        for rel in rels:
-            formatted_relationships.append(
-                f"• {rel['source']}.{rel['source_key']} -> {rel['target']}.{rel['target_key']} "
-                f"({rel['type'].replace('_',' ').title()})"
-            )
-    relationships_str = "\n".join(formatted_relationships) or "No relationships found"
+    logger.info(f"relationships in newlang: {relationships}")
+    relationships_str = relationships or "No relationships found"
     logger.info(f"submit query --> invoke_chain --> get_chain : relationship_str: {relationships_str}")
 
     # print("Few shot prompt : " , few_shot_prompt.invoke({{"input": "List all parts used in a particular repair order RO22A002529",
@@ -641,16 +635,11 @@ def get_business_rule(intent, file_path='business_rules.txt'):
     
 #     return example_selector
 
-def find_relationships_for_tables(table_names, json_file_path):
-    # Load the JSON
-    with open(json_file_path, 'r',encoding='utf-8') as f:
-        relations_data = json.load(f)
-    all_related = {}
-    for table_name in table_names:
-        related = []
-        for rel in relations_data["relations"]:
-            if rel.get("source") == table_name or rel.get("target") == table_name:
-                related.append(rel)
-        all_related[table_name] = related
-    return all_related
-
+def find_relationships_for_tables(table_names, yaml_file_path):
+    with open(yaml_file_path, 'r', encoding='utf-8') as f:
+        relations_data = yaml.safe_load(f)
+    filtered = []
+    for rel in relations_data.get("RELATIONSHIPS", []):
+        if rel.get("left_table") in table_names or rel.get("right_table") in table_names:
+            filtered.append(rel)
+    return yaml.dump({"RELATIONSHIPS": filtered}, sort_keys=False, allow_unicode=True)

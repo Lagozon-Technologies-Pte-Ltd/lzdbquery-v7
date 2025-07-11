@@ -171,3 +171,4 @@ static/automotive_wordcloud.png
 .github/workflows/main_lzdbquery-playground-v4.yml
 /db_examples
 /db_new_ev
+/new_environ
