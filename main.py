@@ -36,7 +36,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from dependencies import  get_db
 from contextlib import asynccontextmanager
-
+import redis
 class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Log the request details
@@ -76,17 +76,18 @@ async def lifespan(app: FastAPI):
     app.state.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-    # # Azure Redis Cache (async)
-    # app.state.redis_client = redis.Redis(
-    #     host=os.environ["REDIS_HOST"],
-    #     port=int(os.environ.get("REDIS_PORT", 6380)),
-    #     password=os.environ["REDIS_KEY"],
-    #     ssl=True,
-    #     decode_responses=True,
-    #     max_connections=20
-    # )
+    # Azure Redis Cache (async)
+    app.state.redis_client = redis.Redis(
+        host=os.environ["REDIS_HOST"],
+        port=int(os.environ.get("REDIS_PORT", 6380)),
+        password=os.environ["REDIS_KEY"],
+        ssl=True,
+        decode_responses=True,
+        max_connections=20
+    )
 
     yield
+    await app.state.redis_client.close()
 
     engine.dispose()
 
@@ -99,6 +100,31 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
 AZURE_CONTAINER_NAME = os.getenv('AZURE_CONTAINER_NAME')
+
+##Redis Utility Functions
+def get_cache_key(*args, **kwargs):
+    """Generate a unique cache key from function arguments"""
+    key_parts = [str(arg) for arg in args]
+    key_parts.extend([f"{k}={v}" for k, v in kwargs.items()])
+    return "::".join(key_parts)
+
+async def cache_response(redis_client, key: str, data: dict, expire: int = 3600):
+    """Cache the response data with expiration"""
+    try:
+        redis_client.setex(key, expire, json.dumps(data))
+    except Exception as e:
+        logger.error(f"Error caching data: {str(e)}")
+
+async def get_cached_response(redis_client, key: str):
+    """Retrieve cached response if exists"""
+    try:
+        cached_data = redis_client.get(key)
+        if cached_data:
+            return json.loads(cached_data)
+        return None
+    except Exception as e:
+        logger.error(f"Error retrieving cached data: {str(e)}")
+        return None
 
 # Initialize the BlobServiceClient
 try:
@@ -700,6 +726,23 @@ async def submit_query(
     db: Session = Depends(get_db),
 
 ):
+    cache_key = get_cache_key(
+        "submit_query",
+        user_query=user_query,
+        section=section,
+        database=database,
+        question_type=request.session.get("current_question_type", "generic")
+    )
+    
+    # Check cache first
+    redis_client = request.app.state.redis_client
+    cached_response = await get_cached_response(redis_client, cache_key)
+    if cached_response:
+        logger.info(f"Cache HIT for key: {cache_key}")
+        logger.info("Returning cached response")
+        return JSONResponse(content=cached_response)
+    else:
+        logger.info(f"Cache MISS for key: {cache_key}")
     logger.info(f"Received /submit request with query: {user_query}, section: {section}, database: {database}")
     
     # Initialize response structure
@@ -921,7 +964,10 @@ async def submit_query(
         #     "content": response_data["chat_response"]
         # })
 
-        return JSONResponse(content=convert_dates(response_data))
+        response_data = convert_dates(response_data)  # Your existing conversion
+        await cache_response(redis_client, cache_key, response_data)
+        
+        return JSONResponse(content=response_data)
 
     except HTTPException as he:
         # Capture error details
