@@ -23,7 +23,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 import logging, time
 from logging.config import dictConfig
 import automotive_wordcloud_analysis as awa
-import zipfile
+import zipfile, asyncio
 from wordcloud import WordCloud
 from table_details import get_table_details, get_table_metadata  # Importing the function
 from openai import AzureOpenAI
@@ -56,6 +56,27 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         return response
 
 load_dotenv()  # Load environment variables from .env file
+# --- Helper function: the actual DB ping ---
+def run_keepalive_query(engine):
+    with engine.connect() as conn:
+        conn.execute(text("SELECT 1"))
+    logging.info("Keep-alive DB ping successful.")
+
+# --- The async keep-alive task ---
+async def keep_all_connections_alive(engine, pool_size, interval=600):
+    logging.info("Keep-alive background task started.")
+
+    while True:
+        for _ in range(pool_size):
+            try:
+                logging.info(f"Pinging DB connection {_+1}/{pool_size}.")
+                await asyncio.to_thread(run_keepalive_query, engine)
+            except Exception as e:
+                logging.warning(f"Keep-alive ping failed: {e}")
+            await asyncio.sleep(1)  # Small pause between pings
+        await asyncio.sleep(interval)
+pool_size=int(SQL_POOL_SIZE)
+max_overflow=int(SQL_MAX_OVERFLOW)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Azure OpenAI LLM
@@ -79,6 +100,11 @@ async def lifespan(app: FastAPI):
     )
     app.state.engine = engine
     app.state.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+     # Start the keep-alive background task
+    keepalive_task = asyncio.create_task(
+        keep_all_connections_alive(engine, pool_size, interval=600)
+    )
+
     # --- RETRY LOGIC FOR WARM-UP ---
     max_attempts = 10
     for attempt in range(1, max_attempts + 1):
@@ -106,11 +132,17 @@ async def lifespan(app: FastAPI):
     #     decode_responses=True,
     #     max_connections=20
     # )
-
-    yield
+    try:
+        yield
     # # app.state.redis_client.close()
-
-    engine.dispose()
+    finally:
+        # On shutdown: cancel the keep-alive task and clean up
+        keepalive_task.cancel()
+        try:
+            await keepalive_task
+        except asyncio.CancelledError:
+            pass
+        engine.dispose()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -209,6 +241,16 @@ def download_as_excel(data: pd.DataFrame, filename: str = "data.xlsx"):
         data.to_excel(writer, index=False, sheet_name='Sheet1')
     output.seek(0)  # Reset the pointer to the beginning of the stream
     return output
+
+@app.get("/health")
+def health_check():
+    try:
+        with app.state.engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        return {"status": "ok"}
+    except Exception:
+        return {"status": "db_error"}, 503
+
 @app.get("/get_prompt")
 async def get_prompt(type: str):
     if type == "interpretation":

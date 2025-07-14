@@ -6,6 +6,22 @@ let isRecording = false;
 let mediaRecorder;
 let audioChunks = [];
 let originalButtonHTML = ""; // Store the original button HTML
+
+// Every 20 minutes (20 * 60 * 1000 ms)
+setInterval(() => {
+  fetch('/health')
+    .then(response => response.json())
+    .then(data => {
+      if (data.status !== 'ok') {
+        console.error('Health check failed:', data);
+      } else {
+        console.log('Health check passed:', data);
+      }
+    })
+    .catch(err => {
+      console.error('Health check error:', err);
+    });
+}, 15 * 60 * 1000);
 window.onload = function () {
     // Reset variables
     const loadingDiv = document.getElementById('loading');
