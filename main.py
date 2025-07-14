@@ -379,7 +379,7 @@ def generate_chart_figure(data_df: pd.DataFrame, x_axis: str, y_axis: str, chart
             
         return fig
     except Exception as e:
-        logger.info(f"Error generating {chart_type} chart: {str(e)}")
+        logger.info(f"generate_chart_figure in main.py, Error generating {chart_type} chart: {str(e)}")
         raise
 
 class ChartRequest(BaseModel):
@@ -453,7 +453,6 @@ async def download_table(payload: TableDownloadRequest):
     # Convert to DataFrame
     df = pd.DataFrame(rows)
 
-    logger.info("data for download: ", df)
     # Generate Excel file (implement this function as you need)
     output = download_as_excel(df, filename=f"{table_name}.xlsx")
 
@@ -564,7 +563,7 @@ def load_prompts(filename:str):
         with open(filename, "r", encoding="utf-8") as file:
             return yaml.safe_load(file)
     except Exception as e:
-        logger.info(f"Error reading prompts file: {e}")
+        logger.info(f"load_prompts in main.py: Error reading prompts file: {e}")
         return {}
     
 
@@ -760,7 +759,7 @@ async def submit_query(
                     last_msg = request.session['messages'][-1]  # Get the only message
                     chat_history = f"{last_msg['role']}: {last_msg['content']}"
                 
-                logger.info(f"Chat history: {chat_history}")
+                logger.info(f"Inside /submit request, Chat history: {chat_history}")
                 # logger.info(f"Messages in session for new question: {request.session['messages']}")
                 # Step 1: Generate unified prompt based on question type
                 try:
@@ -788,14 +787,13 @@ async def submit_query(
                         )
                     # The response content will be a JSON string
                         response_content = response.choices[0].message.content
-                        logger.info(f"Inside submit function: response recieved is: {response_content}")
+                        logger.info(f"Inside submit function: rephrased response form LLM is:: {response_content}")
 
                         # Parse the guaranteed JSON string into a Python dictionary
                         json_output = json.loads(response_content)
-                        logger.info(f"Inside submit function, usecase: json output in usecase: {json_output}")
+                        # logger.info(f"Inside submit function, usecase: json output in usecase: {json_output}")
                         # Now you can safely access the keys
                         llm_reframed_query = json_output.get("rephrased_query")
-                        logger.info(f"Inside submit function, usecase: reframed query after modification: {llm_reframed_query}")
 
                         intent_result = intent_classification(llm_reframed_query)
                         
@@ -840,7 +838,7 @@ async def submit_query(
 
                     # The response content will be a JSON string
                         response_content = response.choices[0].message.content
-                        logger.info(f"Inside submit function, generic: response recieved is: {response_content}")
+                        logger.info(f"Inside submit function, generic: rephrased quesry from LLM recieved is: {response_content}")
 
                         # Parse the guaranteed JSON string into a Python dictionary
                         json_output = json.loads(response_content)
@@ -852,7 +850,7 @@ async def submit_query(
                             llm_reframed_query = json_output.get("rephrased_query", "")
                             chosen_tables = db_tables
                             selected_business_rule = ""
-                            logger.info(f"Inside submit function, generic: reframed query after modification: {llm_reframed_query}, chosen tables are: {chosen_tables}")
+                            logger.info(f"Inside submit function, generic: chosen tables are: {chosen_tables}")
                             examples = get_examples(llm_reframed_query, "generic")
 
                         except json.JSONDecodeError:
@@ -880,8 +878,8 @@ async def submit_query(
                 try:
                     relationships = find_relationships_for_tables(chosen_tables , 'table_relation.yaml')
                     table_details = get_table_details(table_name=chosen_tables)
-                    logger.info(f"relationships: {relationships}")
-                    logger.info(f"messages in session just before invoke chain: {request.session['messages']}")
+                    # logger.info(f"Inside /submit request, relationships: {relationships}")
+                    # logger.info(f"messages in session just before invoke chain: {request.session['messages']}")
 
                     response, chosen_tables, tables_data, final_prompt = invoke_chain(
                         db,
@@ -998,7 +996,7 @@ async def reset_session(request: Request):
     request.session["current_question_type"] = "generic"
     # request.session["prompts"] = load_prompts("generic_prompt.yaml")
 
-    logger.info(f"Question type is: {request.session.get('current_question_type')}")
+    logger.info(f"Endpoint: reset sesion, Question type is: {request.session.get('current_question_type')}")
     return {"message": "Session state cleared successfully"}
 
 def prepare_table_html(tables_data, page_number, records_per_page):
@@ -1146,6 +1144,5 @@ async def set_question_type(payload: QuestionTypeRequest, request: Request):
     request.session["current_question_type"] = current_question_type
     # request.session["prompts"] = prompts  # If you want to store prompts per session
 
-    print("Received question type:", current_question_type)
     return JSONResponse(content={"message": "Question type set", "prompts": prompts})
 
