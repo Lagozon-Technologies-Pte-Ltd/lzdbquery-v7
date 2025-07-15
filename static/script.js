@@ -811,7 +811,7 @@ function updatePageContent(data) {
     const xlsxbtn = document.getElementById("xlsx-btn");
     const selectedSection = document.getElementById('section-dropdown').value;
     // Always update these elements regardless of success/failure
-    userQueryDisplay.querySelector('span').textContent = data.user_query || "";
+    userQueryDisplay.querySelector('span').textContent = data.description || "";
     const formattedQuery = data.query
             .replace(/FROM/g, '\nFROM')
             .replace(/WHERE/g, '\nWHERE')

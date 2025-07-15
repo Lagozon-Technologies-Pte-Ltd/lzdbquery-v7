@@ -417,8 +417,8 @@ def get_chain(question, selected_database, table_details, selected_business_rule
 
         SQL_Statement = json_output.get('query')
         # logger.info(f"Query: {json_output.get('query')}")
-        logger.info(f"Error: {json_output.get('error')}")
-        logger.info(f"Description: {json_output.get('description')}")
+        logger.info(f"submit query --> invoke_chain --> get_chain :LLM SQL Generation Error: {json_output.get('error')}")
+        logger.info(f"submit query --> invoke_chain --> get_chain : Description: {json_output.get('description')}")
     except Exception as e:
         logger.error(f"Error in submit query --> invoke_chain --> get_chain : {e}")
 
@@ -461,6 +461,8 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
             selected_database, table_info, selected_business_rule, question_type, relationships, examples
         )  ##we get query output from get chain
         SQL_Statement = json_output["query"]
+        description = json_output["description"]
+        print("This is our description", description)
 
         # SQL_Statement = SQL_Statement.replace("SQL Query:", "").strip()
 
@@ -501,7 +503,7 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
             except Exception as e:
                 logger.error(f"submit query --> invoke_chain : table data has some issues.{e}")
         # Include SQL_Statement in the return tuple
-        return json_output, db_tables, tables_data, final_prompt
+        return json_output, db_tables, tables_data, final_prompt ,description
 
     except Exception as e:
         print("submit query --> invoke_chain :", e)

@@ -57,13 +57,14 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
 load_dotenv()  # Load environment variables from .env file
 # --- Helper function: the actual DB ping ---
+keep_alive_interval = os.getenv("keep_alive_interval")
 def run_keepalive_query(engine):
     with engine.connect() as conn:
         conn.execute(text("SELECT 1"))
     logging.info("Keep-alive DB ping successful.")
 
 # --- The async keep-alive task ---
-async def keep_all_connections_alive(engine, pool_size, interval=600):
+async def keep_all_connections_alive(engine, pool_size, interval=keep_alive_interval):
     logging.info("Keep-alive background task started.")
 
     while True:
@@ -778,7 +779,7 @@ async def submit_query(
                 "langprompt": "",
                 "error": None
             }
-
+            # with log_execution_time("Prompt loading and rephrase LLM"):
             try:
                 # Reset per-request variables
                 unified_prompt = ""
@@ -818,15 +819,17 @@ async def submit_query(
                         )
                         
                         # llm_reframed_query = llm.invoke(unified_prompt).content.strip()
-                        response = azure_openai_client.chat.completions.create(
-                            model=AZURE_DEPLOYMENT_NAME,
-                            messages=[
-                            {"role": "system", "content": unified_prompt},
-                            {"role": "user", "content": user_query}
-                        ],
-                        temperature=0,  # Lower temperature for more predictable, structured output
-                        response_format={"type": "json_object"}  # This is the key parameter!
-                        )
+                        with log_execution_time("submit_query -> Rephrasing LLM"):
+
+                            response = azure_openai_client.chat.completions.create(
+                                model=AZURE_DEPLOYMENT_NAME,
+                                messages=[
+                                {"role": "system", "content": unified_prompt},
+                                {"role": "user", "content": user_query}
+                            ],
+                            temperature=0,  # Lower temperature for more predictable, structured output
+                            response_format={"type": "json_object"}  # This is the key parameter!
+                            )
                     # The response content will be a JSON string
                         response_content = response.choices[0].message.content
                         logger.info(f"Inside submit function: rephrased response form LLM is:: {response_content}")
@@ -868,19 +871,21 @@ async def submit_query(
                         )
                         
                         # llm_response_str = llm.invoke(unified_prompt).content.strip()
-                        response = azure_openai_client.chat.completions.create(
-                            model=AZURE_DEPLOYMENT_NAME,
-                            messages=[
-                            {"role": "system", "content": unified_prompt},
-                            {"role": "user", "content": user_query}
-                        ],
-                        temperature=0,  # Lower temperature for more predictable, structured output
-                        response_format={"type": "json_object"}  # This is the key parameter!
-                        )
+                        with log_execution_time("submit_query -> rephrase LLM"):
+
+                            response = azure_openai_client.chat.completions.create(
+                                model=AZURE_DEPLOYMENT_NAME,
+                                messages=[
+                                {"role": "system", "content": unified_prompt},
+                                {"role": "user", "content": user_query}
+                            ],
+                            temperature=0,  # Lower temperature for more predictable, structured output
+                            response_format={"type": "json_object"}  # This is the key parameter!
+                            )
 
                     # The response content will be a JSON string
                         response_content = response.choices[0].message.content
-                        logger.info(f"Inside submit function, generic: rephrased quesry from LLM recieved is: {response_content}")
+                        logger.info(f"Inside submit function, generic: rephrased query from LLM recieved is: {response_content}")
 
                         # Parse the guaranteed JSON string into a Python dictionary
                         json_output = json.loads(response_content)
@@ -893,7 +898,8 @@ async def submit_query(
                             chosen_tables = db_tables
                             selected_business_rule = ""
                             logger.info(f"Inside submit function, generic: chosen tables are: {chosen_tables}")
-                            examples = get_examples(llm_reframed_query, "generic")
+                            with log_execution_time("submit_query -> examples"):
+                                examples = get_examples(llm_reframed_query, "generic")
 
                         except json.JSONDecodeError:
                             raise HTTPException(
@@ -923,7 +929,7 @@ async def submit_query(
                     # logger.info(f"Inside /submit request, relationships: {relationships}")
                     # logger.info(f"messages in session just before invoke chain: {request.session['messages']}")
 
-                    response, chosen_tables, tables_data, final_prompt = invoke_chain(
+                    response, chosen_tables, tables_data, final_prompt, description= invoke_chain(
                         db,
                         llm_reframed_query,  # Using the reframed query here
                         request.session['messages'],
@@ -938,6 +944,8 @@ async def submit_query(
                     )
 
                     response_data["langprompt"] = str(final_prompt)
+                    response_data["description"] = description
+
                     
                     if isinstance(response, str):
                         request.session['generated_query'] = response
