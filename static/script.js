@@ -9,18 +9,18 @@ let originalButtonHTML = ""; // Store the original button HTML
 
 // Every 20 minutes (20 * 60 * 1000 ms)
 setInterval(() => {
-  fetch('/health')
-    .then(response => response.json())
-    .then(data => {
-      if (data.status !== 'ok') {
-        console.error('Health check failed:', data);
-      } else {
-        console.log('Health check passed:', data);
-      }
-    })
-    .catch(err => {
-      console.error('Health check error:', err);
-    });
+    fetch('/health')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status !== 'ok') {
+                console.error('Health check failed:', data);
+            } else {
+                console.log('Health check passed:', data);
+            }
+        })
+        .catch(err => {
+            console.error('Health check error:', err);
+        });
 }, 15 * 60 * 1000);
 window.onload = function () {
     // Reset variables
@@ -440,26 +440,26 @@ function setupClientPagination(tableName, fullData, currentPage, recordsPerPage)
         console.error(`Invalid data for table ${tableName}`, fullData);
         return;
     }
-    
+
     const totalRecords = fullData.length;
     const totalPages = Math.ceil(totalRecords / recordsPerPage);
-    
+
     // Ensure currentPage is within bounds
     currentPage = Math.max(1, Math.min(currentPage, totalPages));
-    
+
     renderTablePage(tableName, fullData, currentPage, recordsPerPage);
     updatePaginationLinks(tableName, currentPage, totalPages, recordsPerPage);
 }
 function changePage(tableName, pageNumber, recordsPerPage) {
     console.log(`Changing to page ${pageNumber} for table ${tableName}`);
     console.log('Client table data:', clientTableData);
-    
+
     const fullData = clientTableData[tableName];
     if (!fullData) {
         console.error(`No data found for table: ${tableName}`);
         return;
     }
-    
+
     setupClientPagination(tableName, fullData, pageNumber, recordsPerPage);
 }
 
@@ -467,10 +467,10 @@ function renderTablePage(tableName, fullData, pageNumber, recordsPerPage) {
     const startIndex = (pageNumber - 1) * recordsPerPage;
     const endIndex = startIndex + recordsPerPage;
     const pageData = fullData.slice(startIndex, endIndex);
-    
+
     // Pass pageNumber to generateTableHtml
     const tableHtml = generateTableHtml(pageData, pageNumber, recordsPerPage);
-    
+
     const tableDiv = document.getElementById(`${tableName}_table`);
     if (tableDiv) {
         tableDiv.innerHTML = tableHtml;
@@ -478,28 +478,28 @@ function renderTablePage(tableName, fullData, pageNumber, recordsPerPage) {
 }
 function generateTableHtml(data, pageNumber = 1, recordsPerPage = 10) {
     if (!data || data.length === 0) return '<div class="no-data">No data available</div>';
-    
+
     let html = '<table class="data-table"><thead><tr><th>S.No</th>';
-    
+
     // Create headers from the first item's keys
     Object.keys(data[0]).forEach(header => {
         html += `<th>${header}</th>`;
     });
     html += '</tr></thead><tbody>';
-    
+
     // Calculate starting serial number based on page number
     const startSerial = (pageNumber - 1) * recordsPerPage + 1;
-    
+
     // Create rows with correct serial numbers
     data.forEach((row, index) => {
         html += `<tr><td>${startSerial + index}</td>`; // Use calculated serial number
-        
+
         Object.values(row).forEach(cell => {
             html += `<td>${cell}</td>`;
         });
         html += '</tr>';
     });
-    
+
     html += '</tbody></table>';
     return html;
 }// Your existing mic recording function
@@ -804,26 +804,43 @@ function chooseExampleQuestion() {
 /**
  *
  */
+document.addEventListener("DOMContentLoaded", function () {
+  const toggleBtn = document.getElementById("toggle-query-btn");
+  const userQueryDisplay = document.getElementById("user_query_display");
+
+  toggleBtn.addEventListener("click", function () {
+    if (userQueryDisplay.style.display === "none" || userQueryDisplay.style.display === "") {
+      userQueryDisplay.style.display = "block";
+      this.textContent = "Hide Description";
+    } else {
+      userQueryDisplay.style.display = "none";
+      this.textContent = "Show Description";
+    }
+  });
+});
+
+
 function updatePageContent(data) {
     const userQueryDisplay = document.getElementById("user_query_display");
+    
     const sqlQueryContent = document.getElementById("sql-query-content");
     const tablesContainer = document.getElementById("tables_container");
     const xlsxbtn = document.getElementById("xlsx-btn");
     const selectedSection = document.getElementById('section-dropdown').value;
     // Always update these elements regardless of success/failure
-    userQueryDisplay.querySelector('span').textContent = data.description || "";
+    userQueryDisplay.querySelector('span').textContent = `SQL QUERY DESCRIPTION: ${data.description || ""}`;
     const formattedQuery = data.query
-            .replace(/FROM/g, '\nFROM')
-            .replace(/WHERE/g, '\nWHERE')
-            .replace(/INNER JOIN/g, '\nINNER JOIN')
-            .replace(/LEFT JOIN/g, '\nLEFT JOIN')
-            .replace(/RIGHT JOIN/g, '\nRIGHT JOIN')
-            .replace(/FULL JOIN/g, '\nFULL JOIN')
-            .replace(/GROUP BY/g, '\nGROUP BY')
-            .replace(/ORDER BY/g, '\nORDER BY')
-            .replace(/HAVING/g, '\nHAVING')
-            .replace(/SELECT/g, '\nSELECT')
-            .replace(/ON/g, '\nON');
+        .replace(/FROM/g, '\nFROM')
+        .replace(/WHERE/g, '\nWHERE')
+        .replace(/INNER JOIN/g, '\nINNER JOIN')
+        .replace(/LEFT JOIN/g, '\nLEFT JOIN')
+        .replace(/RIGHT JOIN/g, '\nRIGHT JOIN')
+        .replace(/FULL JOIN/g, '\nFULL JOIN')
+        .replace(/GROUP BY/g, '\nGROUP BY')
+        .replace(/ORDER BY/g, '\nORDER BY')
+        .replace(/HAVING/g, '\nHAVING')
+        .replace(/SELECT/g, '\nSELECT')
+        .replace(/ON/g, '\nON');
     sqlQueryContent.textContent = formattedQuery || "No SQL query available";
 
     // Clear containers

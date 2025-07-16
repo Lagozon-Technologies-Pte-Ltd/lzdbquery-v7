@@ -244,7 +244,7 @@ input:checked+.slider:before {
 .tabcontent {
     color: #21126b;
     display: none;
-    padding: 6px 12px;
+    padding-left:0px;
     border-top: none;
 }
 
@@ -681,6 +681,25 @@ code.sql {
     color: white;
     border: none;
 }
+#toggle-query-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    /* Space between icon and text */
+    background: radial-gradient(50% 50% at 50% 50%, rgb(183.48, 168.62, 249.71) 4%, rgb(136.38, 111.28, 248.21) 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 15px;
+    padding: 8px;
+
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+    color: white;
+    border: none;
+}
+
 
 .download-btn:hover {
     background-color: #21126b;
@@ -936,7 +955,6 @@ table tr:hover {
 /* Bold Labels for Query and Results */
 #user_query_display,
 #sql_query_display {
-    font-weight: bold;
     font-size: 18px;
     color: #21126b;
 }
