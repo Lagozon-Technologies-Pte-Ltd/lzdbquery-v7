@@ -117,19 +117,19 @@ import configure
 db_tables =  json.loads(os.getenv("db_tables"))
 
 
-SQL_DB_SERVER = os.getenv("SQL_DB_SERVER")
-SQL_DB_PORT = os.getenv("SQL_DB_PORT")
-SQL_DB_NAME = os.getenv("SQL_DB_NAME")
-SQL_DB_USER = os.getenv("SQL_DB_USER")
-SQL_DB_PASSWORD = os.getenv("SQL_DB_PASSWORD")
-SQL_DB_DRIVER = os.getenv("SQL_DB_DRIVER").replace(" ", "+")  # URL encode spaces
-SQL_POOL_SIZE = int(os.getenv("SQL_POOL_SIZE", 5))
-SQL_MAX_OVERFLOW = int(os.getenv("SQL_MAX_OVERFLOW", 10))
+# SQL_DB_SERVER = os.getenv("SQL_DB_SERVER")
+# SQL_DB_PORT = os.getenv("SQL_DB_PORT")
+# SQL_DB_NAME = os.getenv("SQL_DB_NAME")
+# SQL_DB_USER = os.getenv("SQL_DB_USER")
+# SQL_DB_PASSWORD = os.getenv("SQL_DB_PASSWORD")
+# SQL_DB_DRIVER = os.getenv("SQL_DB_DRIVER").replace(" ", "+")  # URL encode spaces
+# SQL_POOL_SIZE = int(os.getenv("SQL_POOL_SIZE", 5))
+# SQL_MAX_OVERFLOW = int(os.getenv("SQL_MAX_OVERFLOW", 10))
 
-SQL_DATABASE_URL = (
-    f"mssql+pyodbc://{SQL_DB_USER}:{SQL_DB_PASSWORD}@{SQL_DB_SERVER}:{SQL_DB_PORT}/{SQL_DB_NAME}"
-    f"?driver={SQL_DB_DRIVER}&Connection+Timeout=120"
-)
+# SQL_DATABASE_URL = (
+#     f"mssql+pyodbc://{SQL_DB_USER}:{SQL_DB_PASSWORD}@{SQL_DB_SERVER}:{SQL_DB_PORT}/{SQL_DB_NAME}"
+#     f"?driver={SQL_DB_DRIVER}&Connection+Timeout=120"
+# )
 
 
 from sqlalchemy.exc import SQLAlchemyError
