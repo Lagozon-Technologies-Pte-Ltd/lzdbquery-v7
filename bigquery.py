@@ -38,13 +38,13 @@ client = bigquery.Client(
 
 # ✅ Now you can use short table name
 query = """
+
+
 SELECT 
-  MODL_DESC AS MODEL_DESCRIPTION, 
-  MODL_CD AS MODEL_CODE, 
-  MODL_GROP_CD AS MODEL_GROUP_CODE, 
-  FAMLY_DESC AS FAMILY_DESCRIPTION 
+  *
 FROM 
-  MH_MODEL_MASTER;
+  MH_RO_HDR_DETAILS
+  limit 10;
 """
 
 # Execute the query
