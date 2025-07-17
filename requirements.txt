@@ -161,7 +161,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-multipart==0.0.9
 pytz==2024.1
-pywin32==310
+pysqlite3-binary
 PyYAML==6.0.1
 pyzmq==25.1.2
 referencing==0.34.0
