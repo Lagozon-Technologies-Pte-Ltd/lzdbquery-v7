@@ -32,11 +32,13 @@ from SM_examples import get_examples
 # Configure logging
 # logging.basicConfig(level=logging.INFO)
 from logger_config import configure_logging, log_execution_time
+from google.cloud import bigquery
+from google.oauth2 import service_account
 
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from dependencies import  get_db
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import sessionmaker, Session
+from dependencies import  get_bq_client
 from contextlib import asynccontextmanager
 # import redis
 configure_logging()
@@ -58,6 +60,9 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 load_dotenv()  # Load environment variables from .env file
 # --- Helper function: the actual DB ping ---
 keep_alive_interval = os.getenv("keep_alive_interval")
+Query_record_size = os.getenv("Query_record_size")
+print("Query_record_size",Query_record_size)
+
 def run_keepalive_query(engine):
     with engine.connect() as conn:
         conn.execute(text("SELECT 1"))
@@ -76,10 +81,45 @@ async def keep_all_connections_alive(engine, pool_size, interval=keep_alive_inte
                 logging.warning(f"Keep-alive ping failed: {e}")
             await asyncio.sleep(1)  # Small pause between pings
         await asyncio.sleep(interval)
-pool_size=int(SQL_POOL_SIZE)
-max_overflow=int(SQL_MAX_OVERFLOW)
+# pool_size=int(SQL_POOL_SIZE)
+# max_overflow=int(SQL_MAX_OVERFLOW)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Initialize credentials
+    credentials_info = {
+        "type": os.getenv('GOOGLE_CREDENTIALS_TYPE'),
+        "project_id": os.getenv('GOOGLE_CREDENTIALS_PROJECT_ID'),
+        "private_key_id": os.getenv('GOOGLE_CREDENTIALS_PRIVATE_KEY_ID'),
+        "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCraZCE2H2pE6uE\n7rgU6pKFpGilWEloN+NwUQOzHhTE8ehenKJ0lwqc8MpnTwseT861Qj80TojR1lfu\nLZP2ZlefuEUaZ48lncs/8vEzpntVGm9vazSU2ytG/o3yHpMUb/E1UDVKwVN1G60K\nHLvFJIvmB0v6IgWwvSzYtkjaIHX+Ny1BT1Ag2baKNEGtytU+Ph56CK4mxtAMpnFg\njZ0g+KYRLEDPLEJPoryhMEJXA1Dlf9vp8b8EVh3MZfoVmaA5wRYntDsQkukAIIpQ\nkII4V7GJaBnhpaNuyh57sj4HrpKKL9ZNULnNyjIWQhTyxxFRMFOpVDH1du7YgRPq\njyPPH1xvAgMBAAECggEACoGEN/8QAuhB8MNYltuZbiEQUuO+4TJLJ0c6K5vJBj1w\nkn/xCxObIrRaAlUbZ2siF3KtEy24NuqJnLYuARQ4TRPdb9TLNsNdnRi2BOHCz9Ld\nLOdn2kU2nedlfIcl6wv39jnpW2nO+1RL/kqaH+c6mm4sxk5PYR5Bbw4LYTBL/6bm\n2hPqyRB7cBfEXOc5+/vwvLD7zd3uHFYwSbmDwJMFS+rv8V2xiEhe+EDFBjbqXSpb\ncltjhKQgrMGteSJeSfei3fAq+K9rDu3akyAVt+gYP408AjEme/zOi7tqyGOBqPN1\nwnVzoj0GD8Nm4OAaRqJkftj9pev8XfD9yc48eJRMZQKBgQDTlmLvFxO+Mml3gN8U\n4Yw11zjczScTbuY5uqhWD+BlzFfSk1tdbAx5oQjJOc5WQXR7adgZ6A7pKs/QpQMA\n2ioCY0vOakhqS46SehhgoRj0Yj+6qZF9h438+XQlCCUxIBud7J0C7e/hZLNyvzeQ\ni4VtcMpgRAEK+vz10XyYYJETVQKBgQDPZGCFqthHhp4yr530bWElPxC9H+GJmqQH\n0VZeMQQ1+bXs3VQOv8jXFZpn/BVhhKfddjNDqVdCfJu7oanWmC9TnjGHdV6gxWIK\nfplmhKIoBerwZJFLPLj/wV4Sfdvf6Zv5sDQ5ow9jzd2oUNL49OV06W3N65ug8RBO\nMUoMFCN4swKBgQCBDouN1f+e1VTrJVnsfJ5vALWYSDH7cntO3wFqbQisTvWKZYMm\n+o6paYXYZz/p8MbBuA+tzZO6uPhFBUFNtcRF7JcCcmV1IFz4DyzrU5fLCFpi2qb5\ncEM0+FrVc6Br1G/D5dznOoZEbo3eAbA8pD1gQZnPGeug7PJ6ZaqfrtcOeQKBgDWa\ngSQrW0lpbvw0zgO+Payt1zq6wcWaNalbnxIrYyY8S5xUPISvZ07IY6dazX/uFKE2\nCtwDKe2iXXIqv8YagakAK1cSrAmr2sJRpH6N64eit+24YKFsqXhZV2I6K5l9PPZV\nZ7o5/iFStWbqtQzp52DHcL0Xl5sKk6dSMAxdLCnnAoGBAM3FswYDNsPd4kwflVNO\nL2DiOW94Dpqoc+Fo1gP0ifE/wpr7So08G6fcq2/tIvHacHGFHAll4OaAa3jC/DSK\nx6S+F6GqCOhjdc4oVfqthYOanW6WHIpCILSwVMy+HL33ijGwSElAzN/mbnCnP3HC\nBo54Ew2hgqlN8xwtbjUFMbYQ\n-----END PRIVATE KEY-----",
+        "client_email": os.getenv('GOOGLE_CREDENTIALS_CLIENT_EMAIL'),
+        "client_id": os.getenv('GOOGLE_CREDENTIALS_CLIENT_ID'),
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": os.getenv('GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL'),
+        "universe_domain": "googleapis.com"
+    }
+
+    credentials = service_account.Credentials.from_service_account_info(
+        credentials_info,
+        scopes=["https://www.googleapis.com/auth/bigquery"]
+    )
+
+    # Initialize BigQuery client with explicit project
+    app.state.bq_client = bigquery.Client(
+    credentials=credentials,
+    project=credentials.project_id,
+    default_query_job_config=bigquery.QueryJobConfig(
+        default_dataset="gen-ai-team-mahindra.lz_mahindra_dataset"
+    )
+)
+    
+    # Set default dataset reference
+    try:
+        yield
+    finally:
+        # No explicit cleanup needed for BigQuery client
+        pass
     # Azure OpenAI LLM
     # app.state.azure_openai_client = AzureOpenAI(
     #     azure_deployment=os.environ["AZURE_DEPLOYMENT_NAME"],
@@ -89,38 +129,38 @@ async def lifespan(app: FastAPI):
     # )
 
     # Azure SQL DB
-    engine = create_engine(
+    # engine = create_engine(
       
 
-        SQL_DATABASE_URL,
-        pool_size=int(SQL_POOL_SIZE),
-        max_overflow=int(SQL_MAX_OVERFLOW),
-        echo=False,
-        pool_recycle=1200,  # Recycle every 20 minutes
-        pool_pre_ping=True  # Validate connection before using
-    )
-    app.state.engine = engine
-    app.state.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-     # Start the keep-alive background task
-    keepalive_task = asyncio.create_task(
-        keep_all_connections_alive(engine, pool_size, interval=600)
-    )
+    #     SQL_DATABASE_URL,
+    #     pool_size=int(SQL_POOL_SIZE),
+    #     max_overflow=int(SQL_MAX_OVERFLOW),
+    #     echo=False,
+    #     pool_recycle=1200,  # Recycle every 20 minutes
+    #     pool_pre_ping=True  # Validate connection before using
+    # )
+    # app.state.engine = engine
+    # app.state.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    #  # Start the keep-alive background task
+    # keepalive_task = asyncio.create_task(
+    #     keep_all_connections_alive(engine, pool_size, interval=600)
+    # )
 
-    # --- RETRY LOGIC FOR WARM-UP ---
-    max_attempts = 10
-    for attempt in range(1, max_attempts + 1):
-        try:
-            with engine.connect() as connection:
-                connection.execute(text("SELECT 1"))
-            logging.info("Warm-up DB connection successful.")
-            break  # Success, exit the retry loop
-        except Exception as e:
-            logging.warning(f"Warm-up DB connection attempt {attempt} failed: {e}")
-            if attempt < max_attempts:
-                time.sleep(2 ** attempt)  # Exponential backoff
-            else:
-                logging.error("All warm-up DB connection attempts failed.")
-                # Optionally: raise or exit if you want to fail fast
+    # # --- RETRY LOGIC FOR WARM-UP ---
+    # max_attempts = 10
+    # for attempt in range(1, max_attempts + 1):
+    #     try:
+    #         with engine.connect() as connection:
+    #             connection.execute(text("SELECT 1"))
+    #         logging.info("Warm-up DB connection successful.")
+    #         break  # Success, exit the retry loop
+    #     except Exception as e:
+    #         logging.warning(f"Warm-up DB connection attempt {attempt} failed: {e}")
+    #         if attempt < max_attempts:
+    #             time.sleep(2 ** attempt)  # Exponential backoff
+    #         else:
+    #             logging.error("All warm-up DB connection attempts failed.")
+    #             # Optionally: raise or exit if you want to fail fast
     # --- END RETRY LOGIC ---
 
 
@@ -133,17 +173,17 @@ async def lifespan(app: FastAPI):
     #     decode_responses=True,
     #     max_connections=20
     # )
-    try:
-        yield
-    # # app.state.redis_client.close()
-    finally:
-        # On shutdown: cancel the keep-alive task and clean up
-        keepalive_task.cancel()
-        try:
-            await keepalive_task
-        except asyncio.CancelledError:
-            pass
-        engine.dispose()
+    # try:
+    #     yield
+    # # # app.state.redis_client.close()
+    # finally:
+    #     # On shutdown: cancel the keep-alive task and clean up
+    #     keepalive_task.cancel()
+    #     try:
+    #         await keepalive_task
+    #     except asyncio.CancelledError:
+    #         pass
+    #     engine.dispose()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -155,6 +195,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
 AZURE_CONTAINER_NAME = os.getenv('AZURE_CONTAINER_NAME')
 
+
 # Initialize the BlobServiceClient
 try:
     blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
@@ -164,24 +205,24 @@ except Exception as e:
     # Handle the error appropriately, possibly exiting the application
     raise  # Re-raise the exception to prevent the app from starting
 from pydantic import BaseModel
-class ChartRequest(BaseModel):
-    """
-    Pydantic model for chart generation requests.
-    """
-    table_name: str
-    x_axis: str
-    y_axis: str
-    chart_type: str
+# class ChartRequest(BaseModel):
+#     """
+#     Pydantic model for chart generation requests.
+#     """
+#     table_name: str
+#     x_axis: str
+#     y_axis: str
+#     chart_type: str
 
-    class Config:  # This ensures compatibility with FastAPI
-        json_schema_extra = {
-            "example": {
-                "table_name": "example_table",
-                "x_axis": "column1",
-                "y_axis": "column2",
-                "chart_type": "Line Chart"
-            }
-        }
+#     class Config:  # This ensures compatibility with FastAPI
+#         json_schema_extra = {
+#             "example": {
+#                 "table_name": "example_table",
+#                 "x_axis": "column1",
+#                 "y_axis": "column2",
+#                 "chart_type": "Line Chart"
+#             }
+#         }
 
 # Initialize OpenAI API key and model
 # OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
@@ -189,7 +230,7 @@ class ChartRequest(BaseModel):
 
 AZURE_OPENAI_API_KEY = os.environ.get('AZURE_OPENAI_API_KEY')
 AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
-AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION', "2024-02-01")
+AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION')
 AZURE_DEPLOYMENT_NAME = os.environ.get('AZURE_DEPLOYMENT_NAME')
 
 # Initialize the Azure OpenAI client
@@ -208,7 +249,7 @@ azure_openai_client = AzureOpenAI(
 #     api_key=AZURE_OPENAI_API_KEY,
 # )
 
-databases = ["Azure SQL"]
+databases = ["GCP"]
 question_dropdown = os.getenv('Question_dropdown')
 
 import datetime
@@ -339,9 +380,9 @@ async def add_to_faqs(data: QueryInput, subject:str, request:Request):
     question_type = request.session.get('current_question_type')
 
     if question_type == 'generic':
-        blob_name = f'table_files/{subject}_questions_generic.csv'
+        blob_name = f'table_files/Azure-SQL-DB_questions_generic.csv'
     elif question_type == "usecase":
-        blob_name = f'table_files/{subject}_questions.csv'
+        blob_name = f'table_files/Azure-SQL-DB_questions.csv'
     try:
         # Get the blob client
         blob_client = blob_service_client.get_blob_client(container=AZURE_CONTAINER_NAME, blob=blob_name)
@@ -563,9 +604,9 @@ async def get_questions(subject: str, request: Request):
     """
     question_type = request.session.get('current_question_type')
     if question_type == 'generic':
-        csv_file_name = f"table_files/{subject}_questions_generic.csv"
+        csv_file_name = f"table_files/Azure-SQL-DB_questions_generic.csv"
     else: 
-        csv_file_name = f"table_files/{subject}_questions.csv"
+        csv_file_name = f"table_files/Azure-SQL-DB_questions.csv"
     blob_client = blob_service_client.get_blob_client(container=AZURE_CONTAINER_NAME, blob=csv_file_name)
 
     try:
@@ -761,7 +802,7 @@ async def submit_query(
     page: int = Query(1),
     records_per_page: int = Query(10),
     model: Optional[str] = Form(AZURE_DEPLOYMENT_NAME),
-    db: Session = Depends(get_db),
+    db: bigquery.Client = Depends(get_bq_client),
 
 ):
     logger.info(f"Endpoint:  /submit request with query: {user_query}, section: {section}, database: {database}")
@@ -820,9 +861,10 @@ async def submit_query(
                         
                         # llm_reframed_query = llm.invoke(unified_prompt).content.strip()
                         with log_execution_time("submit_query -> Rephrasing LLM"):
-
                             response = azure_openai_client.chat.completions.create(
                                 model=AZURE_DEPLOYMENT_NAME,
+                                store= True,
+                                
                                 messages=[
                                 {"role": "system", "content": unified_prompt},
                                 {"role": "user", "content": user_query}
@@ -875,6 +917,7 @@ async def submit_query(
 
                             response = azure_openai_client.chat.completions.create(
                                 model=AZURE_DEPLOYMENT_NAME,
+                                store = True,
                                 messages=[
                                 {"role": "system", "content": unified_prompt},
                                 {"role": "user", "content": user_query}
@@ -940,9 +983,11 @@ async def submit_query(
                         selected_business_rule,
                         current_question_type,
                         relationships,
-                        examples
-                    )
+                        examples,
+                        Query_record_size
 
+                    )
+                    
                     response_data["langprompt"] = str(final_prompt)
                     response_data["description"] = description
 

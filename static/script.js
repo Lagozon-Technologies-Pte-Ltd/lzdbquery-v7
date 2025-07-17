@@ -208,7 +208,7 @@ function connectToDatabase(selectedDatabase) {
     let sections = [];
 
     if (selectedDatabase === 'GCP') {
-        sections = ['Demo', 'Mahindra-PoC-V2']; // Directly specify GCP sections
+        sections = ['Mahindra-PoC']; // Directly specify GCP sections
     } else if (selectedDatabase == 'PostgreSQL-Azure') {
         sections = [
             'Mah-POC-Azure'
@@ -805,21 +805,19 @@ function chooseExampleQuestion() {
  *
  */
 document.addEventListener("DOMContentLoaded", function () {
-  const toggleBtn = document.getElementById("toggle-query-btn");
-  const userQueryDisplay = document.getElementById("user_query_display");
+    const toggleBtn = document.getElementById("toggle-query-btn");
+    const userQueryDisplay = document.getElementById("user_query_display");
 
-  toggleBtn.addEventListener("click", function () {
-    if (userQueryDisplay.style.display === "none" || userQueryDisplay.style.display === "") {
-      userQueryDisplay.style.display = "block";
-      this.textContent = "Hide Description";
-    } else {
-      userQueryDisplay.style.display = "none";
-      this.textContent = "Show Description";
-    }
-  });
+    toggleBtn.addEventListener("click", function () {
+        if (userQueryDisplay.style.display === "none" || userQueryDisplay.style.display === "") {
+            userQueryDisplay.style.display = "block";
+            this.textContent = "Hide Description";
+        } else {
+            userQueryDisplay.style.display = "none";
+            this.textContent = "Show Description";
+        }
+    });
 });
-
-
 function updatePageContent(data) {
     const userQueryDisplay = document.getElementById("user_query_display");
     

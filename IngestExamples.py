@@ -26,7 +26,7 @@ with open("sql_query_examples_usecase.json", encoding="utf-8") as f:
 # Azure OpenAI settings
 AZURE_OPENAI_API_KEY = os.environ.get('AZURE_OPENAI_API_KEY')
 AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
-AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION', "2024-02-01")
+AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION')
 AZURE_EMBEDDING_DEPLOYMENT_NAME = os.environ.get('AZURE_EMBEDDING_DEPLOYMENT_NAME')
 CHROMA_DB_PATH = os.environ.get('Chroma_Query_Examples')
 

@@ -117,19 +117,19 @@ import configure
 db_tables =  json.loads(os.getenv("db_tables"))
 
 
-SQL_DB_SERVER = os.getenv("SQL_DB_SERVER")
-SQL_DB_PORT = os.getenv("SQL_DB_PORT")
-SQL_DB_NAME = os.getenv("SQL_DB_NAME")
-SQL_DB_USER = os.getenv("SQL_DB_USER")
-SQL_DB_PASSWORD = os.getenv("SQL_DB_PASSWORD")
-SQL_DB_DRIVER = os.getenv("SQL_DB_DRIVER").replace(" ", "+")  # URL encode spaces
-SQL_POOL_SIZE = int(os.getenv("SQL_POOL_SIZE", 5))
-SQL_MAX_OVERFLOW = int(os.getenv("SQL_MAX_OVERFLOW", 10))
+# SQL_DB_SERVER = os.getenv("SQL_DB_SERVER")
+# SQL_DB_PORT = os.getenv("SQL_DB_PORT")
+# SQL_DB_NAME = os.getenv("SQL_DB_NAME")
+# SQL_DB_USER = os.getenv("SQL_DB_USER")
+# SQL_DB_PASSWORD = os.getenv("SQL_DB_PASSWORD")
+# SQL_DB_DRIVER = os.getenv("SQL_DB_DRIVER").replace(" ", "+")  # URL encode spaces
+# SQL_POOL_SIZE = int(os.getenv("SQL_POOL_SIZE", 5))
+# SQL_MAX_OVERFLOW = int(os.getenv("SQL_MAX_OVERFLOW", 10))
 
-SQL_DATABASE_URL = (
-    f"mssql+pyodbc://{SQL_DB_USER}:{SQL_DB_PASSWORD}@{SQL_DB_SERVER}:{SQL_DB_PORT}/{SQL_DB_NAME}"
-    f"?driver={SQL_DB_DRIVER}&Connection+Timeout=120"
-)
+# SQL_DATABASE_URL = (
+#     f"mssql+pyodbc://{SQL_DB_USER}:{SQL_DB_PASSWORD}@{SQL_DB_SERVER}:{SQL_DB_PORT}/{SQL_DB_NAME}"
+#     f"?driver={SQL_DB_DRIVER}&Connection+Timeout=120"
+# )
 
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -303,32 +303,32 @@ def create_bigquery_uri(project_id, dataset_id):
 
 
 # Connection for new AZURE SQL 
-def get_sql_db():
-    try:
-        engine = create_engine(
-            SQL_DATABASE_URL,
-            pool_size=SQL_POOL_SIZE,
-            max_overflow=SQL_MAX_OVERFLOW,
-            echo=False  # Set to False in production
-        )
+# def get_sql_db():
+#     try:
+#         engine = create_engine(
+#             SQL_DATABASE_URL,
+#             pool_size=SQL_POOL_SIZE,
+#             max_overflow=SQL_MAX_OVERFLOW,
+#             echo=False  # Set to False in production
+#         )
 
        
 
-        # Wrap the engine in a LangChain SQLDatabase object
-        # db = SQLDatabase(engine)
+    #     Wrap the engine in a LangChain SQLDatabase object
+    #     db = SQLDatabase(engine)
 
-        return engine
+    #     return engine
 
-    except SQLAlchemyError as e:
-        logger.error(f"Error connecting to the database: {e}")
-        return None
-
-
+    # except SQLAlchemyError as e:
+    #     logger.error(f"Error connecting to the database: {e}")
+    #     return None
 
 
-def get_chain(question, selected_database, table_details, selected_business_rule,question_type,relationships, examples):
+
+
+def get_chain(question, selected_database, table_details, selected_business_rule,question_type,relationships, examples,Query_record_size):
     if selected_database == 'GCP':
-        prompt_file = "GCP_prompt.txt"
+        prompt_file = "Generic_GCP_prompt.txt" if question_type == "generic" else "GCP_prompt.txt"
     elif selected_database == 'PostgreSQL-Azure':
         prompt_file = "Generic_postgres_prompt.txt" if question_type == "generic" else "Postgres_prompt.txt"
     elif selected_database == 'Azure SQL':
@@ -381,9 +381,9 @@ def get_chain(question, selected_database, table_details, selected_business_rule
     logger.info(f"submit query --> invoke_chain --> get_chain : examples_str : {examples_str}")
     if question_type == "generic":
 
-        final_prompt1 = static_prompt.format(table_info=table_details,  Business_Glossary = business_glossary,relationships=relationships_str, examples = examples_str)
+        final_prompt1 = static_prompt.format(table_info=table_details,  Business_Glossary = business_glossary,relationships=relationships_str, examples = examples_str,Query_record_size=Query_record_size)
     elif question_type =="usecase":
-        final_prompt1 = static_prompt.format(table_info=table_details, Business_Rule = selected_business_rule, Business_Glossary = business_glossary, relationships=relationships_str, examples = examples_str)
+        final_prompt1 = static_prompt.format(table_info=table_details, Business_Rule = selected_business_rule, Business_Glossary = business_glossary, relationships=relationships_str, examples = examples_str,Query_record_size=Query_record_size)
     final_prompt = final_prompt1
     # print("prompt here: ", final_prompt)
     # if selected_database=="GCP":
@@ -396,6 +396,7 @@ def get_chain(question, selected_database, table_details, selected_business_rule
    
         response = azure_openai_client.chat.completions.create(
             model=AZURE_DEPLOYMENT_NAME,
+            store = True,
             messages=[
             {"role": "system", "content": final_prompt},
             {"role": "user", "content": question}
@@ -449,19 +450,19 @@ def get_chain(question, selected_database, table_details, selected_business_rule
 
     return json_output, final_prompt1
 
-def invoke_chain(db,question, messages, selected_model, selected_subject, selected_database, table_info, selected_business_rule, question_type, relationships, examples):
+def invoke_chain(db,question, messages, selected_model, selected_subject, selected_database, table_info, selected_business_rule, question_type, relationships, examples,Query_record_size):
     logger.info(f"submit query --> invoke_chain , parameters are: {question, messages, selected_model, selected_subject, selected_database}")
     response = None
     SQL_Statement = None
     final_prompt = None
     try:
         # history = create_history(messages)
-        json_output, final_prompt = get_chain(
+        response, final_prompt = get_chain(
             question, 
-            selected_database, table_info, selected_business_rule, question_type, relationships, examples
+            selected_database, table_info, selected_business_rule, question_type, relationships, examples,Query_record_size
         )  ##we get query output from get chain
-        SQL_Statement = json_output["query"]
-        description = json_output["description"]
+        SQL_Statement = response["query"]
+        description = response["description"]
         print("This is our description", description)
 
         # SQL_Statement = SQL_Statement.replace("SQL Query:", "").strip()
@@ -478,11 +479,13 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
         tables_data = {}
         query = SQL_Statement
         print(f"submit query --> invoke_chain: Executing SQL Query: {query}")
-        # if selected_database == "GCP":
-        #     result_json = db.run(query)
-        #     df = pd.DataFrame(result_json)
-        #     tables_data[table] = df
-        #     break
+        if selected_database == "GCP":
+            rows = db.query(query).result()
+            result_json = [dict(row) for row in rows]
+            logger.info(f"submit query --> invoke_chain : result after executing : \n{result_json}")
+            df = pd.DataFrame(result_json)
+            tables_data["Table data"] = df
+            # break
         # elif selected_database == "PostgreSQL-Azure":
         #     alchemyEngine = create_engine(f'postgresql+psycopg2://{quote_plus(db_user)}:{quote_plus(db_password)}@{db_host}:{db_port}/{db_database}')
         #     with alchemyEngine.connect() as conn:
@@ -490,26 +493,28 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
         #     tables_data[table] = df
         #     print(table)
         #     break 
-        if selected_database == "Azure SQL":
-            # db = get_sql_db()
+        # if selected_database == "Azure SQL":
+        #     # db = get_sql_db()
 
-            result = db.execute(query)
-            # logger.info(f"submit query --> invoke_chain : result after executing \n{query} : \n{result}")
-            try:
-                rows = result.fetchall()
-                columns = result.keys()
-                df = pd.DataFrame(rows, columns=columns)
-                tables_data["Table data"] = df
-            except Exception as e:
-                logger.error(f"submit query --> invoke_chain : table data has some issues.{e}")
+        #     result = db.query(query)
+        #     logger.info(f"submit query --> invoke_chain : result after executing : \n{result}")
+        #     try:
+        #         rows = result.fetchall()
+        #         columns = result.keys()
+        #         df = pd.DataFrame(rows, columns=columns)
+        #         tables_data["Table data"] = df
+        #     except Exception as e:
+        #         logger.error(f"submit query --> invoke_chain : table data has some issues.{e}")
         # Include SQL_Statement in the return tuple
-        return json_output, db_tables, tables_data, final_prompt ,description
+        return response, db_tables, tables_data, final_prompt ,description
+
+
 
     except Exception as e:
         print("submit query --> invoke_chain :", e)
         # Return whatever response was generated, or None if none was generated
         # Also return SQL_Statement and final_prompt if available
-        return response, [], {}, final_prompt
+        return response, [], {}, final_prompt, None
 
 
 # def create_history(messages):
