@@ -8,7 +8,6 @@ Example:
   {{  "User message": "Find the top 5 models with the highest seat capacity.",
   "query": "SELECT `MM`.`MODL_DESC` AS `MODEL_DESCRIPTION`, `MM`.`SEAT_CAPCTY` AS `SEAT_CAPACITY` FROM `MH_MODEL_MASTER` AS `MM` ORDER BY `MM`.`SEAT_CAPCTY` DESC, `MM`.`MODL_DESC` ASC LIMIT 5"}}
 
-## Business Glossary :
 {Business_Glossary}    
 
 # Instructions

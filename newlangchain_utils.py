@@ -365,7 +365,14 @@ def get_chain(question, selected_database, table_details, selected_business_rule
     #     input_variables=["input","top_k","table_info"],
     # )
     
-    business_glossary = get_business_glossary_text()
+    Business_Glossary_Boolean = os.getenv("Business_Glossary_Boolean")
+
+    if Business_Glossary_Boolean == "1":
+        business_glossary = "## Business Glossary :\n" + get_business_glossary_text()
+    else:
+        business_glossary = ""
+   
+    
     relationships_str = relationships or "No relationships found"
     logger.info(f"submit query --> invoke_chain --> get_chain : relationship_str: {relationships_str}")
 
