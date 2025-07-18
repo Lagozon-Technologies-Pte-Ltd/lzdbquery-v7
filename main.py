@@ -284,14 +284,14 @@ def download_as_excel(data: pd.DataFrame, filename: str = "data.xlsx"):
     output.seek(0)  # Reset the pointer to the beginning of the stream
     return output
 
-@app.get("/health")
-def health_check():
-    try:
-        with app.state.engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-        return {"status": "ok"}
-    except Exception:
-        return {"status": "db_error"}, 503
+# @app.get("/health")
+# def health_check():
+#     try:
+#         with app.state.engine.connect() as conn:
+#             conn.execute(text("SELECT 1"))
+#         return {"status": "ok"}
+#     except Exception:
+#         return {"status": "db_error"}, 503
 
 @app.get("/get_prompt")
 async def get_prompt(type: str):

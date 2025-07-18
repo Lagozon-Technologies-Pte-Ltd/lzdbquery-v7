@@ -8,20 +8,20 @@ let audioChunks = [];
 let originalButtonHTML = ""; // Store the original button HTML
 
 // Every 20 minutes (20 * 60 * 1000 ms)
-setInterval(() => {
-    fetch('/health')
-        .then(response => response.json())
-        .then(data => {
-            if (data.status !== 'ok') {
-                console.error('Health check failed:', data);
-            } else {
-                console.log('Health check passed:', data);
-            }
-        })
-        .catch(err => {
-            console.error('Health check error:', err);
-        });
-}, 15 * 60 * 1000);
+// setInterval(() => {
+//     fetch('/health')
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.status !== 'ok') {
+//                 console.error('Health check failed:', data);
+//             } else {
+//                 console.log('Health check passed:', data);
+//             }
+//         })
+//         .catch(err => {
+//             console.error('Health check error:', err);
+//         });
+// }, 15 * 60 * 1000);
 window.onload = function () {
     // Reset variables
     const loadingDiv = document.getElementById('loading');
@@ -826,7 +826,7 @@ function updatePageContent(data) {
     const xlsxbtn = document.getElementById("xlsx-btn");
     const selectedSection = document.getElementById('section-dropdown').value;
     // Always update these elements regardless of success/failure
-    userQueryDisplay.querySelector('span').textContent = `SQL QUERY DESCRIPTION: ${data.description || ""}`;
+    userQueryDisplay.querySelector('span').textContent = `Query Description: ${data.description || ""}`;
     const formattedQuery = data.query
         .replace(/FROM/g, '\nFROM')
         .replace(/WHERE/g, '\nWHERE')
