@@ -6,11 +6,9 @@ from dotenv import load_dotenv
 # from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder,FewShotChatMessagePromptTemplate,PromptTemplate # type: ignore
 import pandas as pd
 import os
-import configure
-from operator import itemgetter
+
 #from  langchain_openai.chat_models import with_structured_output
-import json
-from starlette.middleware.base import BaseHTTPMiddleware
+import json, logging
 
 # from langchain.vectorstores import Chroma
 # from langchain.prompts.example_selector import SemanticSimilarityExampleSelector
@@ -20,7 +18,11 @@ from openai import AzureOpenAI
 # import logging
 # from logging.config import dictConfig
 # logging.basicConfig(level=logging.INFO)
+from logger_config import configure_logging, log_execution_time
 
+configure_logging()
+# Create main application logger
+logger = logging.getLogger("app")
 # # Logging configuration
 # LOGGING_CONFIG = {
 #     "version": 1,
@@ -45,7 +47,6 @@ from openai import AzureOpenAI
 # dictConfig(LOGGING_CONFIG)
 # logger = logging.getLogger("app")
 
-from logger_custom import logger
 
 AZURE_OPENAI_API_KEY = os.environ.get('AZURE_OPENAI_API_KEY')
 AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
