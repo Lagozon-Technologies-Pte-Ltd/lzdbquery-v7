@@ -17,13 +17,13 @@ from dotenv import load_dotenv
 # from state import session_state, session_lock
 from typing import Optional, List, Dict
 from starlette.middleware.sessions import SessionMiddleware  # Correct import
-from fastapi.middleware.cors import CORSMiddleware
+# from fastapi.middleware.cors import CORSMiddleware
 from azure.storage.blob import BlobServiceClient
 from starlette.middleware.base import BaseHTTPMiddleware
 import logging, time
-from logging.config import dictConfig
-import automotive_wordcloud_analysis as awa
-import zipfile, asyncio
+
+# import automotive_wordcloud_analysis as awa
+import  asyncio
 from wordcloud import WordCloud
 from table_details import get_table_details, get_table_metadata  # Importing the function
 from openai import AzureOpenAI
@@ -458,10 +458,20 @@ def generate_chart_figure(data_df: pd.DataFrame, x_axis: str, y_axis: str, chart
             text_data = data_df[x_axis].dropna().astype(str).tolist()
             text = ' '.join(text_data)
             
+            excluded_words = {
+            "check", "service", "rep", "km", "vehicle", "gaadi",
+            "hai", "kar", "me", "ka", "ki", "ko", "se", "ke",
+            "schedule", "washing", "1000", "10000", "maxicare",
+            "wheel", "alignment", "balance", "pickup", "cleaning", "wash", "rahi", "nhi", "rha", "krne", "rhe", "hona", "par", "lag", "clean",
+            "CLU", "ENG", "BOD", "CLN", "GEN", "STG", "WHT", "IFT", "BRK", "ELC", "TRN", "FUE", "HVA", "SER", "EPT", "SUS", "DRL", "EXH", "SAF", "VAS", "RE-",
+            "708", "013", "405", "SWU"
+            }
+
+            
             # Generate word cloud
             wordcloud = WordCloud(width=800, height=400, 
                                 background_color='white',
-                                max_words=200).generate(text)
+                                max_words=200, stopwords=excluded_words).generate(text)
             
             # Convert to Plotly figure
             fig = px.imshow(wordcloud.to_array())
@@ -476,7 +486,6 @@ def generate_chart_figure(data_df: pd.DataFrame, x_axis: str, y_axis: str, chart
     except Exception as e:
         logger.info(f"generate_chart_figure in main.py, Error generating {chart_type} chart: {str(e)}")
         raise
-
 class ChartRequest(BaseModel):
     x_axis: str
     y_axis: str
@@ -511,7 +520,7 @@ async def generate_chart(request0: ChartRequest):
                 data_df[x_axis] = data_df[x_axis].astype(str)
         else:
             try:
-                data_df[y_axis] = pd.to_numeric(data_df[y_axis], errors='coerce')
+                # data_df[y_axis] = pd.to_numeric(data_df[y_axis], errors='coerce')
                 data_df = data_df.dropna(subset=[y_axis])
                 if len(data_df) == 0:
                     raise ValueError("No valid numeric data available after conversion")

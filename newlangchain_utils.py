@@ -103,10 +103,10 @@ from operator import itemgetter
 
 
 # from table_details import get_table_details , get_tables , itemgetter ,  Table 
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
+# from sqlalchemy import create_engine, text
+# from sqlalchemy.orm import sessionmaker
 
-import configure
+# import configure
 # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'Cloud_service.json'
 # db_user = os.getenv("db_user")
 # db_password = os.getenv("db_password")
@@ -133,7 +133,7 @@ db_tables =  json.loads(os.getenv("db_tables"))
 # )
 
 
-from sqlalchemy.exc import SQLAlchemyError
+# from sqlalchemy.exc import SQLAlchemyError
 # def insert_feedback(department, user_query, sql_query, table_name, data, feedback_type="user not reacted", feedback="user not given feedback"):
 #     engine = create_engine(f'postgresql+psycopg2://{quote_plus(db_user)}:{quote_plus(db_password)}@{db_host}:{db_port}/{db_database}')
 #     Session = sessionmaker(bind=engine)
