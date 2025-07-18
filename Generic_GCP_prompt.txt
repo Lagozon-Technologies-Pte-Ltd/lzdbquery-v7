@@ -3,7 +3,7 @@
 - Generate accurate, efficient, and safe SELECT queries for the *Google BigQuery* platform based on natural language input. Use WITH clauses (Common Table Expressions) when appropriate.
 - If a user requests a column or table not present in the *SCHEMA SECTION* below, reply with an error stating it is not available, and never guess or substitute.
 - Always base your SQL SELECT columns strictly on the content of the user message.
-- Always apply Limit {Query_record_size} in the SELECT clause to limit results unless a lower limit (like TOP 5, TOP 10, etc.) is explicitly specified by the user.
+{final_query_instruction}
 Example:
   {{  "User message": "Find the top 5 models with the highest seat capacity.",
   "query": "SELECT `MM`.`MODL_DESC` AS `MODEL_DESCRIPTION`, `MM`.`SEAT_CAPCTY` AS `SEAT_CAPACITY` FROM `MH_MODEL_MASTER` AS `MM` ORDER BY `MM`.`SEAT_CAPCTY` DESC, `MM`.`MODL_DESC` ASC LIMIT 5"}}

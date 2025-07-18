@@ -60,8 +60,19 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 load_dotenv()  # Load environment variables from .env file
 # --- Helper function: the actual DB ping ---
 keep_alive_interval = os.getenv("keep_alive_interval")
-Query_record_size = os.getenv("Query_record_size")
-print("Query_record_size",Query_record_size)
+Query_Record_Size_Boolean = os.getenv("Query_Record_Size_Boolean")
+Query_record_size = os.getenv("Query_Record_Size")
+
+if Query_Record_Size_Boolean == "1":
+    final_query_instruction = (
+        f"- Always apply LIMIT {Query_record_size} in the SELECT clause to limit results "
+        f"unless a lower limit (like TOP 5, TOP 10, etc.) is explicitly specified by the user."
+    )
+else:
+    final_query_instruction = ""
+
+
+print("final_query_instruction",final_query_instruction)
 
 def run_keepalive_query(engine):
     with engine.connect() as conn:
@@ -971,6 +982,7 @@ async def submit_query(
                     table_details = get_table_details(table_name=chosen_tables)
                     # logger.info(f"Inside /submit request, relationships: {relationships}")
                     # logger.info(f"messages in session just before invoke chain: {request.session['messages']}")
+                    print("final",final_query_instruction )
 
                     response, chosen_tables, tables_data, final_prompt, description= invoke_chain(
                         db,
@@ -984,7 +996,7 @@ async def submit_query(
                         current_question_type,
                         relationships,
                         examples,
-                        Query_record_size
+                        final_query_instruction
 
                     )
                     

@@ -326,7 +326,8 @@ def create_bigquery_uri(project_id, dataset_id):
 
 
 
-def get_chain(question, selected_database, table_details, selected_business_rule,question_type,relationships, examples,Query_record_size):
+def get_chain(question, selected_database, table_details, selected_business_rule,question_type,relationships, examples,final_query_instruction):
+    print(" final_query_instruction  inside the get chain" ,  final_query_instruction)
     if selected_database == 'GCP':
         prompt_file = "Generic_GCP_prompt.txt" if question_type == "generic" else "GCP_prompt.txt"
     elif selected_database == 'PostgreSQL-Azure':
@@ -381,9 +382,9 @@ def get_chain(question, selected_database, table_details, selected_business_rule
     logger.info(f"submit query --> invoke_chain --> get_chain : examples_str : {examples_str}")
     if question_type == "generic":
 
-        final_prompt1 = static_prompt.format(table_info=table_details,  Business_Glossary = business_glossary,relationships=relationships_str, examples = examples_str,Query_record_size=Query_record_size)
+        final_prompt1 = static_prompt.format(table_info=table_details,  Business_Glossary = business_glossary,relationships=relationships_str, examples = examples_str,final_query_instruction=final_query_instruction)
     elif question_type =="usecase":
-        final_prompt1 = static_prompt.format(table_info=table_details, Business_Rule = selected_business_rule, Business_Glossary = business_glossary, relationships=relationships_str, examples = examples_str,Query_record_size=Query_record_size)
+        final_prompt1 = static_prompt.format(table_info=table_details, Business_Rule = selected_business_rule, Business_Glossary = business_glossary, relationships=relationships_str, examples = examples_str,final_query_instruction=final_query_instruction)
     final_prompt = final_prompt1
     # print("prompt here: ", final_prompt)
     # if selected_database=="GCP":
@@ -450,7 +451,7 @@ def get_chain(question, selected_database, table_details, selected_business_rule
 
     return json_output, final_prompt1
 
-def invoke_chain(db,question, messages, selected_model, selected_subject, selected_database, table_info, selected_business_rule, question_type, relationships, examples,Query_record_size):
+def invoke_chain(db,question, messages, selected_model, selected_subject, selected_database, table_info, selected_business_rule, question_type, relationships, examples,final_query_instruction):
     logger.info(f"submit query --> invoke_chain , parameters are: {question, messages, selected_model, selected_subject, selected_database}")
     response = None
     SQL_Statement = None
@@ -459,7 +460,7 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
         # history = create_history(messages)
         response, final_prompt = get_chain(
             question, 
-            selected_database, table_info, selected_business_rule, question_type, relationships, examples,Query_record_size
+            selected_database, table_info, selected_business_rule, question_type, relationships, examples,final_query_instruction
         )  ##we get query output from get chain
         SQL_Statement = response["query"]
         description = response["description"]
