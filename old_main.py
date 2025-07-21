@@ -6,6 +6,12 @@ from fastapi.staticfiles import StaticFiles
 
 
 
+from celery_app import celery_app
+import ssl  # Add this import at the top
+from models import ChartRequest  # Import from models.py instead
+from tasks import process_data_task, generate_chart_task
+from celery.result import AsyncResult
+
 # from langchain_openai import ChatOpenAI
 import plotly.graph_objects as go, plotly.express as px
 import openai, yaml, os, csv,pandas as pd, base64, uuid
@@ -111,6 +117,8 @@ app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
 app.add_middleware(LoggingMiddleware)
 
 
+# Add this to make Celery app available to your routes
+app.celery_app = celery_app
 
 # Set up static files and templates
 templates = Jinja2Templates(directory="templates")
@@ -741,319 +749,6 @@ async def submit_query(
     records_per_page: int = Query(10),
     model: Optional[str] = Form(AZURE_DEPLOYMENT_NAME),
     db: Session = Depends(get_db),
-):
-    # Check cache first
-    cache_key = get_cache_key(
-        "submit_query",
-        user_query=user_query,
-        section=section,
-        database=database,
-        question_type=request.session.get("current_question_type", "generic")
-    )
-    
-    redis_client = request.app.state.redis_client
-    cached_response = await get_cached_response(redis_client, cache_key)
-    if cached_response:
-        return JSONResponse(content=cached_response)
-    
-    # Prepare task data
-    task_data = {
-        "user_query": user_query,
-        "section": section,
-        "database": database,
-        "current_question_type": request.session.get("current_question_type", "generic"),
-        "messages": request.session.get('messages', []),
-        "model": model,
-        "cache_key": cache_key,
-    }
-    
-    # Start Celery task
-    task = process_query_task.delay(task_data)
-    
-    return JSONResponse(
-        status_code=202,
-        content={
-            "message": "Query processing started",
-            "task_id": task.id,
-            "status_url": f"/tasks/{task.id}",
-            "flower_url": "http://localhost:5555"  # Direct link to Flower
-        }
-    )
-
-
-    
-@celery_app.task(bind=True)
-def process_query_task(self, task_data):
-    """
-    Celery task to process the query with progress updates for Flower
-    """
-    # Initialize progress tracking
-    self.update_state(state='PROGRESS', meta={'current': 0, 'total': 100, 'status': 'Starting processing'})
-    
-    try:
-        # Extract data from task
-        user_query = task_data["user_query"]
-        section = task_data["section"]
-        database = task_data["database"]
-        current_question_type = task_data.get("current_question_type", "generic")
-        messages = task_data.get("messages", [])
-        cache_key = task_data["cache_key"]
-        
-        # Initialize response structure
-        response_data = {
-            "user_query": user_query,
-            "query": "",
-            "tables": [],
-            "llm_response": "",
-            "chat_response": "",
-            "history": messages,
-            "interprompt": "",
-            "langprompt": "",
-            "error": None
-        }
-
-        # Step 1: Generate unified prompt
-        self.update_state(state='PROGRESS', meta={'current': 20, 'total': 100, 'status': 'Generating prompt'})
-        
-        if current_question_type == "usecase":
-            # Your usecase processing logic
-                key_parameters = get_key_parameters()
-                keyphrases = get_keyphrases()
-                unified_prompt = prompts["unified_prompt"].format(
-                    user_query=user_query,
-                    chat_history=chat_history,
-                    key_parameters=key_parameters,
-                    keyphrases=keyphrases
-                )
-                
-                # llm_reframed_query = llm.invoke(unified_prompt).content.strip()
-                response = azure_openai_client.chat.completions.create(
-                    model=AZURE_DEPLOYMENT_NAME,
-                    messages=[
-                    {"role": "system", "content": unified_prompt},
-                    {"role": "user", "content": user_query}
-                ],
-                temperature=0,  # Lower temperature for more predictable, structured output
-                response_format={"type": "json_object"}  # This is the key parameter!
-                )
-            # The response content will be a JSON string
-                response_content = response.choices[0].message.content
-                logger.info(f"Inside submit function: response recieved is: {response_content}")
-
-                # Parse the guaranteed JSON string into a Python dictionary
-                json_output = json.loads(response_content)
-                logger.info(f"Inside submit function, usecase: json output in usecase: {json_output}")
-                # Now you can safely access the keys
-                llm_reframed_query = json_output.get("rephrased_query")
-                logger.info(f"Inside submit function, usecase: reframed query after modification: {llm_reframed_query}")
-
-                intent_result = intent_classification(llm_reframed_query)
-                
-                if not intent_result:
-                    error_msg = "Please rephrase or add more details to your question as I am not able to assess the Intended Use case"
-                    
-                    
-                    response_data = {
-                        "user_query": user_query,
-                        "query": "",
-                        "tables": "",
-                        "llm_response": llm_reframed_query,
-                        "chat_response": error_msg,
-                        "history": request.session['messages'],
-                        "interprompt": unified_prompt,
-                        "langprompt": ""
-                    }
-                    return JSONResponse(content=response_data)
-                chosen_tables = intent_result["tables"]
-                selected_business_rule = get_business_rule(intent_result["intent"])
-
-        elif current_question_type == "generic":
-            # Your generic processing logic
-            tables_metadata = get_table_metadata()
-                unified_prompt = prompts["unified_prompt"].format(
-                    user_query=user_query,
-                    chat_history=chat_history,
-                    key_parameters=get_key_parameters(),
-                    keyphrases=get_keyphrases(),
-                    table_metadata=tables_metadata
-                )
-                
-                # llm_response_str = llm.invoke(unified_prompt).content.strip()
-                response = azure_openai_client.chat.completions.create(
-                    model=AZURE_DEPLOYMENT_NAME,
-                    messages=[
-                    {"role": "system", "content": unified_prompt},
-                    {"role": "user", "content": user_query}
-                ],
-                temperature=0,  # Lower temperature for more predictable, structured output
-                response_format={"type": "json_object"}  # This is the key parameter!
-                )
-
-            # The response content will be a JSON string
-                response_content = response.choices[0].message.content
-                logger.info(f"Inside submit function, generic: response recieved is: {response_content}")
-
-                # Parse the guaranteed JSON string into a Python dictionary
-                json_output = json.loads(response_content)
-
-                # Now you can safely access the keys
-                # llm_reframed_query = json_output.get("rephrased_query")
-                try:
-                    # llm_result = json.loads(llm_response_str)
-                    llm_reframed_query = json_output.get("rephrased_query", "")
-                    chosen_tables = db_tables
-                    selected_business_rule = ""
-                    logger.info(f"Inside submit function, generic: reframed query after modification: {llm_reframed_query}, chosen tables are: {chosen_tables}")
-
-                except json.JSONDecodeError:
-                    raise HTTPException(
-                        status_code=500,
-                        detail="Failed to parse LLM response"
-                    )
-            
-            # Now add the reframed query to messages instead of original user_query
-            # logger.info(f"Now, adding message to history: {llm_reframed_query}")
-            request.session['messages'] = [{"role": "user", "content": llm_reframed_query}]
-            # logger.info(f"messages in session: {request.session['messages']}")
-            response_data["llm_response"] = llm_reframed_query
-            response_data["interprompt"] = unified_prompt
-            
-        except Exception as e:
-            logger.error(f"Prompt generation error: {str(e)}")
-            raise HTTPException(
-                status_code=500,
-                detail=f"Prompt generation failed: {str(e)}"
-            )
-            
-
-        # Step 2: Invoke LangChain
-        self.update_state(state='PROGRESS', meta={'current': 50, 'total': 100, 'status': 'Invoking LangChain'})
-        # Your LangChain invocation code here
-        try:
-            relationships = find_relationships_for_tables(chosen_tables , 'table_relation.json')
-            table_details = get_table_details(table_name=chosen_tables)
-            examples = get_examples(llm_reframed_query, current_question_type)
-            logger.info(f"relationships: {relationships}")
-            logger.info(f"messages in session just before invoke chain: {request.session['messages']}")
-
-            response, chosen_tables, tables_data, final_prompt = invoke_chain(
-                db,
-                llm_reframed_query,  # Using the reframed query here
-                request.session['messages'],
-                model,
-                section,
-                database,
-                table_details,
-                selected_business_rule,
-                current_question_type,
-                relationships,
-                examples
-            )
-
-            response_data["langprompt"] = str(final_prompt)
-            
-            if isinstance(response, str):
-                request.session['generated_query'] = response
-                response_data["query"] = response
-                request.session['generated_query'] = response
-            else:
-                response_data["query"] = response.get("query", "")
-                request.session['generated_query'] = response.get("query", "")
-                request.session['chosen_tables'] = chosen_tables
-                # request.session['tables_data'] = tables_data
-
-        except Exception as e:
-            logger.error(f"LangChain invocation error: {str(e)}", exc_info=True)
-            raise HTTPException(
-                status_code=500,
-                detail=f"Query execution failed: {str(e)}"
-            )
-
-        # Step 3: Process results
-        self.update_state(state='PROGRESS', meta={'current': 80, 'total': 100, 'status': 'Processing results'})
-        # Your result processing code here
-        try:
-            # Format numeric columns
-            for table_name, df in tables_data.items():
-                for col in df.select_dtypes(include=['number']).columns:
-                    tables_data["Table data"][col] = df[col].apply(format_number)
-            
-            tables_data_dict = {k: v.to_dict(orient='records') for k, v in tables_data.items()}
-
-            # Prepare table HTML
-            initial_page_html = prepare_table_html(tables_data, 1,10)
-
-            response_data["tables"] = initial_page_html
-            response_data["tables_data"] = tables_data_dict           
-         # Generate insights if data exists
-            # data_preview = next(iter(session_state['tables_data'].values())).head(5).to_string(index=False)
-            # response_data["chat_response"] = ""  # Placeholder for actual insights
-            
-        except Exception as e:
-            logger.error(f"Data processing error: {str(e)}")
-            response_data["chat_response"] = f"Data retrieved but processing failed: {str(e)}"
-
-        # Append successful response to chat history
-        # session_state['messages'].append({
-        #     "role": "assistant",
-        #     "content": response_data["chat_response"]
-        # })
-
-        response_data = convert_dates(response_data)  # Your existing conversion
-        await cache_response(redis_client, cache_key, response_data)
-        
-        return JSONResponse(content=response_data)
-
-    except HTTPException as he:
-        # Capture error details
-        response_data.update({
-            "chat_response": f"Error: {he.detail}",
-            "error": str(he.detail),
-            "history": request.session['messages'],
-            "langprompt": str(final_prompt) if 'final_prompt' in locals() else "Not generated due to error",
-            "interprompt": unified_prompt if 'unified_prompt' in locals() else "Not generated due to error"
-        })
-        
-        
-        return JSONResponse(
-            content=response_data,
-            status_code=he.status_code
-        )
-        
-    except Exception as e:
-        self.update_state(state='PROGRESS', meta={'current': 100, 'total': 100, 'status': 'Completed'})
-
-        # Unexpected errors
-        logger.error(f"Unexpected error: {str(e)}", exc_info=True)
-        response_data.update({
-            "chat_response": "An unexpected error occurred",
-            "error": str(e),
-            "history":  request.session['messages'],
-            "langprompt": str(final_prompt) if 'final_prompt' in locals() else "Not generated due to error",
-            "interprompt": unified_prompt if 'unified_prompt' in locals() else "Not generated due to error"
-        })
-        
-        request.session['messages'].append({
-            "role": "user",
-            "content": "An unexpected error occurred"
-        })
-        
-        return JSONResponse(
-            content=response_data,
-            status_code=500
-        )
-        
-
-@app.post("/submit")
-async def submit_query(
-    request: Request,
-    section: str = Form(...),
-    database: str = Form(...), 
-    user_query: str = Form(...),
-    page: int = Query(1),
-    records_per_page: int = Query(10),
-    model: Optional[str] = Form(AZURE_DEPLOYMENT_NAME),
-    db: Session = Depends(get_db),
 
 ):
     cache_key = get_cache_key(
@@ -1497,3 +1192,40 @@ async def set_question_type(payload: QuestionTypeRequest, request: Request):
     return JSONResponse(content={"message": "Question type set", "prompts": prompts})
 
 
+
+#redis endpoint
+@app.post("/async-process")
+async def async_process(data: Dict):
+    """Queue data processing task"""
+    task = process_data_task.delay(data)
+    return JSONResponse({"task_id": task.id})
+
+@app.post("/async-chart")
+async def async_chart(request: ChartRequest):
+    """Queue chart generation task"""
+    task = generate_chart_task.delay(request.dict())
+    return {"task_id": task.id}
+
+@app.get("/task/{task_id}")
+async def get_task_result(task_id: str):
+    """Check task status and get result"""
+    task_result = AsyncResult(task_id)
+    
+    if not task_result.ready():
+        return JSONResponse({
+            "task_id": task_id,
+            "status": task_result.status
+        })
+    
+    if task_result.failed():
+        return JSONResponse({
+            "task_id": task_id,
+            "status": "FAILURE",
+            "error": str(task_result.result)
+        }, status_code=400)
+    
+    return JSONResponse({
+        "task_id": task_id,
+        "status": "SUCCESS",
+        "result": task_result.result
+    })

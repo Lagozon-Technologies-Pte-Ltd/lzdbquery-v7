@@ -1,0 +1,22 @@
+Question,
+How many vehicle has attended by service advisor (employee code),
+How much time Service Advisor took to deliver the vehicle. ,
+Which Technician has attended MH01XX1234 vehicle. ,
+Which was the pick up location for MH01XX1234,
+How much discount in part & labour was given in MH01XX1234,Show daily repair order counts with labor amounts for April 2025
+Show all customer verbatim entries for a specific RO number. RO22A002529
+Show all customer verbatim entries for a specific RO number. RO22A002529
+List the Top 10 Dealers with highest OEM part consumption under Repair from 01-Jan-2024 to 31-dec-2024
+List the Top 5 Dealer Zone & Area Office (Dealer Area Office) with highest OEM part consumption under Repair from 01-Jan-2024 to 31-dec-2024
+For each item_type, show effective price, GST paid, and discount %.
+What is the total sales amount for each state?
+List most sold styles with avg discount and sale amount.
+Which city had the highest total sales?
+Show daily sales for top 3 stores in May 2025.
+Show average discount percentage per category in last 3 months.
+Show average discount percentage per category in last 3 months.
+Show average discount percentage per category in last 3 months.
+Provide the list of Top 10 consumed OEM part under "Bodyshop" from 01-Jan-2024 to 31-dec-2024
+Show all dealers with the zones, area, location code , location name, product division, and parent grou
+Show the number of ROs per dealer for the month of Feb'25
+Give customer verbatim for those ROs which took more than 72 hours
