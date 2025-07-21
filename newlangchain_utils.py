@@ -1,14 +1,16 @@
 import os, ast
 import pandas as pd
 # from google.cloud import bigquery
-import datetime, yaml
+import datetime
 from dotenv import load_dotenv
 # from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder,FewShotChatMessagePromptTemplate,PromptTemplate # type: ignore
 import pandas as pd
 import os
-
+import configure
+from operator import itemgetter
 #from  langchain_openai.chat_models import with_structured_output
-import json, logging
+import json
+from starlette.middleware.base import BaseHTTPMiddleware
 
 # from langchain.vectorstores import Chroma
 # from langchain.prompts.example_selector import SemanticSimilarityExampleSelector
@@ -18,11 +20,7 @@ from openai import AzureOpenAI
 # import logging
 # from logging.config import dictConfig
 # logging.basicConfig(level=logging.INFO)
-from logger_config import configure_logging, log_execution_time
 
-configure_logging()
-# Create main application logger
-logger = logging.getLogger("app")
 # # Logging configuration
 # LOGGING_CONFIG = {
 #     "version": 1,
@@ -47,6 +45,7 @@ logger = logging.getLogger("app")
 # dictConfig(LOGGING_CONFIG)
 # logger = logging.getLogger("app")
 
+from logger_custom import logger
 
 AZURE_OPENAI_API_KEY = os.environ.get('AZURE_OPENAI_API_KEY')
 AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
@@ -103,10 +102,10 @@ from operator import itemgetter
 
 
 # from table_details import get_table_details , get_tables , itemgetter ,  Table 
-# from sqlalchemy import create_engine, text
-# from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 
-# import configure
+import configure
 # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'Cloud_service.json'
 # db_user = os.getenv("db_user")
 # db_password = os.getenv("db_password")
@@ -118,22 +117,22 @@ from operator import itemgetter
 db_tables =  json.loads(os.getenv("db_tables"))
 
 
-# SQL_DB_SERVER = os.getenv("SQL_DB_SERVER")
-# SQL_DB_PORT = os.getenv("SQL_DB_PORT")
-# SQL_DB_NAME = os.getenv("SQL_DB_NAME")
-# SQL_DB_USER = os.getenv("SQL_DB_USER")
-# SQL_DB_PASSWORD = os.getenv("SQL_DB_PASSWORD")
-# SQL_DB_DRIVER = os.getenv("SQL_DB_DRIVER").replace(" ", "+")  # URL encode spaces
-# SQL_POOL_SIZE = int(os.getenv("SQL_POOL_SIZE", 5))
-# SQL_MAX_OVERFLOW = int(os.getenv("SQL_MAX_OVERFLOW", 10))
+SQL_DB_SERVER = os.getenv("SQL_DB_SERVER")
+SQL_DB_PORT = os.getenv("SQL_DB_PORT")
+SQL_DB_NAME = os.getenv("SQL_DB_NAME")
+SQL_DB_USER = os.getenv("SQL_DB_USER")
+SQL_DB_PASSWORD = os.getenv("SQL_DB_PASSWORD")
+SQL_DB_DRIVER = os.getenv("SQL_DB_DRIVER").replace(" ", "+")  # URL encode spaces
+SQL_POOL_SIZE = int(os.getenv("SQL_POOL_SIZE", 5))
+SQL_MAX_OVERFLOW = int(os.getenv("SQL_MAX_OVERFLOW", 10))
 
-# SQL_DATABASE_URL = (
-#     f"mssql+pyodbc://{SQL_DB_USER}:{SQL_DB_PASSWORD}@{SQL_DB_SERVER}:{SQL_DB_PORT}/{SQL_DB_NAME}"
-#     f"?driver={SQL_DB_DRIVER}&Connection+Timeout=120"
-# )
+SQL_DATABASE_URL = (
+    f"mssql+pyodbc://{SQL_DB_USER}:{SQL_DB_PASSWORD}@{SQL_DB_SERVER}:{SQL_DB_PORT}/{SQL_DB_NAME}"
+    f"?driver={SQL_DB_DRIVER}&Connection+Timeout=120"
+)
 
 
-# from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError
 # def insert_feedback(department, user_query, sql_query, table_name, data, feedback_type="user not reacted", feedback="user not given feedback"):
 #     engine = create_engine(f'postgresql+psycopg2://{quote_plus(db_user)}:{quote_plus(db_password)}@{db_host}:{db_port}/{db_database}')
 #     Session = sessionmaker(bind=engine)
@@ -304,33 +303,32 @@ def create_bigquery_uri(project_id, dataset_id):
 
 
 # Connection for new AZURE SQL 
-# def get_sql_db():
-#     try:
-#         engine = create_engine(
-#             SQL_DATABASE_URL,
-#             pool_size=SQL_POOL_SIZE,
-#             max_overflow=SQL_MAX_OVERFLOW,
-#             echo=False  # Set to False in production
-#         )
+def get_sql_db():
+    try:
+        engine = create_engine(
+            SQL_DATABASE_URL,
+            pool_size=SQL_POOL_SIZE,
+            max_overflow=SQL_MAX_OVERFLOW,
+            echo=False  # Set to False in production
+        )
 
        
 
-    #     Wrap the engine in a LangChain SQLDatabase object
-    #     db = SQLDatabase(engine)
+        # Wrap the engine in a LangChain SQLDatabase object
+        # db = SQLDatabase(engine)
 
-    #     return engine
+        return engine
 
-    # except SQLAlchemyError as e:
-    #     logger.error(f"Error connecting to the database: {e}")
-    #     return None
-
-
+    except SQLAlchemyError as e:
+        logger.error(f"Error connecting to the database: {e}")
+        return None
 
 
-def get_chain(question, selected_database, table_details, selected_business_rule,question_type,relationships, examples,final_query_instruction):
-    print(" final_query_instruction  inside the get chain" ,  final_query_instruction)
+
+
+def get_chain(question, selected_database, table_details, selected_business_rule,question_type,relationships, examples):
     if selected_database == 'GCP':
-        prompt_file = "Generic_GCP_prompt.txt" if question_type == "generic" else "GCP_prompt.txt"
+        prompt_file = "GCP_prompt.txt"
     elif selected_database == 'PostgreSQL-Azure':
         prompt_file = "Generic_postgres_prompt.txt" if question_type == "generic" else "Postgres_prompt.txt"
     elif selected_database == 'Azure SQL':
@@ -365,15 +363,15 @@ def get_chain(question, selected_database, table_details, selected_business_rule
     #     input_variables=["input","top_k","table_info"],
     # )
     
-    Business_Glossary_Boolean = os.getenv("Business_Glossary_Boolean")
-
-    if Business_Glossary_Boolean == "1":
-        business_glossary = "## Business Glossary :\n" + get_business_glossary_text()
-    else:
-        business_glossary = ""
-   
-    
-    relationships_str = relationships or "No relationships found"
+    business_glossary = get_business_glossary_text()
+    formatted_relationships = []
+    for table, rels in relationships.items():
+        for rel in rels:
+            formatted_relationships.append(
+                f"• {rel['source']}.{rel['source_key']} -> {rel['target']}.{rel['target_key']} "
+                f"({rel['type'].replace('_',' ').title()})"
+            )
+    relationships_str = "\n".join(formatted_relationships) or "No relationships found"
     logger.info(f"submit query --> invoke_chain --> get_chain : relationship_str: {relationships_str}")
 
     # print("Few shot prompt : " , few_shot_prompt.invoke({{"input": "List all parts used in a particular repair order RO22A002529",
@@ -390,9 +388,9 @@ def get_chain(question, selected_database, table_details, selected_business_rule
     logger.info(f"submit query --> invoke_chain --> get_chain : examples_str : {examples_str}")
     if question_type == "generic":
 
-        final_prompt1 = static_prompt.format(table_info=table_details,  Business_Glossary = business_glossary,relationships=relationships_str, examples = examples_str,final_query_instruction=final_query_instruction)
+        final_prompt1 = static_prompt.format(table_info=table_details,  Business_Glossary = business_glossary,relationships=relationships_str, examples = examples_str)
     elif question_type =="usecase":
-        final_prompt1 = static_prompt.format(table_info=table_details, Business_Rule = selected_business_rule, Business_Glossary = business_glossary, relationships=relationships_str, examples = examples_str,final_query_instruction=final_query_instruction)
+        final_prompt1 = static_prompt.format(table_info=table_details, Business_Rule = selected_business_rule, Business_Glossary = business_glossary, relationships=relationships_str, examples = examples_str)
     final_prompt = final_prompt1
     # print("prompt here: ", final_prompt)
     # if selected_database=="GCP":
@@ -405,7 +403,6 @@ def get_chain(question, selected_database, table_details, selected_business_rule
    
         response = azure_openai_client.chat.completions.create(
             model=AZURE_DEPLOYMENT_NAME,
-            store = True,
             messages=[
             {"role": "system", "content": final_prompt},
             {"role": "user", "content": question}
@@ -426,9 +423,9 @@ def get_chain(question, selected_database, table_details, selected_business_rule
         # print(f"Description: {json_output.get('description')}")
 
         SQL_Statement = json_output.get('query')
-        # logger.info(f"Query: {json_output.get('query')}")
-        logger.info(f"submit query --> invoke_chain --> get_chain :LLM SQL Generation Error: {json_output.get('error')}")
-        logger.info(f"submit query --> invoke_chain --> get_chain : Description: {json_output.get('description')}")
+        logger.info(f"Query: {json_output.get('query')}")
+        logger.info(f"Error: {json_output.get('error')}")
+        logger.info(f"Description: {json_output.get('description')}")
     except Exception as e:
         logger.error(f"Error in submit query --> invoke_chain --> get_chain : {e}")
 
@@ -455,24 +452,22 @@ def get_chain(question, selected_database, table_details, selected_business_rule
         
     
     # return chain,  SQL_Statement, db,final_prompt1
-    # logger.info(f" submit query --> invoke_chain --> get_chain, Generated SQL Statement : {SQL_Statement}")
+    logger.info(f"Generated SQL Statement before execution returned from get_chain : {SQL_Statement}")
 
     return json_output, final_prompt1
 
-def invoke_chain(db,question, messages, selected_model, selected_subject, selected_database, table_info, selected_business_rule, question_type, relationships, examples,final_query_instruction):
-    logger.info(f"submit query --> invoke_chain , parameters are: {question, messages, selected_model, selected_subject, selected_database}")
+def invoke_chain(db,question, messages, selected_model, selected_subject, selected_database, table_info, selected_business_rule, question_type, relationships, examples):
+    logger.info(f"Submit query, now in invoke chain functin in newlangchain_utils, parameters are: {question, messages, selected_model, selected_subject, selected_database}")
     response = None
     SQL_Statement = None
     final_prompt = None
     try:
         # history = create_history(messages)
-        response, final_prompt = get_chain(
+        json_output, final_prompt = get_chain(
             question, 
-            selected_database, table_info, selected_business_rule, question_type, relationships, examples,final_query_instruction
+            selected_database, table_info, selected_business_rule, question_type, relationships, examples
         )  ##we get query output from get chain
-        SQL_Statement = response["query"]
-        description = response["description"]
-        print("This is our description", description)
+        SQL_Statement = json_output["query"]
 
         # SQL_Statement = SQL_Statement.replace("SQL Query:", "").strip()
 
@@ -488,13 +483,11 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
         tables_data = {}
         query = SQL_Statement
         print(f"submit query --> invoke_chain: Executing SQL Query: {query}")
-        if selected_database == "GCP":
-            rows = db.query(query).result()
-            result_json = [dict(row) for row in rows]
-            logger.info(f"submit query --> invoke_chain : result after executing : \n{result_json}")
-            df = pd.DataFrame(result_json)
-            tables_data["Table data"] = df
-            # break
+        # if selected_database == "GCP":
+        #     result_json = db.run(query)
+        #     df = pd.DataFrame(result_json)
+        #     tables_data[table] = df
+        #     break
         # elif selected_database == "PostgreSQL-Azure":
         #     alchemyEngine = create_engine(f'postgresql+psycopg2://{quote_plus(db_user)}:{quote_plus(db_password)}@{db_host}:{db_port}/{db_database}')
         #     with alchemyEngine.connect() as conn:
@@ -502,28 +495,26 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
         #     tables_data[table] = df
         #     print(table)
         #     break 
-        # if selected_database == "Azure SQL":
-        #     # db = get_sql_db()
+        if selected_database == "Azure SQL":
+            # db = get_sql_db()
 
-        #     result = db.query(query)
-        #     logger.info(f"submit query --> invoke_chain : result after executing : \n{result}")
-        #     try:
-        #         rows = result.fetchall()
-        #         columns = result.keys()
-        #         df = pd.DataFrame(rows, columns=columns)
-        #         tables_data["Table data"] = df
-        #     except Exception as e:
-        #         logger.error(f"submit query --> invoke_chain : table data has some issues.{e}")
+            result = db.execute(query)
+            logger.info(f"submit query --> invoke_chain : result after executing \n{query} : \n{result}")
+            try:
+                rows = result.fetchall()
+                columns = result.keys()
+                df = pd.DataFrame(rows, columns=columns)
+                tables_data["Table data"] = df
+            except Exception as e:
+                logger.error(f"submit query --> invoke_chain : table data has some issues.{e}")
         # Include SQL_Statement in the return tuple
-        return response, db_tables, tables_data, final_prompt ,description
-
-
+        return json_output, db_tables, tables_data, final_prompt
 
     except Exception as e:
         print("submit query --> invoke_chain :", e)
         # Return whatever response was generated, or None if none was generated
         # Also return SQL_Statement and final_prompt if available
-        return response, [], {}, final_prompt, None
+        return response, [], {}, final_prompt
 
 
 # def create_history(messages):
@@ -585,8 +576,8 @@ def intent_classification(user_query):
                 break  # stop after the first matching intent (optional)
 
     if detected_intent and matched_tables:
-        logger.info(f"submit query --> intent_classification,usecase, Returned intent:, {detected_intent}")
-        logger.info(f"submit query --> intent_classification,usecase, Returned tables from intent: {matched_tables}")
+        print("Returned intent:", detected_intent)
+        print("Returned tables from intent:", matched_tables)
         return {
             "intent": detected_intent,
             "tables": list(matched_tables)
@@ -602,12 +593,12 @@ def get_business_rule(intent, file_path='business_rules.txt'):
             # Normalize all keys to lowercase for case-insensitive lookup
             business_rules = {k.lower(): v for k, v in ast.literal_eval(file_content).items()}
     except Exception as e:
-        return f"submit query --> get_business_rule, Error reading business rules file: {e}"
+        return f"Error reading business rules file: {e}"
 
     key = intent.lower().strip()
     rule = business_rules.get(key)
 
-    return rule if rule else f"submit query --> get_business_rule, No business rule defined for intent: {intent}"
+    return rule if rule else f"No business rule defined for intent: {intent}"
 
 # def get_example_selector(json_file_path: str):
 #     """
@@ -650,11 +641,16 @@ def get_business_rule(intent, file_path='business_rules.txt'):
     
 #     return example_selector
 
-def find_relationships_for_tables(table_names, yaml_file_path):
-    with open(yaml_file_path, 'r', encoding='utf-8') as f:
-        relations_data = yaml.safe_load(f)
-    filtered = []
-    for rel in relations_data.get("RELATIONSHIPS", []):
-        if rel.get("left_table") in table_names or rel.get("right_table") in table_names:
-            filtered.append(rel)
-    return yaml.dump({"RELATIONSHIPS": filtered}, sort_keys=False, allow_unicode=True)
+def find_relationships_for_tables(table_names, json_file_path):
+    # Load the JSON
+    with open(json_file_path, 'r',encoding='utf-8') as f:
+        relations_data = json.load(f)
+    all_related = {}
+    for table_name in table_names:
+        related = []
+        for rel in relations_data["relations"]:
+            if rel.get("source") == table_name or rel.get("target") == table_name:
+                related.append(rel)
+        all_related[table_name] = related
+    return all_related
+
