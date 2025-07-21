@@ -15,7 +15,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
-
+    <!-- Add this to your head section -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body data-initial-question-type="{{ initial_question_type }}">
@@ -134,76 +135,110 @@
                     </div>
 
                     <!-- Hidden Popup Modal -->
+                    <!-- SQL QUERY MODAL -->
                     <div id="sql-query-popup" class="modal">
                         <div class="modal-content">
-                            <span class="close-btn" onclick="closeSQLQueryPopup()">&times;</span>
-                            <h2>SQL Query</h2>
-                            <pre><code id="sql-query-content" class="language-sql"></code></pre>
+                            <div class="modal-header">
+                                <div class="modal-title">
+                                    <h2>SQL Query</h2>
+                                    <button class="copy-btn-popup" data-target="sql-query-content" title="Copy SQL">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                                <span class="close-btn" onclick="closeSQLQueryPopup()">&times;</span>
+                            </div>
+                            <div class="modal-body">
+                                <pre><code id="sql-query-content" class="language-sql"></code></pre>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- PROMPT MODAL -->
                     <div id="lang-prompt-popup" class="modal">
                         <div class="modal-content">
-                            <span class="close-btn" onclick="closepromptPopup()">&times;</span>
-                            <h2>Prompt</h2>
-                            <pre><code id="lang-prompt-content" class="language-markdown"></code></pre>
-
+                            <div class="modal-header">
+                                <div class="modal-title">
+                                    <h2>Query Prompt</h2>
+                                    <button class="copy-btn-popup" data-target="lang-prompt-content"
+                                        title="Copy Prompt">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                                <span class="close-btn" onclick="closepromptPopup()">&times;</span>
+                            </div>
+                            <div class="modal-body">
+                                <pre><code id="lang-prompt-content" class="language-markdown"></code></pre>
+                            </div>
                         </div>
                     </div>
                     <div id="interp-prompt-popup" class="modal">
                         <div class="modal-content">
-                            <span class="close-btn" onclick="closeinterpromptPopup()">&times;</span>
-                            <h2>Prompt</h2>
-                            <pre><code id="interp-prompt-content" ></code></pre>
+                            <div class="modal-header">
+                                <div class="modal-title">
+                                    <h2>Rephrasing Prompt</h2>
+                                    <button class="copy-btn-popup" data-target="interp-prompt-content"
+                                        title="Copy Prompt">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                                <span class="close-btn" onclick="closeinterpromptPopup()">&times;</span>
+                            </div>
+                            <div class="modal-body">
+                                <pre><code id="interp-prompt-content" class="language-markdown"></code></pre>
+                            </div>
                         </div>
                     </div>
-
-                    <div id="tables_container"></div>
-                    <div id="xlsx-btn"></div>
-                    <div id="email-btn"></div>
-                    <p id="faq-message" style="color: green;"></p>
                 </div>
 
-                <!-- Create Visualizations Tab Content -->
-                <div id="createVisualizations" class="tabcontent" style="display:none;">
-                    <div id="visualise-options">
-                        <div>
-                            <label for="x-axis-dropdown">X-Axis:</label>
-                            <select id="x-axis-dropdown">
-                                <option value="" disabled selected>X-Axis</option>
-                            </select>
-                        </div>
 
-                        <div>
-                            <label for="y-axis-dropdown">Y-Axis:</label>
-                            <select id="y-axis-dropdown">
-                                <option value="" disabled selected>Y-Axis</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label for="chart-type-dropdown">Chart Type:</label>
-                            <select id="chart-type-dropdown">
-                                <option value="Word Cloud">Word Cloud</option>
-                                <option value="Line Chart">Line Chart</option>
-                                <option value="Bar Chart">Bar Chart</option>
-                                <option value="Scatter Plot">Scatter Plot</option>
-                                <option value="Pie Chart">Pie Chart</option>
-                                <option value="Histogram">Histogram</option>
-                                <option value="Box Plot">Box Plot</option>
-                                <option value="Heatmap">Heatmap</option>
-                                <option value="Violin Plot">Violin Plot</option>
-                                <option value="Area Chart">Area Chart</option>
-                                <option value="Funnel Chart">Funnel Chart</option>
-                            </select>
-                        </div>
-                        <button onclick="generateChart()" id="generate-chart-button">Generate</button>
-
-                        <p id="chart-loading" style="display: none; color: red; font-weight: bold;">Generating Chart...
-                        </p>
-                    </div>
-                    <div id="chart-container" style="margin-top: 20px;"></div>
-                </div>
+                <div id="tables_container"></div>
+                <div id="xlsx-btn"></div>
+                <div id="email-btn"></div>
+                <p id="faq-message" style="color: green;"></p>
             </div>
+
+            <!-- Create Visualizations Tab Content -->
+            <div id="createVisualizations" class="tabcontent" style="display:none;">
+                <div id="visualise-options">
+                    <div>
+                        <label for="x-axis-dropdown">X-Axis:</label>
+                        <select id="x-axis-dropdown">
+                            <option value="" disabled selected>X-Axis</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="y-axis-dropdown">Y-Axis:</label>
+                        <select id="y-axis-dropdown">
+                            <option value="" disabled selected>Y-Axis</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="chart-type-dropdown">Chart Type:</label>
+                        <select id="chart-type-dropdown">
+                            <option value="Word Cloud">Word Cloud</option>
+                            <option value="Line Chart">Line Chart</option>
+                            <option value="Bar Chart">Bar Chart</option>
+                            <option value="Scatter Plot">Scatter Plot</option>
+                            <option value="Pie Chart">Pie Chart</option>
+                            <option value="Histogram">Histogram</option>
+                            <option value="Box Plot">Box Plot</option>
+                            <option value="Heatmap">Heatmap</option>
+                            <option value="Violin Plot">Violin Plot</option>
+                            <option value="Area Chart">Area Chart</option>
+                            <option value="Funnel Chart">Funnel Chart</option>
+                        </select>
+                    </div>
+                    <button onclick="generateChart()" id="generate-chart-button">Generate</button>
+
+                    <p id="chart-loading" style="display: none; color: red; font-weight: bold;">Generating
+                        Chart...
+                    </p>
+                </div>
+                <div id="chart-container" style="margin-top: 20px;"></div>
+            </div>
+        </div>
         </div>
     </main>
     <script src="static/script.js"></script>
