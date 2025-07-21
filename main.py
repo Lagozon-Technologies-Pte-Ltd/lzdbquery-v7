@@ -57,7 +57,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 import secrets
-
+limiter = Limiter(key_func=get_remote_address)
 DEFAULT_RATE_LIMIT = os.getenv("DEFAULT_RATE_LIMIT", "100/minute")
 SENSITIVE_RATE_LIMIT = os.getenv("SENSITIVE_RATE_LIMIT", "11/minute") 
 HEALTH_CHECK_LIMIT = os.getenv("HEALTH_CHECK_LIMIT", "10/second")
