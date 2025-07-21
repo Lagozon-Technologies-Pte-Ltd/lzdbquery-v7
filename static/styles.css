@@ -13,20 +13,40 @@ body {
     color: #21126b;
     font-size: 18px;
 }
+
 /* Pointer cursors for clickable elements */
-a, button, input[type="button"], input[type="submit"], 
-input[type="reset"], [role="button"], .btn, 
-.tab button, .switch, .close-btn, .page-item a,
-.download-btn, #send-button, #chat-mic-button,
-#view-sql-query-btn, #add-to-faqs-btn, #send-email-btn,
-#interpBtn, #langchainBtn, #generate-chart-button {
+a,
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+[role="button"],
+.btn,
+.tab button,
+.switch,
+.close-btn,
+.page-item a,
+.download-btn,
+#send-button,
+#chat-mic-button,
+#view-sql-query-btn,
+#add-to-faqs-btn,
+#send-email-btn,
+#interpBtn,
+#langchainBtn,
+#generate-chart-button {
     cursor: pointer !important;
 }
 
 /* Text input cursors */
-input[type="text"], input[type="search"], input[type="email"], 
-input[type="password"], input[type="number"], input[type="tel"],
-textarea, [contenteditable] {
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+textarea,
+[contenteditable] {
     cursor: text;
 }
 
@@ -36,7 +56,8 @@ textarea, [contenteditable] {
 }
 
 /* Disabled elements */
-[disabled], :disabled {
+[disabled],
+:disabled {
     cursor: not-allowed !important;
 }
 
@@ -45,6 +66,7 @@ textarea, [contenteditable] {
     cursor: pointer;
     text-decoration: underline;
 }
+
 .query-details-header {
     display: flex;
     align-items: center;
@@ -103,7 +125,8 @@ textarea, [contenteditable] {
 }
 
 input:checked+.slider {
-    background: radial-gradient(50% 50% at 50% 50%, rgb(183.48, 168.62, 249.71) 4%, rgb(136.38, 111.28, 248.21) 100%);;
+    background: radial-gradient(50% 50% at 50% 50%, rgb(183.48, 168.62, 249.71) 4%, rgb(136.38, 111.28, 248.21) 100%);
+    ;
 }
 
 input:checked+.slider:before {
@@ -115,11 +138,15 @@ input:checked+.slider:before {
     font-weight: 500;
     color: #444;
 }
+
 #xlsx-btn {
     display: flex;
-    justify-content: center; /* Centers the buttons horizontally */
-    gap: 15px; /* Adds spacing between buttons */
-    margin-top: 15px; /* Adds spacing between the table and buttons */
+    justify-content: center;
+    /* Centers the buttons horizontally */
+    gap: 15px;
+    /* Adds spacing between buttons */
+    margin-top: 15px;
+    /* Adds spacing between the table and buttons */
 }
 
 #add-to-faqs-btn {
@@ -154,6 +181,7 @@ input:checked+.slider:before {
     justify-content: center;
     align-items: center;
 }
+
 .feedback-section {
     margin-top: 10px;
     text-align: center;
@@ -168,20 +196,40 @@ input:checked+.slider:before {
 
 .modal-content {
     background-color: white;
-    padding: 20px;
+    padding: 0;
     border-radius: 10px;
     width: 60%;
     max-width: 950px;
     max-height: 80vh;
-    overflow-y: auto;
     position: relative;
     text-align: left;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.modal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between heading and button */
+}
+.modal-header {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px 0;
+    border-radius: 10px 10px 0 0;
+}
+
+.modal-body {
+    padding: 0 20px;
+    overflow-y: auto;
 }
 
 .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
     font-size: 20px;
     cursor: pointer;
     font-weight: bold;
@@ -192,6 +240,7 @@ input:checked+.slider:before {
 .close-btn:hover {
     color: red;
 }
+
 
 /* Style the tab */
 .tab {
@@ -253,6 +302,25 @@ input:checked+.slider:before {
     width: 100%;
     padding: 20px;
     border-radius: 10px;
+}
+
+#toggle-query-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    /* Space between icon and text */
+    background: radial-gradient(50% 50% at 50% 50%, rgb(183.48, 168.62, 249.71) 4%, rgb(136.38, 111.28, 248.21) 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 15px;
+    padding: 8px;
+
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+    color: white;
+    border: none;
 }
 
 /* Chat History */
@@ -338,7 +406,7 @@ input:checked+.slider:before {
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
     background: #f7f9fc;
     color: #4a5568;
-    outline: none;    
+    outline: none;
 }
 
 .chatinput-wrapper {
@@ -381,6 +449,7 @@ input:checked+.slider:before {
     /* font-size: 16px; */
     transition: all 0.3sease-in-out;
 }
+
 /* Action buttons */
 .action-btn {
     margin: 5px;
@@ -410,8 +479,18 @@ input:checked+.slider:before {
     height: 16px;
 }
 
-.copy-btn {
-    background-color: #6c757d;
+
+.copy-btn-popup {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #21126b;
+}
+
+.copy-btn-popup:hover {
+    background-color: white;
+    color: #007bff;
 }
 
 /* No data/error message */
@@ -451,6 +530,7 @@ input:checked+.slider:before {
     background-color: #fce8e8;
     color: red;
 }
+
 #query-results {
     margin-top: 20px;
     min-height: 520px;
@@ -604,6 +684,7 @@ code.sql {
 
 
 }
+
 #interpBtn {
     display: flex;
     align-items: center;
@@ -623,6 +704,7 @@ code.sql {
 
 
 }
+
 #langchainBtn {
     display: flex;
     align-items: center;
@@ -663,6 +745,7 @@ code.sql {
 
 
 }
+
 .download-btn {
     display: flex;
     align-items: center;
@@ -681,6 +764,26 @@ code.sql {
     color: white;
     border: none;
 }
+
+#toggle-query-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    /* Space between icon and text */
+    background: radial-gradient(50% 50% at 50% 50%, rgb(183.48, 168.62, 249.71) 4%, rgb(136.38, 111.28, 248.21) 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 15px;
+    padding: 8px;
+
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+    color: white;
+    border: none;
+}
+
 
 .download-btn:hover {
     background-color: #21126b;
@@ -1000,41 +1103,40 @@ table tr:hover {
     }
 }
 
-  /* Additional styles for radio buttons */
-        .radio-options {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            margin: 10px 0;
-        }
-        
-        .radio-options label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            padding: 2px 0;
-        }
-        
-        .radio-options input[type="radio"] {
-            margin: 0;
-            width: 14px;
-            height: 14px;
-        }
-        
-        /* Adjust header layout */
-        .chat-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .connection-info {
-            color: green;
-            font-weight: 100;
-            font-size: 20px;
-            margin-left: auto;
-            padding-left: 10px;
-        }
+/* Additional styles for radio buttons */
+.radio-options {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 10px 0;
+}
 
+.radio-options label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 0;
+}
+
+.radio-options input[type="radio"] {
+    margin: 0;
+    width: 14px;
+    height: 14px;
+}
+
+/* Adjust header layout */
+.chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.connection-info {
+    color: green;
+    font-weight: 100;
+    font-size: 20px;
+    margin-left: auto;
+    padding-left: 10px;
+}
