@@ -40,6 +40,17 @@ from google.oauth2 import service_account
 # from sqlalchemy.orm import sessionmaker, Session
 from dependencies import  get_bq_client
 from contextlib import asynccontextmanager
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+import secrets
+
+DEFAULT_RATE_LIMIT = os.getenv("DEFAULT_RATE_LIMIT", "100/minute")
+SENSITIVE_RATE_LIMIT = os.getenv("SENSITIVE_RATE_LIMIT", "11/minute") 
+HEALTH_CHECK_LIMIT = os.getenv("HEALTH_CHECK_LIMIT", "10/second")
+FILE_UPLOAD_LIMIT = os.getenv("FILE_UPLOAD_LIMIT", "5/minute")
+
 # import redis
 configure_logging()
 # Create main application logger
@@ -196,15 +207,34 @@ async def lifespan(app: FastAPI):
     #         pass
     #     engine.dispose()
 
-
+# Remove the storage parameter and simplified initialization
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(lifespan=lifespan)
-app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
+app.add_middleware(SlowAPIMiddleware) 
+secret_key = secrets.token_hex(32) 
+app.add_middleware(SessionMiddleware, secret_key=secret_key)
 app.add_middleware(LoggingMiddleware)
 # Set up static files and templates
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
 AZURE_CONTAINER_NAME = os.getenv('AZURE_CONTAINER_NAME')
+
+
+app.state.limiter = limiter
+# Custom rate limit handler
+async def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={
+            "detail": f"Too many requests. Limit: {exc.detail}",
+            "retry_after": str(exc.detail)
+        },
+        headers={"Retry-After": str(exc.detail)}
+    )
+
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+
 
 
 # Initialize the BlobServiceClient
@@ -305,7 +335,8 @@ def download_as_excel(data: pd.DataFrame, filename: str = "data.xlsx"):
 #         return {"status": "db_error"}, 503
 
 @app.get("/get_prompt")
-async def get_prompt(type: str):
+@limiter.limit(SENSITIVE_RATE_LIMIT)  # Stricter limit for sensitive endpoint
+async def get_prompt(request: Request, type: str):
     if type == "interpretation":
         filename = "chatbot_prompt.yaml"
     elif type == "langchain":
@@ -612,7 +643,8 @@ async def transcribe_audio(file: UploadFile = File(...)):
 
 @app.get("/get_questions/")
 @app.get("/get_questions")
-async def get_questions(subject: str, request: Request):
+@limiter.limit(DEFAULT_RATE_LIMIT)
+async def get_questions(request: Request, subject: str):
     """
     Fetches questions from a CSV file in Azure Blob Storage based on the selected subject.
 
@@ -814,6 +846,7 @@ def parse_table_data(csv_file_path):
 
 
 @app.post("/submit")
+@limiter.limit(SENSITIVE_RATE_LIMIT) 
 async def submit_query(
     request: Request,
     section: str = Form(...),
@@ -1101,6 +1134,7 @@ async def submit_query(
 # Replace APIRouter with direct app.post
 
 @app.post("/reset-session")
+@limiter.limit(DEFAULT_RATE_LIMIT)
 async def reset_session(request: Request):
     """
     Resets the session state by clearing the session dictionary.
@@ -1253,6 +1287,7 @@ def display_table_with_styles(data, table_name):
 class QuestionTypeRequest(BaseModel):
     question_type: str
 @app.post("/set-question-type")
+@limiter.limit(DEFAULT_RATE_LIMIT)
 async def set_question_type(payload: QuestionTypeRequest, request: Request):
     current_question_type = payload.question_type
     filename = "generic_prompt.yaml" if current_question_type == "generic" else "chatbot_prompt.yaml"
