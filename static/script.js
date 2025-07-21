@@ -157,7 +157,7 @@ function toggleDevMode() {
         if (!langchainBtn) {
             langchainBtn = document.createElement('button');
             langchainBtn.id = 'langchainBtn';
-            langchainBtn.textContent = 'Langchain Prompt';
+            langchainBtn.textContent = 'Query Prompt';
             langchainBtn.className = 'dev-mode-btn';  // Add class for styling
             xlsxbtn.appendChild(langchainBtn);
             // Add click event to open popup with text file content
@@ -340,7 +340,6 @@ async function sendMessage() {
         // Format and display langprompt
         const langdata = data.langprompt?.match(/template='([\s\S]*?)'\)\),/);
         let promptText = langdata ? langdata[1] : data.langprompt || "Not available";
-        console.log(promptText)
         promptText = promptText.replace(/\\n/g, '\n');
         langPromptContent.textContent = promptText;
         Prism.highlightElement(langPromptContent);
@@ -788,6 +787,35 @@ function chooseExampleQuestion() {
 /**
  *
  */
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.getElementById("toggle-query-btn");
+    const userQueryDisplay = document.getElementById("user_query_display");
+
+    toggleBtn.addEventListener("click", function () {
+        if (userQueryDisplay.style.display === "none" || userQueryDisplay.style.display === "") {
+            userQueryDisplay.style.display = "block";
+            this.textContent = "Hide Description";
+        } else {
+            userQueryDisplay.style.display = "none";
+            this.textContent = "Show Description";
+        }
+    });
+});
+document.querySelectorAll('.copy-btn-popup').forEach(button => {
+    button.addEventListener('click', () => {
+        const targetId = button.getAttribute('data-target');
+        const targetEl = document.getElementById(targetId);
+
+        if (targetEl) {
+            const text = targetEl.textContent.trim();
+            if (text && text !== "No SQL query available") {
+                navigator.clipboard.writeText(text)
+                    .then(() => alert('Copied to clipboard!'))
+                    .catch(err => console.error('Failed to copy:', err));
+            }
+        }
+    });
+});
 function updatePageContent(data) {
     const userQueryDisplay = document.getElementById("user_query_display");
     const sqlQueryContent = document.getElementById("sql-query-content");
@@ -840,18 +868,18 @@ function updatePageContent(data) {
     // xlsxbtn.appendChild(emailBtn);
 
     // Add copy button for SQL query
-    const copyButton = document.createElement('button');
-    copyButton.innerHTML = '<i class="fas fa-copy"></i>';
-    copyButton.className = 'copy-btn-popup';
-    copyButton.addEventListener('click', () => {
-        const sqlQueryText = sqlQueryContent.textContent;
-        if (sqlQueryText && sqlQueryText !== "No SQL query available") {
-            navigator.clipboard.writeText(sqlQueryText)
-                .then(() => alert('SQL query copied to clipboard!'))
-                .catch(err => console.error('Failed to copy:', err));
-        }
-    });
-    sqlQueryContent.parentNode.appendChild(copyButton);
+    // const copyButton = document.createElement('button');
+    // copyButton.innerHTML = '<i class="fas fa-copy"></i>';
+    // copyButton.className = 'copy-btn-popup';
+    // copyButton.addEventListener('click', () => {
+    //     const sqlQueryText = sqlQueryContent.textContent;
+    //     if (sqlQueryText && sqlQueryText !== "No SQL query available") {
+    //         navigator.clipboard.writeText(sqlQueryText)
+    //             .then(() => alert('SQL query copied to clipboard!'))
+    //             .catch(err => console.error('Failed to copy:', err));
+    //     }
+    // });
+    // sqlQueryContent.parentNode.appendChild(copyButton);
 
     // Handle table display (if data exists)
     if (data.tables && data.tables.length > 0) {
