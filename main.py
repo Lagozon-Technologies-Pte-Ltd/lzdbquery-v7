@@ -125,7 +125,25 @@ async def get_cached_response(redis_client, key: str):
     except Exception as e:
         logger.error(f"Error retrieving cached data: {str(e)}")
         return None
+SESSION_COOKIE_NAME = "session_id"
 
+def get_session_id(request: Request) -> str:
+    session_id = request.cookies.get(SESSION_COOKIE_NAME)
+    if not session_id:
+        session_id = str(uuid.uuid4())
+    return session_id
+
+async def get_session_data(redis_client, session_id: str):
+    return await get_cached_response(redis_client, key=f"session::{session_id}")
+
+async def set_session_data(redis_client, session_id: str, data: dict, expire: int = 3600):
+    await cache_response(redis_client, key=f"session::{session_id}", data=data, expire=expire)
+
+async def clear_session_data(redis_client, session_id: str):
+    try:
+        redis_client.delete(f"session::{session_id}")
+    except Exception as e:
+        logger.error(f"Error clearing session data: {str(e)}")
 # Initialize the BlobServiceClient
 try:
     blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
@@ -1064,22 +1082,39 @@ async def read_root(request: Request):
         TemplateResponse: The rendered HTML template.
     """
     # Extract table names dynamically
-    request.session.clear()
+    redis_client = request.app.state.redis_client
+    session_id = get_session_id(request)
+
+    session_data = await get_session_data(redis_client, session_id) or {}
+    
     tables = []
     # Only set defaults if not already set
-    if "current_question_type" not in request.session:
-        request.session["current_question_type"] = "generic"
-        # request.session["prompts"] = load_prompts("generic_prompt.yaml")
-
+    if "current_question_type" not in session_data:
+            session_data["current_question_type"] = "generic"
+            await set_session_data(redis_client, session_id, session_data)
     # Pass dynamically populated dropdown options to the template
-    return templates.TemplateResponse("index.html", {
+    response = templates.TemplateResponse("index.html", {
         "request": request,
         "databases": databases,                                     
         "tables": tables,        # Table dropdown based on database selection
         "question_dropdown": question_dropdown.split(','),  # Static questions from env
     })
-
+    if SESSION_COOKIE_NAME not in request.cookies:
+            response.set_cookie(
+                key=SESSION_COOKIE_NAME,
+                value=session_id,
+                httponly=True,
+                samesite="Lax"
+            )
+    return response
 # Table data display endpoint
+@app.get("/session-debug", response_class=JSONResponse)
+async def session_debug(request: Request):
+    redis_client = request.app.state.redis_client
+    session_id = get_session_id(request)
+    session_data = await get_cached_response(redis_client, f"session::{session_id}")
+    return {"session_id": session_id, "data": session_data}
+
 def display_table_with_styles(data, table_name):
     """
     Displays a Pandas DataFrame as an HTML table with custom styles.
@@ -1157,11 +1192,16 @@ class QuestionTypeRequest(BaseModel):
     question_type: str
 @app.post("/set-question-type")
 async def set_question_type(payload: QuestionTypeRequest, request: Request):
+    redis_client = request.app.state.redis_client
+    session_id = get_session_id(request)
+    session_data = await get_cached_response(redis_client, f"session::{session_id}") or {}
+
     current_question_type = payload.question_type
     filename = "generic_prompt.yaml" if current_question_type == "generic" else "chatbot_prompt.yaml"
     prompts = load_prompts(filename)
-    request.session["current_question_type"] = current_question_type
+    session_data["current_question_type"] = current_question_type
     # request.session["prompts"] = prompts  # If you want to store prompts per session
+    await cache_response(redis_client, f"session::{session_id}", session_data)
 
     print("Received question type:", current_question_type)
     return JSONResponse(content={"message": "Question type set", "prompts": prompts})
