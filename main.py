@@ -37,6 +37,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from dependencies import  get_db
 from contextlib import asynccontextmanager
 import redis
+import redis
 class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Log the request details
@@ -85,8 +86,18 @@ async def lifespan(app: FastAPI):
         decode_responses=True,
         max_connections=20
     )
+    # Azure Redis Cache (async)
+    app.state.redis_client = redis.Redis(
+        host=os.environ["REDIS_HOST"],
+        port=int(os.environ.get("REDIS_PORT", 6380)),
+        password=os.environ["REDIS_KEY"],
+        ssl=True,
+        decode_responses=True,
+        max_connections=20
+    )
 
     yield
+    await app.state.redis_client.close()
     await app.state.redis_client.close()
 
     engine.dispose()
@@ -761,6 +772,23 @@ async def submit_query(
         return JSONResponse(content=cached_response)
     else:
         logger.info(f"Cache MISS for key: {cache_key}")
+    cache_key = get_cache_key(
+        "submit_query",
+        user_query=user_query,
+        section=section,
+        database=database,
+        question_type=request.session.get("current_question_type", "generic")
+    )
+    
+    # Check cache first
+    redis_client = request.app.state.redis_client
+    cached_response = await get_cached_response(redis_client, cache_key)
+    if cached_response:
+        logger.info(f"Cache HIT for key: {cache_key}")
+        logger.info("Returning cached response")
+        return JSONResponse(content=cached_response)
+    else:
+        logger.info(f"Cache MISS for key: {cache_key}")
     logger.info(f"Received /submit request with query: {user_query}, section: {section}, database: {database}")
     
     # Initialize response structure
@@ -982,6 +1010,10 @@ async def submit_query(
         #     "content": response_data["chat_response"]
         # })
 
+        response_data = convert_dates(response_data)  # Your existing conversion
+        await cache_response(redis_client, cache_key, response_data)
+        
+        return JSONResponse(content=response_data)
         response_data = convert_dates(response_data)  # Your existing conversion
         await cache_response(redis_client, cache_key, response_data)
         
