@@ -552,7 +552,12 @@ async def get_questions(subject: str, request: Request):
     Returns:
         JSONResponse: A JSON response containing the list of questions or an error message.
     """
-    question_type = request.session.get('current_question_type')
+    redis_client = request.app.state.redis_client
+    session_id = get_session_id(request)
+
+    session_data = await get_session_data(redis_client, session_id) or {}
+
+    question_type = session_data['current_question_type']
     if question_type == 'generic':
         csv_file_name = f"table_files/{subject}_questions_generic.csv"
     else: 
