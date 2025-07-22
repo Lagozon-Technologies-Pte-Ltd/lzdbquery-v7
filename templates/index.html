@@ -188,61 +188,58 @@
                             </div>
                         </div>
                     </div>
+                
+                    <div id="tables_container"></div>
+                    <div id="xlsx-btn"></div>
+                    <div id="email-btn"></div>
+                    <p id="faq-message" style="color: green;"></p>
                 </div>
 
+                <!-- Create Visualizations Tab Content -->
+                <div id="createVisualizations" class="tabcontent" style="display:none;">
+                    <div id="visualise-options">
+                        <div>
+                            <label for="x-axis-dropdown">X-Axis:</label>
+                            <select id="x-axis-dropdown">
+                                <option value="" disabled selected>X-Axis</option>
+                            </select>
+                        </div>
 
-                <div id="tables_container"></div>
-                <div id="xlsx-btn"></div>
-                <div id="email-btn"></div>
-                <p id="faq-message" style="color: green;"></p>
-            </div>
+                        <div>
+                            <label for="y-axis-dropdown">Y-Axis:</label>
+                            <select id="y-axis-dropdown">
+                                <option value="" disabled selected>Y-Axis</option>
+                            </select>
+                        </div>
 
-            <!-- Create Visualizations Tab Content -->
-            <div id="createVisualizations" class="tabcontent" style="display:none;">
-                <div id="visualise-options">
-                    <div>
-                        <label for="x-axis-dropdown">X-Axis:</label>
-                        <select id="x-axis-dropdown">
-                            <option value="" disabled selected>X-Axis</option>
-                        </select>
+                        <div>
+                            <label for="chart-type-dropdown">Chart Type:</label>
+                            <select id="chart-type-dropdown">
+                                <option value="Word Cloud">Word Cloud</option>
+                                <option value="Line Chart">Line Chart</option>
+                                <option value="Bar Chart">Bar Chart</option>
+                                <option value="Scatter Plot">Scatter Plot</option>
+                                <option value="Pie Chart">Pie Chart</option>
+                                <option value="Histogram">Histogram</option>
+                                <option value="Box Plot">Box Plot</option>
+                                <option value="Heatmap">Heatmap</option>
+                                <option value="Violin Plot">Violin Plot</option>
+                                <option value="Area Chart">Area Chart</option>
+                                <option value="Funnel Chart">Funnel Chart</option>
+                            </select>
+                        </div>
+                        <button onclick="generateChart()" id="generate-chart-button">Generate</button>
+
+                        <p id="chart-loading" style="display: none; color: red; font-weight: bold;">Generating
+                            Chart...
+                        </p>
                     </div>
-
-                    <div>
-                        <label for="y-axis-dropdown">Y-Axis:</label>
-                        <select id="y-axis-dropdown">
-                            <option value="" disabled selected>Y-Axis</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="chart-type-dropdown">Chart Type:</label>
-                        <select id="chart-type-dropdown">
-                            <option value="Word Cloud">Word Cloud</option>
-                            <option value="Line Chart">Line Chart</option>
-                            <option value="Bar Chart">Bar Chart</option>
-                            <option value="Scatter Plot">Scatter Plot</option>
-                            <option value="Pie Chart">Pie Chart</option>
-                            <option value="Histogram">Histogram</option>
-                            <option value="Box Plot">Box Plot</option>
-                            <option value="Heatmap">Heatmap</option>
-                            <option value="Violin Plot">Violin Plot</option>
-                            <option value="Area Chart">Area Chart</option>
-                            <option value="Funnel Chart">Funnel Chart</option>
-                        </select>
-                    </div>
-                    <button onclick="generateChart()" id="generate-chart-button">Generate</button>
-
-                    <p id="chart-loading" style="display: none; color: red; font-weight: bold;">Generating
-                        Chart...
-                    </p>
+                    <div id="chart-container" style="margin-top: 20px;"></div>
                 </div>
-                <div id="chart-container" style="margin-top: 20px;"></div>
             </div>
-        </div>
         </div>
     </main>
     <script src="static/script.js"></script>
 
 </body>
-
 </html>
