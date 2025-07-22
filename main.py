@@ -5,12 +5,14 @@ from starlette.requests import Request
 from fastapi.staticfiles import StaticFiles
 # from langchain_openai import ChatOpenAI
 import plotly.graph_objects as go, plotly.express as px
-import openai, yaml, os, csv,pandas as pd, base64, uuid, msal
+import openai, yaml, os, csv,pandas as pd, base64, uuid, msal, time
 from configure import gauge_config
 # from pydantic import BaseModel
 from io import BytesIO, StringIO
 # from langchain.chains.openai_tools import create_extraction_chain_pydantic
 from pydantic import Field, BaseModel
+from starlette.middleware.sessions import SessionMiddleware
+
 # from langchain_openai import ChatOpenAI
 from newlangchain_utils import *
 from dotenv import load_dotenv
@@ -35,7 +37,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from dependencies import  get_db
 from contextlib import asynccontextmanager
-import redis
 import redis
 class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -103,6 +104,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET", "your-secret-key-here"))
+
 app.add_middleware(LoggingMiddleware)
 # Set up static files and templates
 templates = Jinja2Templates(directory="templates")
@@ -259,75 +262,80 @@ def download_as_excel(data: pd.DataFrame, filename: str = "data.xlsx"):
     output.seek(0)  # Reset the pointer to the beginning of the stream
     return output
 @app.get("/login")
-async def login(request: Request, 
-               redis_client=Depends(get_redis_client),
-               session_id: str = Depends(get_session_id_dep)):
-    # Initialize MSAL client
-    app = msal.ConfidentialClientApplication(
-        os.getenv("CLIENT_ID"),
-        authority=os.getenv("AUTHORITY"),
-        client_credential=os.getenv("CLIENT_SECRET"),
+async def login(request: Request,    
+            session_data: dict = Depends(get_session_data_dep),
+            redis_client=Depends(get_redis_client),
+            session_id: str = Depends(get_session_id_dep)
+            ):
+    msal_app = msal.ConfidentialClientApplication(
+        CLIENT_ID,
+        authority=AUTHORITY,
+        client_credential=CLIENT_SECRET,
     )
-    
-    # Initiate auth code flow
-    flow = app.initiate_auth_code_flow(
-        scopes=SCOPES, 
-        redirect_uri=REDIRECT_PATH
-    )
-    
-    # Store the flow in Redis session
-    session_data = await get_session_data(redis_client, session_id) or {}
-    session_data['flow'] = flow
-    await set_session_data(redis_client, session_id, session_data)
-    
-    # Redirect to Microsoft login
-    return RedirectResponse(url=flow['auth_uri'])
 
+    flow = msal_app.initiate_auth_code_flow(scopes=SCOPES, redirect_uri=REDIRECT_PATH)
+
+    session_data["flow"] = flow
+    await set_session_data(redis_client, session_id, session_data) 
+    logger.info(f"[login] session data: {session_data}")
+
+    # Set session ID cookie here
+    response = RedirectResponse(url=flow["auth_uri"])
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=session_id,
+        max_age=86400,  # 1 day
+        httponly=True,
+        secure=False,  # Set to True in production
+        samesite='lax'
+    )
+    return response
 @app.get("/getAToken")
-async def get_a_token(
-    request: Request,
-    code: Optional[str] = None,
-    error: Optional[str] = None,
-    error_description: Optional[str] = None,
-    redis_client=Depends(get_redis_client),
-    session_id: str = Depends(get_session_id_dep)
-):
-    # Handle errors
-    if error:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Error: {error_description or error}"
-        )
-    
-    # Get session data
-    session_data = await get_session_data(redis_client, session_id) or {}
-    
+async def get_a_token(request: Request,     
+                session_data: dict = Depends(get_session_data_dep),
+                redis_client=Depends(get_redis_client),
+                session_id: str = Depends(get_session_id_dep)
+    ):
+    params = dict(request.query_params)
+    logger.info(f"Session ID in getAToken: {session_id}")
+
+    # Handle error from Azure AD
+    if 'error' in params:
+        return HTMLResponse(content=f"Error: {params.get('error_description', 'Unknown error')}", status_code=400)
+
+    # Check if 'flow' exists in session
     if 'flow' not in session_data:
         return RedirectResponse(url="/")
-    
-    # Initialize MSAL client
-    app = msal.ConfidentialClientApplication(
-        os.getenv("CLIENT_ID"),
-        authority=os.getenv("AUTHORITY"),
-        client_credential=os.getenv("CLIENT_SECRET"),
-    )
-    
-    # Acquire token
-    result = app.acquire_token_by_auth_code_flow(
-        session_data['flow'], 
-        dict(request.query_params)
-    )
-    
-    if "id_token_claims" in result:
-        # Store user info in session
+
+    # Attempt to acquire token
+    result = msal.ConfidentialClientApplication(
+        CLIENT_ID,
+        authority=AUTHORITY,
+        client_credential=CLIENT_SECRET,
+    ).acquire_token_by_auth_code_flow(session_data['flow'], params)
+
+    print(result)
+
+    # Check if ID token was received
+    if 'id_token_claims' in result:
+        print("we got id_token claims")
         session_data['user'] = result['id_token_claims']
-        await set_session_data(redis_client, session_id, session_data)
-        return RedirectResponse(url="/")
+        await set_session_data(redis_client, session_id, session_data) 
+
     else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not retrieve user information"
-        )
+        return HTMLResponse(content="Could not retrieve user information.", status_code=400)
+
+    # Redirect to dashboard
+    response = RedirectResponse(url="/")
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=session_id,
+        max_age=86400,  # 1 day
+        httponly=True,
+        secure=False,  # Set to True in production with HTTPS
+        samesite='lax'
+    )
+    return response
 @app.get("/get_prompt")
 async def get_prompt(type: str):
     if type == "interpretation":
@@ -1206,54 +1214,32 @@ def prepare_table_html(tables_data, page_number, records_per_page):
         })
     return tables_html
 @app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request, 
-            session_data: dict = Depends(get_session_data_dep),
-            redis_client = Depends(get_redis_client),
-            session_id: str = Depends(get_session_id_dep)
-    ):
-    """
-    Renders the root HTML page.
-
-    Args:
-        request (Request): The incoming request.
-
-    Returns:
-        TemplateResponse: The rendered HTML template.
-    """
-    # Extract table names dynamically
-    # Check if user is authenticated
+async def read_root(
+    request: Request,
+    redis_client=Depends(get_redis_client),
+    session_id: str = Depends(get_session_id_dep)
+):
+    # Get fresh session data
+    session_data = await get_session_data(redis_client, session_id) or {}
+    logger.info(f"Session ID in read_root: {session_id}")
+    logger.info(f"session data in read root {session_data}")
+    # Strict validation
+    if not session_data.get('user'):
+        return RedirectResponse('/login')
+    # Valid session - proceed
+    user_data = session_data['user']
+    roles = user_data.get('roles', ['guest'])
     
-    tables = []
-    if 'user' not in session_data:
-        return RedirectResponse(url="/login")
-
-    user_claims = session_data.get('user', {})
-    roles = user_claims.get('roles', [])  # Azure AD usually puts roles in 'roles' claim
-    
-    # Default role if none found
-    user_role = roles[0] if roles else 'guest'
-    # Only set defaults if not already set
-    await clear_session_data(redis_client, session_id)
-
-    if "current_question_type" not in session_data:
-            session_data["current_question_type"] = "generic"
-            await set_session_data(redis_client, session_id, session_data)
-    # Pass dynamically populated dropdown options to the template
     response = templates.TemplateResponse("index.html", {
         "request": request,
-        "databases": databases,                                     
-        "tables": tables,        # Table dropdown based on database selection
-        "question_dropdown": question_dropdown.split(','),  # Static questions from env
-        "user_role":user_role,
-        "user_email": user_claims.get('preferred_username', '') 
+        "user_role": roles[0],
+        "user_email": user_data.get('preferred_username', ''),
+        "databases": databases,
+        "tables": [],
+        "question_dropdown": question_dropdown.split(',')
     })
-    if SESSION_COOKIE_NAME not in request.cookies:
-            response.set_cookie(
-                key=SESSION_COOKIE_NAME,
-                value=session_id,
-                httponly=True,
-                samesite="Lax"
-            )
+
+ 
     
     return response
 # Table data display endpoint
