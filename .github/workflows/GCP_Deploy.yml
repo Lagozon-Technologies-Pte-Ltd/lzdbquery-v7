@@ -1,0 +1,25 @@
+name: Deploy to Google App Engine Flexible Environment
+
+on:
+  push:
+    branches:
+      - azure-independent  # deploy on pushes to main branch (change as needed)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v3
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: Gen AI Team - Mahindra
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+
+    - name: Deploy to App Engine Flexible
+      run: |
+        gcloud app deploy app.yaml --quiet
