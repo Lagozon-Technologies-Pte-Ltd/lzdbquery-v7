@@ -1,0 +1,15 @@
+runtime: python
+env: flex
+runtime_config:
+  operating_system: "ubuntu22"
+  runtime_version: "3.11"
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 2
+  cpu_utilization:
+    target_utilization: 0.8
+resources:
+  cpu: 1
+  memory_gb: 1
+  disk_size_gb: 10
+entrypoint: gunicorn -w 2 -k uvicorn.workers.UvicornWorker -b :$PORT --timeout 240 --log-level debug main:app # Replace with your actual startup command and app module
