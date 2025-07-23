@@ -16,7 +16,7 @@ jobs:
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
       with:
-        project_id: Gen AI Team - Mahindra
+        project_id: gen-ai-team-mahindra
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         export_default_credentials: true
 
