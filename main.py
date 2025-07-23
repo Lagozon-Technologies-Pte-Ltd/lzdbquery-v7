@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 # from langchain_openai import ChatOpenAI
 import plotly.graph_objects as go, plotly.express as px
 import openai, yaml, os, csv,pandas as pd, base64, uuid
-from configure import gauge_config
+
 # from pydantic import BaseModel
 from io import BytesIO, StringIO
 # from langchain.chains.openai_tools import create_extraction_chain_pydantic
@@ -26,7 +26,7 @@ import logging, time
 import  asyncio
 from wordcloud import WordCloud
 from table_details import get_table_details, get_table_metadata  # Importing the function
-from openai import AzureOpenAI
+# from openai import AzureOpenAI
 # from langchain_openai import AzureChatOpenAI
 from SM_examples import get_examples
 # Configure logging
@@ -239,7 +239,7 @@ app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 
 # Initialize the BlobServiceClient
 try:
-    blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+    # blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
     logger.info("Blob service client initialized successfully.")
 except Exception as e:
     logger.error(f"Error initializing BlobServiceClient: {e}")
@@ -275,14 +275,9 @@ AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION')
 AZURE_DEPLOYMENT_NAME = os.environ.get('AZURE_DEPLOYMENT_NAME')
 
 # Initialize the Azure OpenAI client
-azure_openai_client = AzureOpenAI(
-    azure_deployment=AZURE_DEPLOYMENT_NAME,
-
-    api_key=AZURE_OPENAI_API_KEY,
-    api_version=AZURE_OPENAI_API_VERSION,
-    azure_endpoint=AZURE_OPENAI_ENDPOINT
+openai_client = OpenAI(
+    api_key=OPENAI_API_KEY
 )
-
 # llm = AzureOpenAI(
 #     api_version=AZURE_OPENAI_API_VERSION,
 #     azure_deployment=AZURE_DEPLOYMENT_NAME,
@@ -291,7 +286,6 @@ azure_openai_client = AzureOpenAI(
 # )
 
 databases = ["GCP"]
-question_dropdown = os.getenv('Question_dropdown')
 
 import datetime
 
@@ -404,48 +398,48 @@ class QueryInput(BaseModel):
     """
     query: str
 
-@app.post("/add_to_faqs")
-async def add_to_faqs(data: QueryInput, subject:str, request:Request):
-    """
-    Adds a user query to the FAQ CSV file on Azure Blob Storage.
+# @app.post("/add_to_faqs")
+# async def add_to_faqs(data: QueryInput, subject:str, request:Request):
+#     """
+#     Adds a user query to the FAQ CSV file on Azure Blob Storage.
 
-    Args:
-        data (QueryInput): The user query.
+#     Args:
+#         data (QueryInput): The user query.
 
-    Returns:
-        JSONResponse: A JSON response indicating success or failure.
-    """
-    print(f"subject: {subject}")
-    query = data.query.strip()
-    if not query:
-        raise HTTPException(status_code=400, detail="Invalid query!")
-    question_type = request.session.get('current_question_type')
+#     Returns:
+#         JSONResponse: A JSON response indicating success or failure.
+#     """
+#     print(f"subject: {subject}")
+#     query = data.query.strip()
+#     if not query:
+#         raise HTTPException(status_code=400, detail="Invalid query!")
+#     question_type = request.session.get('current_question_type')
 
-    if question_type == 'generic':
-        blob_name = f'table_files/Azure-SQL-DB_questions_generic.csv'
-    elif question_type == "usecase":
-        blob_name = f'table_files/Azure-SQL-DB_questions.csv'
-    try:
-        # Get the blob client
-        blob_client = blob_service_client.get_blob_client(container=AZURE_CONTAINER_NAME, blob=blob_name)
+#     if question_type == 'generic':
+#         blob_name = f'table_files/Azure-SQL-DB_questions_generic.csv'
+#     elif question_type == "usecase":
+#         blob_name = f'table_files/Azure-SQL-DB_questions.csv'
+#     try:
+#         # Get the blob client
+#         # blob_client = blob_service_client.get_blob_client(container=AZURE_CONTAINER_NAME, blob=blob_name)
 
-        try:
-            # Download the blob content
-            blob_content = blob_client.download_blob().content_as_text()
-        except ResourceNotFoundError:
-            # If the blob doesn't exist, create a new one with a header if needed
-            blob_content = "question\n"  # Replace with your actual header
+#         # try:
+#             # Download the blob content
+#             # blob_content = blob_client.download_blob().content_as_text()
+#         # except ResourceNotFoundError:
+#         #     # If the blob doesn't exist, create a new one with a header if needed
+#         #     blob_content = "question\n"  # Replace with your actual header
 
-        # Append the new query to the existing CSV content
-        updated_csv_content = blob_content + f"{query}\n"  # Append new query
+#         # Append the new query to the existing CSV content
+#         # updated_csv_content = blob_content + f"{query}\n"  # Append new query
 
-        # Upload the updated CSV content back to Azure Blob Storage
-        blob_client.upload_blob(updated_csv_content.encode('utf-8'), overwrite=True)
+#         # Upload the updated CSV content back to Azure Blob Storage
+#         # blob_client.upload_blob(updated_csv_content.encode('utf-8'), overwrite=True)
 
-        return {"message": "Query added to FAQs successfully and uploaded to Azure Blob Storage!"}
+#         return {"message": "Query added to FAQs successfully and uploaded to Azure Blob Storage!"}
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
 def generate_chart_figure(data_df: pd.DataFrame, x_axis: str, y_axis: str, chart_type: str):
@@ -628,7 +622,7 @@ async def transcribe_audio(file: UploadFile = File(...)):
         audio_bio.name = file.filename  # Use original filename or set appropriate extension
 
         # Transcribe using Azure OpenAI
-        transcript = azure_openai_client.audio.transcriptions.create(
+        transcript = openai_client.audio.transcriptions.create(
             model="whisper-1",  # Azure deployment name for Whisper model
             file=audio_bio
         )
@@ -659,21 +653,21 @@ async def get_questions(request: Request, subject: str):
         csv_file_name = f"table_files/Azure-SQL-DB_questions_generic.csv"
     else: 
         csv_file_name = f"table_files/Azure-SQL-DB_questions.csv"
-    blob_client = blob_service_client.get_blob_client(container=AZURE_CONTAINER_NAME, blob=csv_file_name)
+    # blob_client = blob_service_client.get_blob_client(container=AZURE_CONTAINER_NAME, blob=csv_file_name)
 
     try:
         # Check if the blob exists
-        if not blob_client.exists():
-            logger.error(f"file not found {csv_file_name}")
-            return JSONResponse(
-                content={"error": f"The file {csv_file_name} does not exist."}, status_code=404
-            )
+        # if not blob_client.exists():
+        #     logger.error(f"file not found {csv_file_name}")
+        #     return JSONResponse(
+        #         content={"error": f"The file {csv_file_name} does not exist."}, status_code=404
+        #     )
 
         # Download the blob content
-        blob_content = blob_client.download_blob().content_as_text()
+        # blob_content = blob_client.download_blob().content_as_text()
 
         # Read the CSV content
-        questions_df = pd.read_csv(StringIO(blob_content))
+        questions_df = pd.read_csv(csv_file_name)
         
         if "question" in questions_df.columns:
             questions = questions_df["question"].tolist()
@@ -914,7 +908,7 @@ async def submit_query(
                         
                         # llm_reframed_query = llm.invoke(unified_prompt).content.strip()
                         with log_execution_time("submit_query -> Rephrasing LLM"):
-                            response = azure_openai_client.chat.completions.create(
+                            response = openai_client.chat.completions.create(
                                 model=AZURE_DEPLOYMENT_NAME,
                                 store= True,
                                 
@@ -968,7 +962,7 @@ async def submit_query(
                         # llm_response_str = llm.invoke(unified_prompt).content.strip()
                         with log_execution_time("submit_query -> rephrase LLM"):
 
-                            response = azure_openai_client.chat.completions.create(
+                            response = openai_client.chat.completions.create(
                                 model=AZURE_DEPLOYMENT_NAME,
                                 store = True,
                                 messages=[
@@ -1205,7 +1199,6 @@ async def read_root(request: Request):
                 "request": request,
                 "databases": databases,                                     
                 "tables": tables,        # Table dropdown based on database selection
-                "question_dropdown": question_dropdown.split(','),  # Static questions from env
             })
         except Exception as e:
             logger.error(f"Error in main read_root: {e}")

@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+final_env/
+new_env/
+db_examples/
+new_environ/
+
+.git/
+Dockerfile
+.dockerignore

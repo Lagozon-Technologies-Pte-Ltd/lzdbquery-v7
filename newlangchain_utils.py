@@ -12,7 +12,7 @@ import json, logging
 
 # from langchain.vectorstores import Chroma
 # from langchain.prompts.example_selector import SemanticSimilarityExampleSelector
-from openai import AzureOpenAI
+from openai import OpenAI
 # from langchain_openai import AzureChatOpenAI
 # from langchain.embeddings import AzureOpenAIEmbeddings 
 # import logging
@@ -46,18 +46,17 @@ logger = logging.getLogger("app")
 # }
 # dictConfig(LOGGING_CONFIG)
 # logger = logging.getLogger("app")
+load_dotenv()
 
-
-AZURE_OPENAI_API_KEY = os.environ.get('AZURE_OPENAI_API_KEY')
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
 AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION', "2024-02-01")
 AZURE_DEPLOYMENT_NAME = os.environ.get('AZURE_DEPLOYMENT_NAME')
 AZURE_EMBEDDING_DEPLOYMENT_NAME= os.environ.get('AZURE_EMBEDDING_DEPLOYMENT_NAME')
+
 # Initialize the Azure OpenAI client
-azure_openai_client = AzureOpenAI(
-    api_key=AZURE_OPENAI_API_KEY,
-    api_version=AZURE_OPENAI_API_VERSION,
-    azure_endpoint=AZURE_OPENAI_ENDPOINT
+openai_client = OpenAI(
+    api_key=OPENAI_API_KEY
 )
 
 # OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
@@ -227,6 +226,7 @@ db_tables =  json.loads(os.getenv("db_tables"))
 #     except SQLAlchemyError as e:
 #           print(f"Error connecting to the database: {e}")
 #     return db
+
 def create_bigquery_uri(project_id, dataset_id):
     """Creates a BigQuery URI string."""
     return f"{project_id}.{dataset_id}"
@@ -403,7 +403,7 @@ def get_chain(question, selected_database, table_details, selected_business_rule
 
     try:
    
-        response = azure_openai_client.chat.completions.create(
+        response = openai_client.chat.completions.create(
             model=AZURE_DEPLOYMENT_NAME,
             store = True,
             messages=[

@@ -2,7 +2,7 @@
 # import json
 import os 
 # import openai
-from openai import AzureOpenAI
+from openai import OpenAI
 from IngestExamples import generic_collection, usecase_collection
 import os
 from logger_config import configure_logging, log_execution_time
@@ -29,10 +29,9 @@ AZURE_EMBEDDING_DEPLOYMENT_NAME= os.environ.get('AZURE_EMBEDDING_DEPLOYMENT_NAME
 # openai.api_version = AZURE_OPENAI_API_VERSION  
 AZURE_EMBEDDING_DEPLOYMENT = AZURE_EMBEDDING_DEPLOYMENT_NAME
 
-client = AzureOpenAI(
+client = OpenAI(
     api_key=AZURE_OPENAI_API_KEY,
-    api_version=AZURE_OPENAI_API_VERSION,
-    azure_endpoint=AZURE_OPENAI_ENDPOINT
+    
 )
 
 def embed_query(text):

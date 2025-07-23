@@ -24,7 +24,7 @@ with open("sql_query_examples_usecase.json", encoding="utf-8") as f:
 
 
 # Azure OpenAI settings
-AZURE_OPENAI_API_KEY = os.environ.get('AZURE_OPENAI_API_KEY')
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
 AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION')
 AZURE_EMBEDDING_DEPLOYMENT_NAME = os.environ.get('AZURE_EMBEDDING_DEPLOYMENT_NAME')
@@ -32,10 +32,8 @@ CHROMA_DB_PATH = os.environ.get('Chroma_Query_Examples')
 
 # Initialize embedding function
 openai_ef = embedding_functions.OpenAIEmbeddingFunction(
-    api_key=AZURE_OPENAI_API_KEY,
-    api_base=AZURE_OPENAI_ENDPOINT,
-    api_type="azure",
-    api_version=AZURE_OPENAI_API_VERSION,
+    api_key=OPENAI_API_KEY,
+    
     model_name=AZURE_EMBEDDING_DEPLOYMENT_NAME
 )
 

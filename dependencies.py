@@ -1,7 +1,7 @@
 from fastapi import Request
 
 def get_llm(request: Request):
-    return request.app.state.azure_openai_client
+    return request.app.state.openai_client
 
 def get_embeddings(request: Request):
     return request.app.state.schema_collection

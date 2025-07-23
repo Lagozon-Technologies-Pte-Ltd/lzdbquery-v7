@@ -897,7 +897,7 @@ function updatePageContent(data) {
     //     }
     // });
     // sqlQueryContent.parentNode.appendChild(copyButton);
-
+           
     // Handle table display (if data exists)
     if (data.tables && data.tables.length > 0) {
         data.tables.forEach((table) => {

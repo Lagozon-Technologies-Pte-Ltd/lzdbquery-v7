@@ -1,11 +1,10 @@
 import pandas as pd
 import os, json
-import configure
 from operator import itemgetter
 # from langchain.chains.openai_tools import create_extraction_chain_pydantic 
 from pydantic import BaseModel, Field
 # from langchain_openai import ChatOpenAI 
-from openai import AzureOpenAI
+# from openai import AzureOpenAI
 # from langchain_openai import AzureChatOpenAI
 import platform
 
