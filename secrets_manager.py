@@ -1,49 +1,46 @@
-import os
+import json
 from google.cloud import secretmanager
 from typing import Optional
 
-def get_secret(secret_id: str, project_id: str = "972862630305") -> str:
+def get_secret(project_id, secret_id, version_id="latest"):
     """
-    Retrieve a secret from Google Cloud Secret Manager with local development fallback.
-    
-    Args:
-        secret_id: The ID of the secret to retrieve
-        project_id: Google Cloud project ID (defaults to your project)
-        
-    Returns:
-        The secret value as a string
-        
-    Raises:
-        Exception: If secret retrieval fails and no local fallback exists
+    Retrieves a secret from Secret Manager, parses it as JSON,
+    and returns a dictionary of variables.
     """
-    # First try local environment variables for development
-    env_val = os.getenv(secret_id)
-    if env_val:
-        return env_val
-    
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+
     try:
-        # Initialize the Secret Manager client
-        client = secretmanager.SecretManagerServiceClient()
-        
-        # Build the resource name of the secret version
-        name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
-        
-        # Access the secret version
-        response = client.access_secret_version(name=name)
-        
-        # Return the decoded payload
-        return response.payload.data.decode('UTF-8')
-    
+        response = client.access_secret_version(request={"name": name})
+        secret_payload = response.payload.data.decode("UTF-8")
+        variables = json.loads(secret_payload)
+        return variables
     except Exception as e:
-        # Try one more fallback - common .env style naming
-        env_fallback = os.getenv(secret_id.upper().replace('-', '_'))
-        if env_fallback:
-            return env_fallback
-            
-        raise Exception(f"Failed to access secret {secret_id}: {str(e)}. "
-                      f"Please set {secret_id} as environment variable for local development.")
+        print(f"Error retrieving or parsing secret {secret_id}: {e}")
+        return {}  # Return an empty dictionary in case of error
 
 
 # Example usage:
-# DATABASE_URL = get_secret("DATABASE_URL")
-# AZURE_OPENAI_API_KEY = get_secret("AZURE_OPENAI_API_KEY")
+# DATABASE_URL = secret_variables.get("DATABASE_URL")
+# AZURE_OPENAI_API_KEY = secret_variables.get("AZURE_OPENAI_API_KEY")
+
+# Example Usage:
+project_id = "972862630305"
+secret_id = "lz-dbquery-secret"
+
+secret_variables = get_secret.get(project_id, secret_id)
+
+# if secret_variables:
+#     # Access individual variables from the dictionary
+#     db_host = secret_variables.get("DB_HOST")
+#     db_user = secret_variables.get("DB_USER")
+#     db_password = secret_variables.get("DB_PASSWORD")
+#     db_port = secret_variables.get("DB_PORT")
+
+#     print(f"DB Host: {db_host}")
+#     print(f"DB User: {db_user}")
+#     print(f"DB Port: {db_port}")
+#     # Be extremely careful about logging passwords!
+#     # print(f"DB Password: {db_password}")
+# else:
+#     print("Failed to retrieve secret variables.")

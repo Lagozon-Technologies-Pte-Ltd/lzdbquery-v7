@@ -4,7 +4,7 @@ import json
 import os
 import logging
 import os
-from secrets_manager import get_secret
+from secrets_manager import secret_variables
 
 
 from logger_config import configure_logging, log_execution_time
@@ -23,9 +23,9 @@ with open("sql_query_examples_usecase.json", encoding="utf-8") as f:
 
 
 # Azure OpenAI settings
-OPENAI_API_KEY = get_secret('OPENAI_API_KEY')
-AZURE_EMBEDDING_DEPLOYMENT_NAME = get_secret('AZURE_EMBEDDING_DEPLOYMENT_NAME')
-CHROMA_DB_PATH = get_secret('Chroma_Query_Examples')
+OPENAI_API_KEY = secret_variables.get('OPENAI_API_KEY')
+AZURE_EMBEDDING_DEPLOYMENT_NAME = secret_variables.get('AZURE_EMBEDDING_DEPLOYMENT_NAME')
+CHROMA_DB_PATH = secret_variables.get('Chroma_Query_Examples')
 
 # Initialize embedding function
 openai_ef = embedding_functions.OpenAIEmbeddingFunction(

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 # from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder,FewShotChatMessagePromptTemplate,PromptTemplate # type: ignore
 import pandas as pd
 import os
-from secrets_manager import get_secret
+from secrets_manager import secret_variables
 
 #from  langchain_openai.chat_models import with_structured_output
 import json, logging
@@ -49,18 +49,18 @@ logger = logging.getLogger("app")
 # logger = logging.getLogger("app")
 load_dotenv()
 
-OPENAI_API_KEY = get_secret('OPENAI_API_KEY')
-# AZURE_OPENAI_ENDPOINT = get_secret('AZURE_OPENAI_ENDPOINT')
-# AZURE_OPENAI_API_VERSION = get_secret('AZURE_OPENAI_API_VERSION', "2024-02-01")
-AZURE_DEPLOYMENT_NAME = get_secret('AZURE_DEPLOYMENT_NAME')
-# AZURE_EMBEDDING_DEPLOYMENT_NAME= get_secret('AZURE_EMBEDDING_DEPLOYMENT_NAME')
+OPENAI_API_KEY = secret_variables.get('OPENAI_API_KEY')
+# AZURE_OPENAI_ENDPOINT = secret_variables.get('AZURE_OPENAI_ENDPOINT')
+# AZURE_OPENAI_API_VERSION = secret_variables.get('AZURE_OPENAI_API_VERSION', "2024-02-01")
+AZURE_DEPLOYMENT_NAME = secret_variables.get('AZURE_DEPLOYMENT_NAME')
+# AZURE_EMBEDDING_DEPLOYMENT_NAME= secret_variables.get('AZURE_EMBEDDING_DEPLOYMENT_NAME')
 
 # Initialize the Azure OpenAI client
 openai_client = OpenAI(
     api_key=OPENAI_API_KEY
 )
 
-# OPENAI_API_KEY = get_secret('OPENAI_API_KEY')
+# OPENAI_API_KEY = secret_variables.get('OPENAI_API_KEY')
 # llm = AzureChatOpenAI(
 #     openai_api_version=AZURE_OPENAI_API_VERSION,
 #     azure_deployment=AZURE_DEPLOYMENT_NAME,
@@ -115,7 +115,7 @@ from operator import itemgetter
 # db_database=os.getenv("db_database")
 # db_port=os.getenv("db_port")
 # db_schema= os.getenv("db_schema")
-db_tables =  json.loads(get_secret("db_tables"))
+db_tables =  json.loads(secret_variables.get("db_tables"))
 
 
 # SQL_DB_SERVER = os.getenv("SQL_DB_SERVER")
@@ -366,7 +366,7 @@ def get_chain(question, selected_database, table_details, selected_business_rule
     #     input_variables=["input","top_k","table_info"],
     # )
     
-    Business_Glossary_Boolean = get_secret("Business_Glossary_Boolean")
+    Business_Glossary_Boolean = secret_variables.get("Business_Glossary_Boolean")
 
     if Business_Glossary_Boolean == "1":
         business_glossary = "## Business Glossary :\n" + get_business_glossary_text()
@@ -555,7 +555,7 @@ def get_business_glossary_text():
     return glossary_text
 
 def get_key_parameters():
-    params = get_secret('key_parameters')
+    params = secret_variables.get('key_parameters')
     # Split by comma and strip whitespace
     return [p.strip() for p in params.split(',') if p.strip()]
 
