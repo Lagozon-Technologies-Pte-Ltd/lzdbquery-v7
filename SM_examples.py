@@ -4,7 +4,7 @@ import os
 # import openai
 from openai import OpenAI
 from IngestExamples import generic_collection, usecase_collection
-import os
+from secrets_manager import get_secret
 from logger_config import configure_logging, log_execution_time
 import logging
 
@@ -16,11 +16,9 @@ logger = logging.getLogger("app")
 
 
 # load_dotenv()
-AZURE_OPENAI_API_KEY = os.environ.get('AZURE_OPENAI_API_KEY')
-AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
-AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION', "2024-02-01")
-AZURE_DEPLOYMENT_NAME = os.environ.get('AZURE_DEPLOYMENT_NAME')
-AZURE_EMBEDDING_DEPLOYMENT_NAME= os.environ.get('AZURE_EMBEDDING_DEPLOYMENT_NAME')
+OPENAI_API_KEY = get_secret('OPENAI_API_KEY')
+# AZURE_DEPLOYMENT_NAME = get_secret('AZURE_DEPLOYMENT_NAME')
+AZURE_EMBEDDING_DEPLOYMENT_NAME= get_secret('AZURE_EMBEDDING_DEPLOYMENT_NAME')
 
 
 # openai.api_type = "azure"
@@ -30,7 +28,7 @@ AZURE_EMBEDDING_DEPLOYMENT_NAME= os.environ.get('AZURE_EMBEDDING_DEPLOYMENT_NAME
 AZURE_EMBEDDING_DEPLOYMENT = AZURE_EMBEDDING_DEPLOYMENT_NAME
 
 client = OpenAI(
-    api_key=AZURE_OPENAI_API_KEY,
+    api_key=OPENAI_API_KEY,
     
 )
 

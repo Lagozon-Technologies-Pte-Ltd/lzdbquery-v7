@@ -45,11 +45,11 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 import secrets
-
-DEFAULT_RATE_LIMIT = os.getenv("DEFAULT_RATE_LIMIT", "100/minute")
-SENSITIVE_RATE_LIMIT = os.getenv("SENSITIVE_RATE_LIMIT", "11/minute") 
-HEALTH_CHECK_LIMIT = os.getenv("HEALTH_CHECK_LIMIT", "10/second")
-FILE_UPLOAD_LIMIT = os.getenv("FILE_UPLOAD_LIMIT", "5/minute")
+from secrets_manager import get_secret
+DEFAULT_RATE_LIMIT="100/minute"
+SENSITIVE_RATE_LIMIT="11/minute"
+HEALTH_CHECK_LIMIT="10/second"
+FILE_UPLOAD_LIMIT="5/minute"
 
 # import redis
 configure_logging()
@@ -70,9 +70,9 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
 load_dotenv()  # Load environment variables from .env file
 # --- Helper function: the actual DB ping ---
-keep_alive_interval = os.getenv("keep_alive_interval")
-Query_Record_Size_Boolean = os.getenv("Query_Record_Size_Boolean")
-Query_record_size = os.getenv("Query_Record_Size")
+# keep_alive_interval = os.getenv("keep_alive_interval")
+Query_Record_Size_Boolean = get_secret("Query_Record_Size_Boolean")
+Query_record_size = get_secret("Query_Record_Size")
 
 if Query_Record_Size_Boolean == "1":
     final_query_instruction = (
@@ -85,42 +85,46 @@ else:
 
 print("final_query_instruction",final_query_instruction)
 
-def run_keepalive_query(engine):
-    with engine.connect() as conn:
-        conn.execute(text("SELECT 1"))
-    logging.info("Keep-alive DB ping successful.")
+# def run_keepalive_query(engine):
+#     with engine.connect() as conn:
+#         conn.execute(text("SELECT 1"))
+#     logging.info("Keep-alive DB ping successful.")
 
-# --- The async keep-alive task ---
-async def keep_all_connections_alive(engine, pool_size, interval=keep_alive_interval):
-    logging.info("Keep-alive background task started.")
+# # --- The async keep-alive task ---
+# async def keep_all_connections_alive(engine, pool_size, interval=keep_alive_interval):
+#     logging.info("Keep-alive background task started.")
 
-    while True:
-        for _ in range(pool_size):
-            try:
-                logging.info(f"Pinging DB connection {_+1}/{pool_size}.")
-                await asyncio.to_thread(run_keepalive_query, engine)
-            except Exception as e:
-                logging.warning(f"Keep-alive ping failed: {e}")
-            await asyncio.sleep(1)  # Small pause between pings
-        await asyncio.sleep(interval)
+#     while True:
+#         for _ in range(pool_size):
+#             try:
+#                 logging.info(f"Pinging DB connection {_+1}/{pool_size}.")
+#                 await asyncio.to_thread(run_keepalive_query, engine)
+#             except Exception as e:
+#                 logging.warning(f"Keep-alive ping failed: {e}")
+#             await asyncio.sleep(1)  # Small pause between pings
+#         await asyncio.sleep(interval)
 # pool_size=int(SQL_POOL_SIZE)
 # max_overflow=int(SQL_MAX_OVERFLOW)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize credentials
+    # Replace the credentials_info dictionary in lifespan with:
     credentials_info = {
-        "type": os.getenv('GOOGLE_CREDENTIALS_TYPE'),
-        "project_id": os.getenv('GOOGLE_CREDENTIALS_PROJECT_ID'),
-        "private_key_id": os.getenv('GOOGLE_CREDENTIALS_PRIVATE_KEY_ID'),
+        "type": get_secret("GOOGLE_CREDENTIALS_TYPE"),
+        "project_id": get_secret("GOOGLE_CREDENTIALS_PROJECT_ID"),
+        "private_key_id": get_secret("GOOGLE_CREDENTIALS_PRIVATE_KEY_ID"),
         "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCraZCE2H2pE6uE\n7rgU6pKFpGilWEloN+NwUQOzHhTE8ehenKJ0lwqc8MpnTwseT861Qj80TojR1lfu\nLZP2ZlefuEUaZ48lncs/8vEzpntVGm9vazSU2ytG/o3yHpMUb/E1UDVKwVN1G60K\nHLvFJIvmB0v6IgWwvSzYtkjaIHX+Ny1BT1Ag2baKNEGtytU+Ph56CK4mxtAMpnFg\njZ0g+KYRLEDPLEJPoryhMEJXA1Dlf9vp8b8EVh3MZfoVmaA5wRYntDsQkukAIIpQ\nkII4V7GJaBnhpaNuyh57sj4HrpKKL9ZNULnNyjIWQhTyxxFRMFOpVDH1du7YgRPq\njyPPH1xvAgMBAAECggEACoGEN/8QAuhB8MNYltuZbiEQUuO+4TJLJ0c6K5vJBj1w\nkn/xCxObIrRaAlUbZ2siF3KtEy24NuqJnLYuARQ4TRPdb9TLNsNdnRi2BOHCz9Ld\nLOdn2kU2nedlfIcl6wv39jnpW2nO+1RL/kqaH+c6mm4sxk5PYR5Bbw4LYTBL/6bm\n2hPqyRB7cBfEXOc5+/vwvLD7zd3uHFYwSbmDwJMFS+rv8V2xiEhe+EDFBjbqXSpb\ncltjhKQgrMGteSJeSfei3fAq+K9rDu3akyAVt+gYP408AjEme/zOi7tqyGOBqPN1\nwnVzoj0GD8Nm4OAaRqJkftj9pev8XfD9yc48eJRMZQKBgQDTlmLvFxO+Mml3gN8U\n4Yw11zjczScTbuY5uqhWD+BlzFfSk1tdbAx5oQjJOc5WQXR7adgZ6A7pKs/QpQMA\n2ioCY0vOakhqS46SehhgoRj0Yj+6qZF9h438+XQlCCUxIBud7J0C7e/hZLNyvzeQ\ni4VtcMpgRAEK+vz10XyYYJETVQKBgQDPZGCFqthHhp4yr530bWElPxC9H+GJmqQH\n0VZeMQQ1+bXs3VQOv8jXFZpn/BVhhKfddjNDqVdCfJu7oanWmC9TnjGHdV6gxWIK\nfplmhKIoBerwZJFLPLj/wV4Sfdvf6Zv5sDQ5ow9jzd2oUNL49OV06W3N65ug8RBO\nMUoMFCN4swKBgQCBDouN1f+e1VTrJVnsfJ5vALWYSDH7cntO3wFqbQisTvWKZYMm\n+o6paYXYZz/p8MbBuA+tzZO6uPhFBUFNtcRF7JcCcmV1IFz4DyzrU5fLCFpi2qb5\ncEM0+FrVc6Br1G/D5dznOoZEbo3eAbA8pD1gQZnPGeug7PJ6ZaqfrtcOeQKBgDWa\ngSQrW0lpbvw0zgO+Payt1zq6wcWaNalbnxIrYyY8S5xUPISvZ07IY6dazX/uFKE2\nCtwDKe2iXXIqv8YagakAK1cSrAmr2sJRpH6N64eit+24YKFsqXhZV2I6K5l9PPZV\nZ7o5/iFStWbqtQzp52DHcL0Xl5sKk6dSMAxdLCnnAoGBAM3FswYDNsPd4kwflVNO\nL2DiOW94Dpqoc+Fo1gP0ifE/wpr7So08G6fcq2/tIvHacHGFHAll4OaAa3jC/DSK\nx6S+F6GqCOhjdc4oVfqthYOanW6WHIpCILSwVMy+HL33ijGwSElAzN/mbnCnP3HC\nBo54Ew2hgqlN8xwtbjUFMbYQ\n-----END PRIVATE KEY-----",
-        "client_email": os.getenv('GOOGLE_CREDENTIALS_CLIENT_EMAIL'),
-        "client_id": os.getenv('GOOGLE_CREDENTIALS_CLIENT_ID'),
+        "client_email": get_secret("GOOGLE_CREDENTIALS_CLIENT_EMAIL"),
+        "client_id": get_secret("GOOGLE_CREDENTIALS_CLIENT_ID"),
         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
         "token_uri": "https://oauth2.googleapis.com/token",
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": os.getenv('GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL'),
+        "client_x509_cert_url":  "https://www.googleapis.com/robot/v1/metadata/x509/lz-mahindra-service-account%40gen-ai-team-mahindra.iam.gserviceaccount.com",
         "universe_domain": "googleapis.com"
+,
     }
+
+
 
     credentials = service_account.Credentials.from_service_account_info(
         credentials_info,
@@ -217,8 +221,8 @@ app.add_middleware(LoggingMiddleware)
 # Set up static files and templates
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
-AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
-AZURE_CONTAINER_NAME = os.getenv('AZURE_CONTAINER_NAME')
+# AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+# AZURE_CONTAINER_NAME = os.getenv('AZURE_CONTAINER_NAME')
 
 
 app.state.limiter = limiter
@@ -269,10 +273,10 @@ from pydantic import BaseModel
 # OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 # openai_client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
-AZURE_OPENAI_API_KEY = os.environ.get('AZURE_OPENAI_API_KEY')
-AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
-AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION')
-AZURE_DEPLOYMENT_NAME = os.environ.get('AZURE_DEPLOYMENT_NAME')
+# AZURE_OPENAI_API_KEY = os.environ.get('AZURE_OPENAI_API_KEY')
+# AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
+# AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION')
+# AZURE_DEPLOYMENT_NAME = os.environ.get('AZURE_DEPLOYMENT_NAME')
 
 # Initialize the Azure OpenAI client
 openai_client = OpenAI(
@@ -613,7 +617,7 @@ async def transcribe_audio(file: UploadFile = File(...)):
     """
     try:
         # Check if API key is available
-        if not AZURE_OPENAI_API_KEY:
+        if not OPENAI_API_KEY:
             raise HTTPException(status_code=500, detail="Missing Azure OpenAI API Key.")
         
         # Read audio file

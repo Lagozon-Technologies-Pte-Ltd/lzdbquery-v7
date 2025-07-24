@@ -9,10 +9,10 @@ from pydantic import BaseModel, Field
 import platform
 
 
-AZURE_OPENAI_API_KEY = os.environ.get('AZURE_OPENAI_API_KEY')
-AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
-AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION', "2024-02-01")
-AZURE_DEPLOYMENT_NAME = os.environ.get('AZURE_DEPLOYMENT_NAME')
+# AZURE_OPENAI_API_KEY = os.environ.get('AZURE_OPENAI_API_KEY')
+# AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
+# AZURE_OPENAI_API_VERSION = os.environ.get('AZURE_OPENAI_API_VERSION', "2024-02-01")
+# AZURE_DEPLOYMENT_NAME = os.environ.get('AZURE_DEPLOYMENT_NAME')
 
 # llm = AzureChatOpenAI(
 #     openai_api_version=AZURE_OPENAI_API_VERSION,
