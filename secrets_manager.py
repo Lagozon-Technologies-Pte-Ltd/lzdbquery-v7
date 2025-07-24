@@ -14,6 +14,7 @@ def get_secret(project_id, secret_id, version_id="latest"):
         response = client.access_secret_version(request={"name": name})
         secret_payload = response.payload.data.decode("UTF-8")
         variables = json.loads(secret_payload)
+        print("secret variables: ", variables)
         return variables
     except Exception as e:
         print(f"Error retrieving or parsing secret {secret_id}: {e}")
