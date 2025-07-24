@@ -1,4 +1,4 @@
-import json
+import  json
 from google.cloud import secretmanager
 from typing import Optional
 
@@ -28,7 +28,7 @@ def get_secret(project_id, secret_id, version_id="latest"):
 project_id = "972862630305"
 secret_id = "lz-dbquery-secret"
 
-secret_variables = get_secret.get(project_id, secret_id)
+secret_variables = get_secret(project_id, secret_id)
 
 # if secret_variables:
 #     # Access individual variables from the dictionary
