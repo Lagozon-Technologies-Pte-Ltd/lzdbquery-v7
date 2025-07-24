@@ -2,8 +2,8 @@
    
 "PARTS_RUNNING_REPAIR": (
     "1. Use sv_ro_bill_hdr_sk to join MH_RO_HDR_DETAILS and MH_RO_PARTS.\n"
-    "2. Use MODL_CD to join MH_MODEL_MASTER and MH_RO_HDR_DETAILS to get MODL_CO, MODL_GROP_DESC, and FAMILY_DESC.\n"
-    "3. USE parnt_grop, loctn_cd AND prodct_divsn TO JOIN THE TABLES MH_AD_AI_DIMENSION AND MH_RO_HDR_DETAILS TO GET DEALER NAME, DEALER ZONE AND DEALER AREA OFFICE. Allowed Values for Dealer Zone are ['South Zone', 'North Zone', 'East Zone', 'West Zone']. Translate natural language queries into SQL using the allowed values (e.g., 'Show sales in the South Zone' is like WHERE zone_name = 'South Zone').\n"
+    "2. Use MODL_CD to join srv_mst_dim_model_master and MH_RO_HDR_DETAILS to get MODL_CO, MODL_GROP_DESC, and FAMILY_DESC.\n"
+    "3. USE parnt_grop, loctn_cd AND prodct_divsn TO JOIN THE TABLES ddp_ad_ai_final_dimension AND MH_RO_HDR_DETAILS TO GET DEALER NAME, DEALER ZONE AND DEALER AREA OFFICE. Allowed Values for Dealer Zone are ['South Zone', 'North Zone', 'East Zone', 'West Zone']. Translate natural language queries into SQL using the allowed values (e.g., 'Show sales in the South Zone' is like WHERE zone_name = 'South Zone').\n"
     "4. When querying from the MH_RO_HDR_DETAILS table, apply default filters to include records that match any of the following combinations of SERV_CATGRY_DESC and SERVICE_GROUP: ('Free Service', 'Mechanical'), ('Paid Service', 'Mechanical'), ('Repair', 'Mechanical'), ('Accessories', 'Accessories'), ('Bodyshop', 'Bodyshop'), ('Charging', 'Others'), ('En-Route', 'Pre-Sale/PDI'), ('Pre-Sale/PDI', 'Pre-Sale/PDI'). BUT, if the user explicitly specifies a service category (e.g., 'Repair', 'Accessories', or 'Pre-Sale/PDI'), then apply a strict filter that only includes records matching the specified category and its corresponding service group (e.g., 'Repair' → 'Mechanical', 'Accessories' → 'Accessories', 'Pre-Sale/PDI' → 'Pre-Sale/PDI'). Do not include other service categories in that case.\n"
 
     "5. In MH_RO_PARTS, always filter where lower(part_category_group) = lower('Spares') AND lower(part_desc) NOT LIKE lower('%filter%').\n"
@@ -25,8 +25,8 @@
 'LABOUR_RUNNING_REPAIR': (
     "Apply business rules:\n"
     "1. Always USE sv_ro_bill_hdr_sk COLUMN TO JOIN THE TABLES MH_RO_HDR_DETAILS AND MH_RO_LABOUR.\n"
-    "2. Always USE MODEL_CD COLUMN TO JOIN THE TABLES MH_MODEL_MASTER AND MH_RO_HDR_DETAILS TO GET MODEL_CO, MODL_GROP_DESC AND FAMILY_DESC INFORMATION.\n"
-    "3. Always USE parnt_grop, loctn_cd AND prodct_divsn TO JOIN THE TABLES MH_AD_AI_DIMENSION AND MH_RO_HDR_DETAILS TO GET DEALER NAME, DEALER ZONE AND DEALER AREA OFFICE.Allowed Values for Dealer Zone are ['South Zone', 'North Zone', 'East Zone', 'West Zone']. Translate natural language queries into SQL using the allowed values (e.g., 'Show sales in the South Zone' is like WHERE zone_name = 'South Zone').\n"
+    "2. Always USE MODEL_CD COLUMN TO JOIN THE TABLES srv_mst_dim_model_master AND MH_RO_HDR_DETAILS TO GET MODEL_CO, MODL_GROP_DESC AND FAMILY_DESC INFORMATION.\n"
+    "3. Always USE parnt_grop, loctn_cd AND prodct_divsn TO JOIN THE TABLES ddp_ad_ai_final_dimension AND MH_RO_HDR_DETAILS TO GET DEALER NAME, DEALER ZONE AND DEALER AREA OFFICE.Allowed Values for Dealer Zone are ['South Zone', 'North Zone', 'East Zone', 'West Zone']. Translate natural language queries into SQL using the allowed values (e.g., 'Show sales in the South Zone' is like WHERE zone_name = 'South Zone').\n"
     "4. When querying from the MH_RO_HDR_DETAILS table, apply default filters to include records that match any of the following combinations of SERV_CATGRY_DESC and SERVICE_GROUP: ('Free Service', 'Mechanical'), ('Paid Service', 'Mechanical'), ('Repair', 'Mechanical'), ('Accessories', 'Accessories'), ('Bodyshop', 'Bodyshop'), ('Charging', 'Others'), ('En-Route', 'Pre-Sale/PDI'), ('Pre-Sale/PDI', 'Pre-Sale/PDI'). BUT, if the user explicitly specifies a service category (e.g., 'Repair', 'Accessories', or 'Pre-Sale/PDI'), then apply a strict filter that only includes records matching the specified category and its corresponding service group (e.g., 'Repair' → 'Mechanical', 'Accessories' → 'Accessories', 'Pre-Sale/PDI' → 'Pre-Sale/PDI'). Do not include other service categories in that case.\n"
     "5. If user asked about  'OEM'(case insensitive), always filter MH_RO_LABOUR labour_type_name = 'OEM Defined' and in MH_RO_LABOUR, always ensure to apply filter where labour_group_name NOT LIKE '%Local%'.\n"
     "6. If the user query mentions 'Local'(case-insensitive, treating both as synonyms), strictly filter in MH_RO_LABOUR where labour_type_name is exactly 'Dealer Defined' .\n"   
@@ -46,8 +46,8 @@
 
 'PARTS_CODE_CONSUMPTION': (
     "1. USE sv_ro_bill_hdr_sk COLUMN TO JOIN THE TABLES MH_RO_HDR_DETAILS AND MH_RO_PARTS.\n"
-    "2. USE MODEL_CD COLUMN TO JOIN THE TABLES MH_MODEL_MASTER AND MH_RO_HDR_DETAILS TO GET MODEL_CO, MODL_GROP_DESC AND FAMILY_DESC INFORMATION.\n"
-    "3. USE parnt_grop, loctn_cd AND prodct_divsn TO JOIN THE TABLES MH_AD_AI_DIMENSION AND MH_RO_HDR_DETAILS TO GET DEALER NAME, DEALER ZONE AND DEALER AREA OFFICE.\n"
+    "2. USE MODEL_CD COLUMN TO JOIN THE TABLES srv_mst_dim_model_master AND MH_RO_HDR_DETAILS TO GET MODEL_CO, MODL_GROP_DESC AND FAMILY_DESC INFORMATION.\n"
+    "3. USE parnt_grop, loctn_cd AND prodct_divsn TO JOIN THE TABLES ddp_ad_ai_final_dimension AND MH_RO_HDR_DETAILS TO GET DEALER NAME, DEALER ZONE AND DEALER AREA OFFICE.\n"
     "4. When querying from the MH_RO_HDR_DETAILS table, apply default filters to include records that match any of the following combinations of SERV_CATGRY_DESC and SERVICE_GROUP: ('Free Service', 'Mechanical'), ('Paid Service', 'Mechanical'), ('Repair', 'Mechanical'), ('Accessories', 'Accessories'), ('Bodyshop', 'Bodyshop'), ('Charging', 'Others'), ('En-Route', 'Pre-Sale/PDI'), ('Pre-Sale/PDI', 'Pre-Sale/PDI'). BUT, if the user explicitly specifies a service category (e.g., 'Repair', 'Accessories', or 'Pre-Sale/PDI'), then apply a strict filter that only includes records matching the specified category and its corresponding service group (e.g., 'Repair' → 'Mechanical', 'Accessories' → 'Accessories', 'Pre-Sale/PDI' → 'Pre-Sale/PDI'). Do not include other service categories in that case.\n"
     "5. For OEM Parts, add filter: OEM Part Indicator = 'Y'.\n"
     "6. For Local Parts, add filter: OEM Part Indicator = 'N'.\n"
@@ -66,8 +66,8 @@
 'LABOUR_CODE_CONSUMPTION': (
     "Apply business rules:\n"
     "1. USE sv_ro_bill_hdr_sk COLUMN TO JOIN THE TABLES MH_RO_HDR_DETAILS AND MH_RO_LABOUR.\n"
-    "2. USE MODEL_CD COLUMN TO JOIN THE TABLES MH_MODEL_MASTER AND MH_RO_HDR_DETAILS TO GET MODEL_CO, MODL_GROP_DESC AND FAMILY_DESC INFORMATION.\n"
-    "3. USE parnt_grop, loctn_cd AND prodct_divsn TO JOIN THE TABLES MH_AD_AI_DIMENSION AND MH_RO_HDR_DETAILS TO GET DEALER NAME, DEALER ZONE AND DEALER AREA OFFICE.\n"
+    "2. USE MODEL_CD COLUMN TO JOIN THE TABLES srv_mst_dim_model_master AND MH_RO_HDR_DETAILS TO GET MODEL_CO, MODL_GROP_DESC AND FAMILY_DESC INFORMATION.\n"
+    "3. USE parnt_grop, loctn_cd AND prodct_divsn TO JOIN THE TABLES ddp_ad_ai_final_dimension AND MH_RO_HDR_DETAILS TO GET DEALER NAME, DEALER ZONE AND DEALER AREA OFFICE.\n"
     "4. When querying from the MH_RO_HDR_DETAILS table, apply default filters to include records that match any of the following combinations of SERV_CATGRY_DESC and SERVICE_GROUP: ('Free Service', 'Mechanical'), ('Paid Service', 'Mechanical'), ('Repair', 'Mechanical'), ('Accessories', 'Accessories'), ('Bodyshop', 'Bodyshop'), ('Charging', 'Others'), ('En-Route', 'Pre-Sale/PDI'), ('Pre-Sale/PDI', 'Pre-Sale/PDI'). BUT, if the user explicitly specifies a service category (e.g., 'Repair', 'Accessories', or 'Pre-Sale/PDI'), then apply a strict filter that only includes records matching the specified category and its corresponding service group (e.g., 'Repair' → 'Mechanical', 'Accessories' → 'Accessories', 'Pre-Sale/PDI' → 'Pre-Sale/PDI'). Do not include other service categories in that case.\n"
     "5. For OEM Labour, add filter: labour_type_name = 'OEM Defined' and exclude labour_group_name = 'Local'.\n"
     "6. For Local Labour, add filter: labour_type_name = 'Dealer Defined' and include labour_group_name = 'Local'.\n"
@@ -103,9 +103,9 @@
     "     '%SCHEDULE%', '%WASHING%','%WASHING & CLEANING%', '%MAXICARE%', '%WHEEL ALIGNMENT%', '%WHEEL BALANCE%', '%SERVICE ACTION%', '%10000%', '%1000%', '%5000%', '%KM%'.\n"
     "  - Use chained NOT LIKE conditions joined with AND to filter out generic or low-signal entries in demanded_verbatim. This ensures accurate exclusion of phrases like 'washing', 'schedule', 'maxicare', 'km', etc.\n"
 
-    "2. Use 'sv_ro_hdr_sk' to join MH_RO_HDR_DETAILS and MH_CUST_VERBATIM.\n"
-    "3. USE parnt_grop, loctn_cd AND prodct_divsn TO JOIN THE TABLES MH_AD_AI_DIMENSION AND MH_RO_HDR_DETAILS TO GET DEALER NAME, DEALER ZONE AND DEALER AREA OFFICE. Allowed Values for Dealer Zone are [ \"South Zone\", \"North Zone\", \"East Zone\", \"West Zone\"] . Translate natural language queries into SQL using the allowed values (e.g., \"Show sales in the South Zone\" is like WHERE zone_name = 'South Zone') \n"
-    "4. Use 'parnt_grop', 'loctn_cd', and 'prodct_divsn' to join MH_AD_AI_DIMENSION and MH_RO_HDR_DETAILS to get Dealer Name, Dealer Zone, and Dealer Area Office; allowed Dealer Zone values are ['South Zone', 'North Zone', 'East Zone', 'West Zone']; translate queries like 'Show sales in the South Zone' to WHERE zone_name = 'South Zone'.\n"
+    "2. Use 'sv_ro_hdr_sk' to join MH_RO_HDR_DETAILS and verbatim_cmm_aruna.\n"
+    "3. USE parnt_grop, loctn_cd AND prodct_divsn TO JOIN THE TABLES ddp_ad_ai_final_dimension AND MH_RO_HDR_DETAILS TO GET DEALER NAME, DEALER ZONE AND DEALER AREA OFFICE. Allowed Values for Dealer Zone are [ \"South Zone\", \"North Zone\", \"East Zone\", \"West Zone\"] . Translate natural language queries into SQL using the allowed values (e.g., \"Show sales in the South Zone\" is like WHERE zone_name = 'South Zone') \n"
+    "4. Use 'parnt_grop', 'loctn_cd', and 'prodct_divsn' to join ddp_ad_ai_final_dimension and MH_RO_HDR_DETAILS to get Dealer Name, Dealer Zone, and Dealer Area Office; allowed Dealer Zone values are ['South Zone', 'North Zone', 'East Zone', 'West Zone']; translate queries like 'Show sales in the South Zone' to WHERE zone_name = 'South Zone'.\n"
     "5. Use 'demanded_verbatim' as the text input for Word Cloud generation.\n"
     "6. Exclude 'demanded_verbatim' values containing keywords like '%SCHEDULE%', '%WASHING%', '%MAXICARE%', '%WHEEL ALIGNMENT%', '%WHEEL BALANCE%', '%SERVICE ACTION%', '%10000%', '%1000%', '%5000%', '%KM%'.\n"
     "7. Use 'part_code' for part quantity count and 'partAmount' for part value calculations.\n"
@@ -121,11 +121,11 @@
 'COUNT_OF_REPEAT_REPAIRS': (
     "Apply business rules:\n"
 
-    "1. USE 'sv_ro_hdr_sk' COLUMN TO JOIN THE TABLES MH_RO_HDR_DETAILS AND MH_CUST_VERBATIM.\n",
+    "1. USE 'sv_ro_hdr_sk' COLUMN TO JOIN THE TABLES MH_RO_HDR_DETAILS AND verbatim_cmm_aruna.\n",
     "2. USE 'sv_ro_bill_hdr_sk' COLUMN TO JOIN THE TABLES MH_RO_HDR_DETAILS AND MH_RO_PARTS.\n",
     "3. USE 'sv_ro_bill_hdr_sk' COLUMN TO JOIN THE TABLES MH_RO_HDR_DETAILS AND MH_RO_LABOUR.\n",
-    "4. USE MODEL_CD COLUMN TO JOIN THE TABLES MH_MODEL_MASTER AND MH_RO_HDR_DETAILS TO GET MODEL_CO, MODL_GROP_DESC AND FAMILY_DESC INFORMATION.\n",
-    "5. USE parnt_grop, loctn_cd AND prodct_divsn TO JOIN THE TABLES MH_AD_AI_DIMENSION AND MH_RO_HDR_DETAILS TO GET DEALER NAME, DEALER ZONE AND DEALER AREA OFFICE.Allowed Values for Dealer Zone are ['South Zone', 'North Zone', 'East Zone', 'West Zone']. Translate natural language queries into SQL using the allowed values (e.g., 'Show sales in the South Zone' is like WHERE zone_name = 'South Zone').\n",
+    "4. USE MODEL_CD COLUMN TO JOIN THE TABLES srv_mst_dim_model_master AND MH_RO_HDR_DETAILS TO GET MODEL_CO, MODL_GROP_DESC AND FAMILY_DESC INFORMATION.\n",
+    "5. USE parnt_grop, loctn_cd AND prodct_divsn TO JOIN THE TABLES ddp_ad_ai_final_dimension AND MH_RO_HDR_DETAILS TO GET DEALER NAME, DEALER ZONE AND DEALER AREA OFFICE.Allowed Values for Dealer Zone are ['South Zone', 'North Zone', 'East Zone', 'West Zone']. Translate natural language queries into SQL using the allowed values (e.g., 'Show sales in the South Zone' is like WHERE zone_name = 'South Zone').\n",
     "6. When querying from the MH_RO_HDR_DETAILS table, apply default filters to include records that match any of the following combinations of SERV_CATGRY_DESC and SERVICE_GROUP: ('Free Service', 'Mechanical'), ('Paid Service', 'Mechanical'), ('Repair', 'Mechanical'), ('Accessories', 'Accessories'), ('Bodyshop', 'Bodyshop'), ('Charging', 'Others'), ('En-Route', 'Pre-Sale/PDI'), ('Pre-Sale/PDI', 'Pre-Sale/PDI'). BUT, if the user explicitly specifies a service category (e.g., 'Repair', 'Accessories', or 'Pre-Sale/PDI'), then apply a strict filter that only includes records matching the specified category and its corresponding service group (e.g., 'Repair' → 'Mechanical', 'Accessories' → 'Accessories', 'Pre-Sale/PDI' → 'Pre-Sale/PDI'). Do not include other service categories in that case.\n"
     "7. For 'Count of Repeat Repairs', add filter: repeat_repair_flag = 'Y'.\n",  
     "8. For 'Count of Repeat Repairs', use commonly sounding Customer VoC 'demanded_verbatim' or same part 'part_code' or same labour 'LABR_CD'.\n",

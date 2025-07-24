@@ -1,3 +1,27 @@
+
+GOOGLE_CREDENTIALS_CLIENT_EMAIL = "mdp-ad-gld-dev-talkto-dta-view@mdp-ad-gld-dta-dev-133464.iam.gserviceaccount.com"
+GOOGLE_CREDENTIALS_CLIENT_ID = "114267503023593270821"
+GOOGLE_CREDENTIALS_PRIVATE_KEY_ID = "7154fbcccc0e1dc495fa475dc991964df27cebbb"
+GOOGLE_CREDENTIALS_PROJECT_ID = "mdp-ad-gld-dta-dev-133464"
+GOOGLE_CREDENTIALS_TYPE = "service_account"
+GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL = https://www.googleapis.com/robot/v1/metadata/x509/mdp-ad-gld-dev-talkto-dta-view%40mdp-ad-gld-dta-dev-133464.iam.gserviceaccount.com,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 [
   {
     "name": "adv_db_database",
@@ -103,7 +127,7 @@
   },
   {
     "name": "db_tables",
-    "value": "[\"mh_ad_ai_dimension\",\"mh_model_master\",\"mh_ro_hdr_details\",\"mh_ro_parts\",\"mh_ro_labour\", \"mh_cust_verbatim\"]",
+    "value": "[\"ddp_ad_ai_final_dimension\",\"mh_model_master\",\"mh_ro_hdr_details\",\"mh_ro_parts\",\"mh_ro_labour\", \"verbatim_cmm_aruna\"]",
     "slotSetting": false
   },
   {

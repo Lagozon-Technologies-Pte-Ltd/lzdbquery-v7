@@ -21,21 +21,21 @@
           "description": "Not all repair orders have parts records."
         },
         {
-          "table": "MH_CUST_VERBATIM",
+          "table": "verbatim_cmm_aruna",
           "on": "SV_RO_HDR_SK",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
           "description": "Not all repair orders have customer feedback."
         },
         {
-          "table": "MH_MODEL_MASTER",
+          "table": "srv_mst_dim_model_master",
           "on": "MODL_CD",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
           "description": "Some repair orders may not have a matching model master."
         },
         {
-          "table": "MH_AD_AI_DIMENSION",
+          "table": "ddp_ad_ai_final_dimension",
           "on": "PARNT_GROP LOCTN_CD prodct_divsn",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
@@ -79,7 +79,7 @@
     }
   },
   {
-    "id": " MH_CUST_VERBATIM",
+    "id": "verbatim_cmm_aruna",
     "document": "Customer Verbatim: Customer feedback for repair orders. Use LEFT OUTER JOIN from repair order header, as not every order has feedback.",
     "metadata": {
       "type": "table",
@@ -96,7 +96,7 @@
     }
   },
   {
-    "id": " MH_MODEL_MASTER",
+    "id": "srv_mst_dim_model_master",
     "document": "Vehicle Model Master: Details about vehicle models. Use LEFT OUTER JOIN from repair order header, as not every order has a model code.",
     "metadata": {
       "type": "table",
@@ -113,7 +113,7 @@
     }
   },
   {
-    "id": " MH_AD_AI_DIMENSION",
+    "id": "ddp_ad_ai_final_dimension",
     "document": "Dealer & Sales Hierarchy: Dealer and sales hierarchy data. Use LEFT OUTER JOIN from repair order header, as not every order has a location code.",
     "metadata": {
       "type": "table",
