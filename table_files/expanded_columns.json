@@ -2257,7 +2257,7 @@
     ]
   },
   {
-    "column_name": "MH_RO_HDR_DETAILS.RO_GT_72",
+    "column_name": "MH_RO_HDR_DETAILS.RO>72",
     "column_desc": "RO Greater Than 72 Hours: Indicates if repair order duration exceeded 72 hours. It stores the value of column sv_ro_hdr_sk for repair order duration exceeding 72 hours else it stores 0.It is not a BOOLEAN field.",
     "metadata": {
       "type": "column",
@@ -2273,7 +2273,7 @@
     ]
   },
   {
-    "column_name": "MH_RO_HDR_DETAILS.RO_LT_ET_72",
+    "column_name": "MH_RO_HDR_DETAILS.RO<=72",
     "column_desc": "RO Less Than or Equal To 72 Hours: Indicates if repair order duration was 72 hours or less.It stores the value of column sv_ro_hdr_sk for repair order duration IS equal to less Than 72 hours else it stores 0.It is not a BOOLEAN field.",
     "metadata": {
       "type": "column",
@@ -2289,7 +2289,7 @@
     ]
   },
   {
-    "column_name": "MH_RO_HDR_DETAILS.RO_LT_ET_48",
+    "column_name": "MH_RO_HDR_DETAILS.RO<=48",
     "column_desc": "RO Less Than or Equal To 48 Hours: Indicates if repair order duration was 48 hours or less.It stores the value of column sv_ro_hdr_sk for repair order duration IS equal to less Than 48 hours else it stores 0.It is not a BOOLEAN field.",
     "metadata": {
       "type": "column",
@@ -2305,7 +2305,7 @@
     ]
   },
   {
-    "column_name": "MH_RO_HDR_DETAILS.RO_LT_ET_24",
+    "column_name": "MH_RO_HDR_DETAILS.RO<=24",
     "column_desc": "RO Less Than or Equal To 24 Hours: Indicates if repair order duration was 24 hours or less.It stores the value of column sv_ro_hdr_sk for repair order duration IS equal to less Than 24 hours else it stores 0.It is not a BOOLEAN field.",
     "metadata": {
       "type": "column",
