@@ -826,8 +826,8 @@ document.querySelectorAll('.copy-btn-popup').forEach(button => {
             const text = targetEl.textContent.trim();
             if (text && text !== "No SQL query available") {
                 navigator.clipboard.writeText(text)
-                    .then(() => alert('Copied to clipboard!'))
-                    .catch(err => console.error('Failed to copy:', err));
+                    
+                    
             }
         }
     });
