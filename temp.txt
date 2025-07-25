@@ -7,6 +7,328 @@ GOOGLE_CREDENTIALS_TYPE = "service_account"
 GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL = https://www.googleapis.com/robot/v1/metadata/x509/mdp-ad-gld-dev-talkto-dta-view%40mdp-ad-gld-dta-dev-133464.iam.gserviceaccount.com,
 
 
+Table_metadata_Big_Query
+
+MH_RO_HDR_DETAILS
+--------------------
+column_name	data_type	is_nullable
+RO_CANCL_DATE	DATE	YES
+SPOT_CARE_APPL_FL	STRING	YES
+VEHCL_TOE_IND	STRING	YES
+VIN	STRING	YES
+RO_DATE	DATE	YES
+RO_DATETIME	TIMESTAMP	YES
+BILL_DATE	DATE	YES
+BILL_DATETIME	TIMESTAMP	YES
+RO_CLOSED_DATE	DATE	YES
+RO_STATS	STRING	YES
+ODMTR_REDNG	NUMERIC	YES
+SV_APNTMNT_HDR_SK	NUMERIC	YES
+RO_BILL_DATE	DATE	YES
+CANCL_DATE	DATE	YES
+SV_RO_HDR_SK	NUMERIC	YES
+PARNT_GROP	STRING	YES
+LOCTN_CD	STRING	YES
+RO_ID	STRING	YES
+PARTS_TOTL_AMNT	NUMERIC	YES
+LABR_TOTL_AMNT	NUMERIC	YES
+DOC_AMNT	NUMERIC	YES
+PARTS_BASC_AMNT	NUMERIC	YES
+LABR_BASC_AMNT	NUMERIC	YES
+SA_EMPLY_NAME	STRING	YES
+PROMSD_DELVRY_DATE	TIMESTAMP	YES
+REVSD_PROMSD_DELVRY_DATE	TIMESTAMP	YES
+REVST_IND	STRING	YES
+MODL_CD	STRING	YES
+SV_RO_BILL_HDR_SK	NUMERIC	YES
+ONLNE_PAYMNT_FLG	STRING	YES
+SEGMNT_CD	STRING	YES
+EXPRS_SERVC_IND	STRING	YES
+CHAS_NUMBR	STRING	YES
+KEY_ACNT_SEGMNT	STRING	YES
+GOVT_VEHCL	STRING	YES
+COLR_CD	STRING	YES
+OEM_MODL_CD	STRING	YES
+PRODCT_DIVSN	STRING	YES
+PART_CHARG_AMNT	NUMERIC	YES
+LABR_CHARG_AMNT	NUMERIC	YES
+SDD_FLAG	NUMERIC	YES
+RO>72	NUMERIC	YES
+RO<=72	NUMERIC	YES
+RO<=48	NUMERIC	YES
+RO<=24	NUMERIC	YES
+RO_CLOSE_DIFF	INT64	YES
+TEA_FLAG	NUMERIC	YES
+CEA_FLAG	NUMERIC	YES
+FLAG_MTRAQ	INT64	YES
+M1_M2_M3_M4	STRING	YES
+KEY	STRING	YES
+RO_KEY	STRING	YES
+KEY_EMP	STRING	YES
+KEY_BAY	STRING	YES
+RO_Day_Closed	INT64	YES
+ORGNL_WARNTY_START_DATE	DATE	YES
+RSA_REGSTRTN_STATS	STRING	YES
+MAX_TO_DAYS_FRM_DOS	NUMERIC	YES
+Arrived date for Eligibility	DATE	YES
+RSA Registartion Flag	STRING	YES
+RSA_EXPRY_DATE	DATE	YES
+Eligible_Vehicle_Flag	STRING	YES
+ORGNL_WARNTY_EXPRY_DATE	DATE	YES
+ORGNL_WARNTY_EXPRY_KM	NUMERIC	YES
+Warranty_Flag	STRING	YES
+VALID_TO	DATE	YES
+Shield_validity_Flag	STRING	YES
+SCHEME_EXP_DATE	DATE	YES
+Shield_Registration_Flag	STRING	YES
+MRP	NUMERIC	YES
+NDP	NUMERIC	YES
+PART_QTY	NUMERIC	YES
+Ageing_Bucket	INT64	YES
+BROUGHT_BY_NAME	STRING	YES
+VEHICLE_BROUGHT_BY	STRING	YES
+SA_FEEDBCK_STATS	STRING	YES
+ACCESORIES_FLAG	INT64	YES
+DIV_KEY	STRING	YES
+REG_NUMBR	STRING	YES
+RO_REMRKS	STRING	YES
+BAY_ACTV_IND	STRING	YES
+APPL_TO	STRING	YES
+WARRANTY_AGEING_RO	INT64	YES
+WARRANTY_AGEING_TDAY	INT64	YES
+SERVC_TYPE_DESC	STRING	YES
+SERV_CATGRY_DESC	STRING	YES
+MODL_COLR_KEY	STRING	YES
+ro_source_name	STRING	YES
+service_type_name	STRING	YES
+repair_order_same_day_delay_reason	STRING	YES
+estimation_variation_reason	STRING	YES
+repair_order_cancel_reason	STRING	YES
+repair_order_delay_reason	STRING	YES
+pendency_reason	STRING	YES
+time_revision_approval_reason	STRING	YES
+cost_revision_approval_reason	STRING	YES
+pickup_type_name	STRING	YES
+drop_type_name	STRING	YES
+ro_doc_type_name	STRING	YES
+bill_type_name	STRING	YES
+service_campaign_type_name	STRING	YES
+tech_employee_name	STRING	YES
+product_division_name	STRING	YES
+taxi_indicator	STRING	YES
+bay_type_name	STRING	YES
+revist_flag	STRING	YES
+repeat_repair_flag	STRING	YES
+service_group	STRING	YES
+---------------------------
+
+MH_RO_LABOUR
+-----------------------------
+
+column_name	data_type	is_nullable
+sv_ro_hdr_sk	NUMERIC	YES
+sv_ro_bill_hdr_sk	NUMERIC	YES
+sv_ro_bill_labr_dtl_sk	NUMERIC	YES
+standrd_hrs	NUMERIC	YES
+sv_labr_mst_sk	NUMERIC	YES
+labr_desc	STRING	YES
+labr_tax	NUMERIC	YES
+labrAmount	NUMERIC	YES
+labr_rate	NUMERIC	YES
+labr_charg_hrs	NUMERIC	YES
+labr_discnt_amnt	NUMERIC	YES
+labr_totl_amnt	NUMERIC	YES
+totalBillAmount	NUMERIC	YES
+labour_billable_type_name	STRING	YES
+labour_type_name	STRING	YES
+labour_group_name	STRING	YES
+labr_code	STRING	YES
+
+-----------------------------------------
+
+MH_RO_PARTS
+-----------------------------------------
+column_name	data_type	is_nullable
+sv_ro_hdr_sk	NUMERIC	YES
+sv_ro_bill_hdr_sk	NUMERIC	YES
+sv_ro_bill_part_dtl_sk	NUMERIC	YES
+part_code	STRING	YES
+part_desc	STRING	YES
+part_quantity	NUMERIC	YES
+part_rate	NUMERIC	YES
+partAmount	NUMERIC	YES
+part_tax	NUMERIC	YES
+part_discnt_amnt	NUMERIC	YES
+part_totl_amnt	NUMERIC	YES
+oem_part_ind	STRING	YES
+abc_ind	STRING	YES
+hml_ind	STRING	YES
+landed_cost	NUMERIC	YES
+ris_ind	STRING	YES
+purchs_pric	NUMERIC	YES
+selng_pric	NUMERIC	YES
+mrp	NUMERIC	YES
+hsn	STRING	YES
+net_delr_pric	NUMERIC	YES
+discnt_rate	NUMERIC	YES
+gndp	NUMERIC	YES
+ndp	NUMERIC	YES
+bill_share	NUMERIC	YES
+totalBillAmount	NUMERIC	YES
+part_category_description	STRING	YES
+part_billable_type_name	STRING	YES
+discount_type_name	STRING	YES
+product_division_name	STRING	YES
+part_type_name	STRING	YES
+part_category_group	STRING	YES
+common_part_category	STRING	YES
+category1	STRING	YES
+--------------------------------------
+
+ddp_ad_ai_final_dimension
+--------------------------------------
+
+column_name	data_type	is_nullable
+delr_name_srv	STRING	YES
+delr_email_sal	STRING	YES
+delr_mobl_sal	STRING	YES
+delr_name_sal	STRING	YES
+zonl_head_srv	STRING	YES
+vp_srv	STRING	YES
+vp_sal	STRING	YES
+delr_actv_ind	STRING	YES
+sals_orgnztn	STRING	YES
+prodct_divsn	STRING	YES
+compny_name	STRING	YES
+compny_cd	STRING	YES
+city_cd	STRING	YES
+batch_pickd_flag	STRING	YES
+batch_pickd_date	TIMESTAMP	YES
+area_ofce	STRING	YES
+actv_ind	STRING	YES
+acc_loctn_ind	STRING	YES
+longtitude	NUMERIC	YES
+lattitude	NUMERIC	YES
+dp_mob_no	NUMERIC	YES
+dp_land_no	NUMERIC	YES
+dp_land_code	STRING	YES
+dp_email_id	STRING	YES
+me_ccm	STRING	YES
+me_asm	STRING	YES
+delr_serv_email	STRING	YES
+delr_serv_contct	STRING	YES
+delr_sals_email	STRING	YES
+delr_sals_contct	STRING	YES
+escaltd_cccf	STRING	YES
+onlin_bookng	STRING	YES
+delr_disply_ind	STRING	YES
+disply_city	STRING	YES
+distrbtn_chanl2	STRING	YES
+distrbtn_chanl1	STRING	YES
+ro_type	STRING	YES
+csp	STRING	YES
+ssp	STRING	YES
+loctn_catgry	STRING	YES
+alt_de_loctn_cd	STRING	YES
+co_ccm	STRING	YES
+update_flag	STRING	YES
+dy_rsm	STRING	YES
+dy_rccm	STRING	YES
+last_updt_date	TIMESTAMP	YES
+pric_city_cd	STRING	YES
+ea_zm_srv	STRING	YES
+ea_zm_sal	STRING	YES
+payr_cd	STRING	YES
+delr_email_srv	STRING	YES
+delr_mobl_srv	STRING	YES
+modfd_date	TIMESTAMP	YES
+modfd_by	STRING	YES
+cretd_date	TIMESTAMP	YES
+cretd_by	STRING	YES
+zonl_head	STRING	YES
+zone	STRING	YES
+unldng_pont	STRING	YES
+stat_cd	STRING	YES
+srv_loctn_ind	STRING	YES
+srv_engnr	STRING	YES
+sprs_loctn_ind	STRING	YES
+sale_loctn_ind	STRING	YES
+sal_ofcr	STRING	YES
+rsm	STRING	YES
+regn_cd	STRING	YES
+rccm	STRING	YES
+parnt_grop	STRING	YES
+ordrng_spr_loctn	STRING	YES
+ordrng_sal_loctn	STRING	YES
+loctn_pin_cd	STRING	YES
+loctn_name	STRING	YES
+loctn_cd	STRING	YES
+loctn_adrs	STRING	YES
+loclty	STRING	YES
+distrbtn_chanl	STRING	YES
+deltd_date	TIMESTAMP	YES
+delr_type	STRING	YES
+delr_tin	STRING	YES
+delr_tan	STRING	YES
+delr_name	STRING	YES
+delr_cst_numbr	STRING	YES
+delr_cd	STRING	YES
+rn	INT64	YES
+area_name	STRING	YES
+zone_name	STRING	YES
+asm_name	STRING	YES
+ccm_name	STRING	YES
+rsm_name	STRING	YES
+rccm_name	STRING	YES
+zonal_head_sales	STRING	YES
+zonal_head_cc	STRING	YES
+mdp_created_dt	TIMESTAMP	YES
+mdp_job_id	STRING	YES
+mdp_business_date	DATE	YES
+
+----------------------------------------
+
+ddp_dim_srv_mst_model_master
+----------------------------------------
+column_name	data_type	is_nullable
+modl_cd	STRING	YES
+modl_desc	STRING	YES
+modl_grop_cd	STRING	YES
+varnt_cd	STRING	YES
+seat_capcty	STRING	YES
+modl_invc_desc	STRING	YES
+famly_cd	STRING	YES
+colr_cd	STRING	YES
+prodct_divsn	STRING	YES
+batch	STRING	YES
+oem_modl_cd	STRING	YES
+sal_modl_grop	STRING	YES
+modl_grop_ordr_by	NUMERIC	YES
+segmnt_cd	STRING	YES
+varnt_desc	STRING	YES
+famly_desc	STRING	YES
+actv_ind	STRING	YES
+modl_grop_desc	STRING	YES
+fuel_type	STRING	YES
+emission	STRING	YES
+driv	STRING	YES
+trim_levl	STRING	YES
+transmission	STRING	YES
+mdp_created_dt	TIMESTAMP	YES
+mdp_job_id	STRING	YES
+mdp_business_date	DATE	YES
+--------------------------------------
+verbatim_cmm_aruna
+--------------------------------------
+column_name	data_type	is_nullable
+ro_number	STRING	YES
+sv_ro_hdr_sk	NUMERIC	YES
+demanded_verbatim	STRING	YES
+verbatim_group	STRING	YES
+verbatim_code	STRING	YES
+cust_verbtm_desc	STRING	YES
+verbatim_group_desc	STRING	YES
+--------------------------------------
 
 
 
