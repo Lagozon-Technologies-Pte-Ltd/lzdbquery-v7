@@ -6,7 +6,7 @@
 {final_query_instruction}
 Example:
   {{  "User message": "Find the top 5 models with the highest seat capacity.",
-  "query": "SELECT `MM`.`MODL_DESC` AS `MODEL_DESCRIPTION`, `MM`.`SEAT_CAPCTY` AS `SEAT_CAPACITY` FROM `MH_MODEL_MASTER` AS `MM` ORDER BY `MM`.`SEAT_CAPCTY` DESC, `MM`.`MODL_DESC` ASC LIMIT 5"}}
+  "query": "SELECT `MM`.`MODL_DESC` AS `MODEL_DESCRIPTION`, `MM`.`SEAT_CAPCTY` AS `SEAT_CAPACITY` FROM `srv_mst_dim_model_master` AS `MM` ORDER BY `MM`.`SEAT_CAPCTY` DESC, `MM`.`MODL_DESC` ASC LIMIT 5"}}
 
 {Business_Glossary}    
 
@@ -223,8 +223,8 @@ Example 2:
 input: Show the number of ROs per dealer for the month of Jan'25
 query:
 
-"description": "This SQL query retrieves the count of repair orders per dealer from the tables MH_RO_HDR_DETAILS (aliased as ROHDR) and MH_AD_AI_DIMENSION (aliased as AD). It performs an inner join between ROHDR and AD using the columns LOCTN_CD, PARNT_GROP, and PRODCT_DIVSN. The selected columns are AD.DELR_NAME as DEALER_NAME and the count of ROHDR.RO_ID as REPAIR_ORDER_COUNT. The query filters records where ROHDR.RO_DATE is between '2025-01-01' and '2025-01-31'. The results are grouped by AD.DELR_NAME and ordered in descending order by REPAIR_ORDER_COUNT",
-"query": "SELECT `AD`.`DELR_NAME` AS `DEALER_NAME`, COUNT(`ROHDR`.`RO_ID`) AS `REPAIR_ORDER_COUNT` FROM `MH_RO_HDR_DETAILS` AS `ROHDR` INNER JOIN `MH_AD_AI_DIMENSION` AS `AD` ON `ROHDR`.`LOCTN_CD` = `AD`.`LOCTN_CD` AND `ROHDR`.`PARNT_GROP` = `AD`.`PARNT_GROP` AND `ROHDR`.`PRODCT_DIVSN` = `AD`.`PRODCT_DIVSN` WHERE `ROHDR`.`RO_DATE` BETWEEN '2025-01-01' AND '2025-01-31' GROUP BY `AD`.`DELR_NAME` ORDER BY `REPAIR_ORDER_COUNT` DESC;",
+"description": "This SQL query retrieves the count of repair orders per dealer from the tables MH_RO_HDR_DETAILS (aliased as ROHDR) and ddp_ad_ai_final_dimension (aliased as AD). It performs an inner join between ROHDR and AD using the columns LOCTN_CD, PARNT_GROP, and PRODCT_DIVSN. The selected columns are AD.DELR_NAME as DEALER_NAME and the count of ROHDR.RO_ID as REPAIR_ORDER_COUNT. The query filters records where ROHDR.RO_DATE is between '2025-01-01' and '2025-01-31'. The results are grouped by AD.DELR_NAME and ordered in descending order by REPAIR_ORDER_COUNT",
+"query": "SELECT `AD`.`DELR_NAME` AS `DEALER_NAME`, COUNT(`ROHDR`.`RO_ID`) AS `REPAIR_ORDER_COUNT` FROM `MH_RO_HDR_DETAILS` AS `ROHDR` INNER JOIN `ddp_ad_ai_final_dimension` AS `AD` ON `ROHDR`.`LOCTN_CD` = `AD`.`LOCTN_CD` AND `ROHDR`.`PARNT_GROP` = `AD`.`PARNT_GROP` AND `ROHDR`.`PRODCT_DIVSN` = `AD`.`PRODCT_DIVSN` WHERE `ROHDR`.`RO_DATE` BETWEEN '2025-01-01' AND '2025-01-31' GROUP BY `AD`.`DELR_NAME` ORDER BY `REPAIR_ORDER_COUNT` DESC;",
 "error": null
 
 Important 

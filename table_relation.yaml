@@ -1,13 +1,13 @@
 RELATIONSHIPS:
 
-  - left_table: MH_MODEL_MASTER
+  - left_table: srv_mst_dim_model_master
     left_columns: [MODL_CD]
     right_table: MH_RO_HDR_DETAILS
     right_columns: [MODL_CD]
     cardinality: OneToMany
     description: Model Master to Repair Order or RO Header Details
 
-  - left_table: MH_AD_AI_DIMENSION
+  - left_table: ddp_ad_ai_final_dimension
     left_columns: [PARNT_GROP, LOCTN_CD, PRODCT_DIVSN]
     right_table: MH_RO_HDR_DETAILS
     right_columns: [PARNT_GROP, LOCTN_CD, PRODCT_DIVSN]
@@ -30,7 +30,7 @@ RELATIONSHIPS:
 
   - left_table: MH_RO_HDR_DETAILS
     left_columns: [SV_RO_HDR_SK]
-    right_table: MH_CUST_VERBATIM
+    right_table: verbatim_cmm_aruna
     right_columns: [SV_RO_HDR_SK]
     cardinality: OneToMany
     description: Repair Order or RO Header to Customer Verbatim

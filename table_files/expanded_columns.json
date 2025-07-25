@@ -1,10 +1,10 @@
 [
   {
-    "column_name": "MH_MODEL_MASTER.MODL_CD",
-    "column_desc": "Model Code: Primary key for MH_MODEL_MASTER. Uniquely identifies a vehicle model. Used to join with MH_RO_HDR_DETAILS.",
+    "column_name": "srv_mst_dim_model_master.MODL_CD",
+    "column_desc": "Model Code: Primary key for srv_mst_dim_model_master. Uniquely identifies a vehicle model. Used to join with MH_RO_HDR_DETAILS.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": true,
@@ -23,11 +23,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.MODL_DESC",
+    "column_name": "srv_mst_dim_model_master.MODL_DESC",
     "column_desc": "Model Description: Text description of the vehicle model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -39,11 +39,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.MODL_GROP_CD",
+    "column_name": "srv_mst_dim_model_master.MODL_GROP_CD",
     "column_desc": "Model Group Code: Code representing the group to which the model belongs.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -55,11 +55,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.VARNT_CD",
+    "column_name": "srv_mst_dim_model_master.VARNT_CD",
     "column_desc": "Variant Code: Code identifying the variant of the vehicle model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -71,11 +71,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.SEAT_CAPCTY",
+    "column_name": "srv_mst_dim_model_master.SEAT_CAPCTY",
     "column_desc": "Seat Capacity: Number of seats in the vehicle model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "INTEGER",
       "nullable": true,
       "is_primary_key": false,
@@ -87,11 +87,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.MODL_INVC_DESC",
+    "column_name": "srv_mst_dim_model_master.MODL_INVC_DESC",
     "column_desc": "Model Invoice Description: Description used for invoicing this model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -103,11 +103,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.FAMLY_CD",
+    "column_name": "srv_mst_dim_model_master.FAMLY_CD",
     "column_desc": "Family Code: Code representing the family grouping of the model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -119,11 +119,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.COLR_CD",
+    "column_name": "srv_mst_dim_model_master.COLR_CD",
     "column_desc": "Color Code: Code representing the color of the vehicle model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -135,11 +135,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.PRODCT_DIVSN",
+    "column_name": "srv_mst_dim_model_master.PRODCT_DIVSN",
     "column_desc": "Product Division: Name or code of the product division for this model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -151,11 +151,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.BATCH",
+    "column_name": "srv_mst_dim_model_master.BATCH",
     "column_desc": "Batch: Batch identifier for the vehicle model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -167,11 +167,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.OEM_MODL_CD",
+    "column_name": "srv_mst_dim_model_master.OEM_MODL_CD",
     "column_desc": "OEM Model Code: Code assigned by the OEM for this model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -183,11 +183,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.SAL_MODL_GROP",
+    "column_name": "srv_mst_dim_model_master.SAL_MODL_GROP",
     "column_desc": "Sales Model Group: Grouping used for sales categorization.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -199,11 +199,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.MODL_GROP_ORDR_BY",
+    "column_name": "srv_mst_dim_model_master.MODL_GROP_ORDR_BY",
     "column_desc": "Model Group Order By: Integer for ordering within the model group.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "INTEGER",
       "nullable": true,
       "is_primary_key": false,
@@ -215,11 +215,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.SEGMNT_CD",
+    "column_name": "srv_mst_dim_model_master.SEGMNT_CD",
     "column_desc": "Segment Code: Code representing the segment of the vehicle model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -231,11 +231,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.VARNT_DESC",
+    "column_name": "srv_mst_dim_model_master.VARNT_DESC",
     "column_desc": "Variant Description: Description of the vehicle variant.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -247,11 +247,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.FAMLY_DESC",
+    "column_name": "srv_mst_dim_model_master.FAMLY_DESC",
     "column_desc": "Family Description: Description of the model family.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -263,11 +263,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.ACTV_IND",
+    "column_name": "srv_mst_dim_model_master.ACTV_IND",
     "column_desc": "Active Indicator: Indicates if the model is active.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -279,11 +279,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.MODL_GROP_DESC",
+    "column_name": "srv_mst_dim_model_master.MODL_GROP_DESC",
     "column_desc": "Model Group Description: Description of the model group.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -295,11 +295,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.FUEL_TYPE",
+    "column_name": "srv_mst_dim_model_master.FUEL_TYPE",
     "column_desc": "Fuel Type: Type of fuel used by the vehicle model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -311,11 +311,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.EMISSION",
+    "column_name": "srv_mst_dim_model_master.EMISSION",
     "column_desc": "Emission: Emission standard or value for the vehicle model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -327,11 +327,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.DRIV",
+    "column_name": "srv_mst_dim_model_master.DRIV",
     "column_desc": "Drive: Drive type of the vehicle model (e.g., FWD, RWD).",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -343,11 +343,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.TRIM_LEVL",
+    "column_name": "srv_mst_dim_model_master.TRIM_LEVL",
     "column_desc": "Trim Level: Trim level of the vehicle model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -359,11 +359,11 @@
     ]
   },
   {
-    "column_name": "MH_MODEL_MASTER.TRANSMISSION",
+    "column_name": "srv_mst_dim_model_master.TRANSMISSION",
     "column_desc": "Transmission: Transmission type of the vehicle model.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_MODEL_MASTER",
+      "table_name": "srv_mst_dim_model_master",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -375,11 +375,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.DELR_NAME",
+    "column_name": "ddp_ad_ai_final_dimension.DELR_NAME",
     "column_desc": "Dealer Name: Name of the dealer in the sales and service hierarchy.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -391,11 +391,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.PRODCT_DIVSN",
+    "column_name": "ddp_ad_ai_final_dimension.PRODCT_DIVSN",
     "column_desc": "Product Division: Product division code or name associated with the dealer.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -407,11 +407,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.ACTV_IND",
+    "column_name": "ddp_ad_ai_final_dimension.ACTV_IND",
     "column_desc": "Active Indicator: Indicates whether the dealer is active.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -423,11 +423,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.PARNT_GROP",
+    "column_name": "ddp_ad_ai_final_dimension.PARNT_GROP",
     "column_desc": "Parent Group Code: Code representing the parent group of the dealer.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -439,11 +439,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.LOCTN_NAME",
+    "column_name": "ddp_ad_ai_final_dimension.LOCTN_NAME",
     "column_desc": "Location Name: Name of the dealer's location.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -455,11 +455,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.LOCTN_CD",
+    "column_name": "ddp_ad_ai_final_dimension.LOCTN_CD",
     "column_desc": "Location Code: Code representing the dealer's location. Used to join with MH_RO_HDR_DETAILS.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -478,11 +478,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.DELR_CD",
-    "column_desc": "Dealer Code: Primary key for MH_AD_AI_DIMENSION. Uniquely identifies a dealer.",
+    "column_name": "ddp_ad_ai_final_dimension.DELR_CD",
+    "column_desc": "Dealer Code: Primary key for ddp_ad_ai_final_dimension. Uniquely identifies a dealer.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": true,
@@ -494,11 +494,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.AREA_NAME",
+    "column_name": "ddp_ad_ai_final_dimension.AREA_NAME",
     "column_desc": "Area Name: Name of the sales area for the dealer.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -510,11 +510,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.ZONE_NAME",
+    "column_name": "ddp_ad_ai_final_dimension.ZONE_NAME",
     "column_desc": "Zone Name: Name of the sales zone for the dealer.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -526,11 +526,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.ASM_NAME",
+    "column_name": "ddp_ad_ai_final_dimension.ASM_NAME",
     "column_desc": "ASM Name: Area Sales Manager's name associated with the dealer.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -542,11 +542,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.CCM_NAME",
+    "column_name": "ddp_ad_ai_final_dimension.CCM_NAME",
     "column_desc": "CCM Name: Customer Care Manager's name associated with the dealer.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -558,11 +558,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.RSM_NAME",
+    "column_name": "ddp_ad_ai_final_dimension.RSM_NAME",
     "column_desc": "RSM Name: Regional Sales Manager's name associated with the dealer.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -574,11 +574,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.RCCM_NAME",
+    "column_name": "ddp_ad_ai_final_dimension.RCCM_NAME",
     "column_desc": "RCCM Name: Regional Customer Care Manager's name associated with the dealer.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -590,11 +590,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.ZONAL_HEAD_SALES",
+    "column_name": "ddp_ad_ai_final_dimension.ZONAL_HEAD_SALES",
     "column_desc": "Zonal Head Sales: Name of the zonal head for sales.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -606,11 +606,11 @@
     ]
   },
   {
-    "column_name": "MH_AD_AI_DIMENSION.ZONAL_HEAD_CC",
+    "column_name": "ddp_ad_ai_final_dimension.ZONAL_HEAD_CC",
     "column_desc": "Zonal Head Customer Care: Name of the zonal head for customer care.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_AD_AI_DIMENSION",
+      "table_name": "ddp_ad_ai_final_dimension",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -622,11 +622,11 @@
     ]
   },
   {
-    "column_name": "MH_CUST_VERBATIM.RO_NUMBER",
+    "column_name": "verbatim_cmm_aruna.RO_NUMBER",
     "column_desc": "RO Number: Repair Order number associated with the customer feedback verbatim.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_CUST_VERBATIM",
+      "table_name": "verbatim_cmm_aruna",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -638,11 +638,11 @@
     ]
   },
   {
-    "column_name": "MH_CUST_VERBATIM.SV_RO_HDR_SK",
+    "column_name": "verbatim_cmm_aruna.SV_RO_HDR_SK",
     "column_desc": "Service RO Header SK: Foreign key to MH_RO_HDR_DETAILS. Links customer feedback to repair order headers.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_CUST_VERBATIM",
+      "table_name": "verbatim_cmm_aruna",
       "data_type": "INTEGER",
       "nullable": true,
       "is_primary_key": true,
@@ -661,11 +661,11 @@
     ]
   },
   {
-    "column_name": "MH_CUST_VERBATIM.DEMANDED_VERBATIM",
+    "column_name": "verbatim_cmm_aruna.DEMANDED_VERBATIM",
     "column_desc": "Demanded Verbatim: Text of the specific issue or request stated by the customer.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_CUST_VERBATIM",
+      "table_name": "verbatim_cmm_aruna",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -677,11 +677,11 @@
     ]
   },
   {
-    "column_name": "MH_CUST_VERBATIM.VERBATIM_GROUP",
+    "column_name": "verbatim_cmm_aruna.VERBATIM_GROUP",
     "column_desc": "Verbatim Group: Code representing the group/category of the verbatim issue.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_CUST_VERBATIM",
+      "table_name": "verbatim_cmm_aruna",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -693,11 +693,11 @@
     ]
   },
   {
-    "column_name": "MH_CUST_VERBATIM.VERBATIM_CODE",
+    "column_name": "verbatim_cmm_aruna.VERBATIM_CODE",
     "column_desc": "Verbatim Code: Code identifying the specific type of customer issue.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_CUST_VERBATIM",
+      "table_name": "verbatim_cmm_aruna",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -709,11 +709,11 @@
     ]
   },
   {
-    "column_name": "MH_CUST_VERBATIM.CUST_VERBTM_DESC",
+    "column_name": "verbatim_cmm_aruna.CUST_VERBTM_DESC",
     "column_desc": "Customer Verbatim Description: Detailed description of the customer's issue or request.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_CUST_VERBATIM",
+      "table_name": "verbatim_cmm_aruna",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -725,11 +725,11 @@
     ]
   },
   {
-    "column_name": "MH_CUST_VERBATIM.VERBATIM_GROUP_DESC",
+    "column_name": "verbatim_cmm_aruna.VERBATIM_GROUP_DESC",
     "column_desc": "Verbatim Group Description: Description of the verbatim group/category.",
     "metadata": {
       "type": "column",
-      "table_name": "MH_CUST_VERBATIM",
+      "table_name": "verbatim_cmm_aruna",
       "data_type": "STRING",
       "nullable": true,
       "is_primary_key": false,
@@ -1795,7 +1795,7 @@
   },
   {
     "column_name": "MH_RO_HDR_DETAILS.SV_RO_HDR_SK",
-    "column_desc": "Service RO Header SK: Primary key for MH_RO_HDR_DETAILS to identify any Repair Order or RO or RO_ID. This is related to RO_ID column on one to one basis.Used to join with MH_CUST_VERBATIM TABLE.",
+    "column_desc": "Service RO Header SK: Primary key for MH_RO_HDR_DETAILS to identify any Repair Order or RO or RO_ID. This is related to RO_ID column on one to one basis.Used to join with verbatim_cmm_aruna TABLE.",
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
@@ -1805,7 +1805,7 @@
       "is_foreign_key": false,
       "joins": [
         {
-          "table": "MH_CUST_VERBATIM",
+          "table": "verbatim_cmm_aruna",
           "on": "sv_ro_hdr_sk",
           "join_type": "LEFT OUTER JOIN"
         }
@@ -1834,7 +1834,7 @@
   },
   {
     "column_name": "MH_RO_HDR_DETAILS.LOCTN_CD",
-    "column_desc": "Location Code: References dealer/location in MH_AD_AI_DIMENSION. Used for joining repair orders to dealer and sales hierarchy.",
+    "column_desc": "Location Code: References dealer/location in ddp_ad_ai_final_dimension. Used for joining repair orders to dealer and sales hierarchy.",
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
@@ -1844,7 +1844,7 @@
       "is_foreign_key": true,
       "joins": [
         {
-          "table": "MH_AD_AI_DIMENSION",
+          "table": "ddp_ad_ai_final_dimension",
           "on": "LOCTN_CD",
           "join_type": "LEFT OUTER JOIN"
         }
@@ -2017,7 +2017,7 @@
   },
   {
     "column_name": "MH_RO_HDR_DETAILS.MODL_CD",
-    "column_desc": "Model Code: Foreign key to MH_MODEL_MASTER. Used for joining repair orders to vehicle model master data.",
+    "column_desc": "Model Code: Foreign key to srv_mst_dim_model_master. Used for joining repair orders to vehicle model master data.",
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
@@ -2027,7 +2027,7 @@
       "is_foreign_key": true,
       "joins": [
         {
-          "table": "MH_MODEL_MASTER",
+          "table": "srv_mst_dim_model_master",
           "on": "MODL_CD",
           "join_type": "LEFT OUTER JOIN"
         }

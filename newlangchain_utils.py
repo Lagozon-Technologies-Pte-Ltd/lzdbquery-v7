@@ -446,7 +446,7 @@ def get_chain(question, selected_database, table_details, selected_business_rule
     # execute_query = CustomQuerySQLDatabaseTool(db=db)
     
     # chain = (
-    #     RunnablePassthrough.assign(table_names_to_use=lambda _: ["MH_RO_HDR_DETAILS", "MH_RO_PARTS", "MH_CUST_VERBATIM", "MH_MODEL_MASTER", "MH_AD_AI_DIMENSION", "MH_RO_LABOUR"]) |
+    #     RunnablePassthrough.assign(table_names_to_use=lambda _: ["MH_RO_HDR_DETAILS", "MH_RO_PARTS", "verbatim_cmm_aruna", "srv_mst_dim_model_master", "ddp_ad_ai_final_dimension", "MH_RO_LABOUR"]) |
     #     RunnablePassthrough.assign(query=generate_query).assign(
     #         result=itemgetter("query")
     #     )
