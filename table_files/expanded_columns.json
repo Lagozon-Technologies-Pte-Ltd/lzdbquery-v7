@@ -76,7 +76,7 @@
     "metadata": {
       "type": "column",
       "table_name": "srv_mst_dim_model_master",
-      "data_type": "INTEGER",
+      "data_type": "String",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -204,7 +204,7 @@
     "metadata": {
       "type": "column",
       "table_name": "srv_mst_dim_model_master",
-      "data_type": "INTEGER",
+      "data_type": "Numeric",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -643,7 +643,7 @@
     "metadata": {
       "type": "column",
       "table_name": "verbatim_cmm_aruna",
-      "data_type": "INTEGER",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": true,
       "is_foreign_key": true,
@@ -769,7 +769,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_LABOUR",
-      "data_type": "INTEGER",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -785,7 +785,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_LABOUR",
-      "data_type": "INTEGER",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": true,
       "is_foreign_key": false
@@ -817,7 +817,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_LABOUR",
-      "data_type": "INTEGER",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -1024,7 +1024,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_PARTS",
-      "data_type": "INTEGER",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": true,
@@ -1063,7 +1063,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_PARTS",
-      "data_type": "INTEGER",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": true,
       "is_foreign_key": false
@@ -1735,7 +1735,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "INTEGER",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -1751,7 +1751,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "INTEGER",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -1799,7 +1799,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "INTEGER",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false,
@@ -1973,7 +1973,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "DATE",
+      "data_type": "TIMESTAMP",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -1989,7 +1989,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "DATE",
+      "data_type": "TIMESTAMP",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -2044,7 +2044,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "INTEGER",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false,
@@ -2246,7 +2246,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "STRING",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -2326,7 +2326,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "INTEGER",
+      "data_type": "INT64",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -2342,7 +2342,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "STRING",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -2358,7 +2358,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "STRING",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -2374,7 +2374,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "STRING",
+      "data_type": "INT64",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -2467,7 +2467,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "INTEGER",
+      "data_type": "INT64",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -2514,7 +2514,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "INTEGER",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -2525,7 +2525,7 @@
     ]
   },
   {
-    "column_name": "MH_RO_HDR_DETAILS.ARRIVED_DATE_FOR_ELIGIBILITY",
+    "column_name": "MH_RO_HDR_DETAILS.Arrived date for Eligibility",
     "column_desc": "Arrived Date for Eligibility: Date when the vehicle arrived for eligibility assessment.",
     "metadata": {
       "type": "column",
@@ -2541,7 +2541,7 @@
     ]
   },
   {
-    "column_name": "MH_RO_HDR_DETAILS.RSA_REGISTARTION_FLAG",
+    "column_name": "MH_RO_HDR_DETAILS.RSA Registartion Flag",
     "column_desc": "RSA Registration Flag: Indicates if RSA registration is flagged for the repair order.",
     "metadata": {
       "type": "column",
@@ -2610,7 +2610,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "INTEGER",
+      "data_type": "NUMERIC",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -2754,7 +2754,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "NUMERIC",
+      "data_type": "INT64",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -2914,7 +2914,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "INTEGER",
+      "data_type": "INT64",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
@@ -2930,7 +2930,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "INTEGER",
+      "data_type": "INT64",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
