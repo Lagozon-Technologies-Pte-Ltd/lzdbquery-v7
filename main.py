@@ -21,6 +21,7 @@ from starlette.middleware.sessions import SessionMiddleware  # Correct import
 from azure.storage.blob import BlobServiceClient
 from starlette.middleware.base import BaseHTTPMiddleware
 import logging, time
+from decimal import Decimal
 
 # import automotive_wordcloud_analysis as awa
 import  asyncio
@@ -301,6 +302,8 @@ def convert_dates(obj):
         return [convert_dates(item) for item in obj]
     elif isinstance(obj, (datetime.date, datetime.datetime)):
         return obj.isoformat()
+    elif isinstance(obj, Decimal):
+        return float(obj)  # Convert Decimal to float for JSON serialization
     else:
         return obj
 class Table(BaseModel):
