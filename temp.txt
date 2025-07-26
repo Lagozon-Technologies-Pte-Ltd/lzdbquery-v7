@@ -1,3 +1,36 @@
+logger.info(f"AI query description: {description}")
+        logger.info(f"AI-generated SQL: {sql_statement}")
+
+        if database == "GCP":
+            # Proactively log client and credentials info for debugging
+            logger.info("BigQuery client info: %s, credentials: %s", db, getattr(db, "_credentials", None))
+            logger.info("About to execute BigQuery SQL: %s", sql_statement)
+            # BigQuery Python client is synchronous; run in thread if heavy (for async).
+            rows = db.query(sql_statement).result()
+            logger.info("BigQuery ran and returned rows.")
+            result_json = [dict(row) for row in rows]
+            logger.info(f"BigQuery Results (sample): {result_json[:3]}")
+            df = pd.DataFrame(result_json)
+            return {
+                "description": description,
+                "sql": sql_statement,
+                "table": df.to_dict(orient="records"),
+            }
+        else:
+            logger.warning("Selected database not GCP; skipping execution.")
+            return {"error": "Unsupported database"}
+
+    except Exception as e:
+        logger.error("Error in submit_query: %s\n%s", e, traceback.format_exc())
+        return {"error": "Query execution failed", "details": str(e)}
+
+    except BaseException as e:
+        logger.critical("Fatal error: %s", e)
+        return {"error": "Unexpected fatal error", "details": str(e)}
+
+
+
+
 
 GOOGLE_CREDENTIALS_CLIENT_EMAIL = "mdp-ad-gld-dev-talkto-dta-view@mdp-ad-gld-dta-dev-133464.iam.gserviceaccount.com"
 GOOGLE_CREDENTIALS_CLIENT_ID = "114267503023593270821"
