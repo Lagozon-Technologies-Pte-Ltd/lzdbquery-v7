@@ -1,21 +1,22 @@
-logger.info(f"AI query description: {description}")
-        logger.info(f"AI-generated SQL: {sql_statement}")
-
-        if database == "GCP":
+# Rama adding
+        logger.info(f"AI query description: {description}")
+        logger.info(f"AI-generated SQL: {SQL_Statement}")
+        tables_data = {}
+        query = SQL_Statement
+        logger.info(f"submit query --> invoke_chain: Begin Executing SQL Query: {query}")
+        if selected_database == "GCP":
             # Proactively log client and credentials info for debugging
             logger.info("BigQuery client info: %s, credentials: %s", db, getattr(db, "_credentials", None))
-            logger.info("About to execute BigQuery SQL: %s", sql_statement)
+            logger.info("About to execute BigQuery SQL: %s", query)
             # BigQuery Python client is synchronous; run in thread if heavy (for async).
-            rows = db.query(sql_statement).result()
+            rows = db.query(query).result()
             logger.info("BigQuery ran and returned rows.")
             result_json = [dict(row) for row in rows]
             logger.info(f"BigQuery Results (sample): {result_json[:3]}")
             df = pd.DataFrame(result_json)
-            return {
-                "description": description,
-                "sql": sql_statement,
-                "table": df.to_dict(orient="records"),
-            }
+            tables_data["Table data"] = df
+            logger.info(f"submit query --> invoke_chain : After query execution success.")
+            return response, db_tables, tables_data, final_prompt ,description
         else:
             logger.warning("Selected database not GCP; skipping execution.")
             return {"error": "Unsupported database"}
@@ -28,6 +29,31 @@ logger.info(f"AI query description: {description}")
         logger.critical("Fatal error: %s", e)
         return {"error": "Unexpected fatal error", "details": str(e)}
 
+        # Rama finish
+        # Rama commented start
+        # print("This is our description", description)
+
+        # SQL_Statement = SQL_Statement.replace("SQL Query:", "").strip()
+
+        # response = chain.invoke({
+        #     "question": question,
+        #     "top_k": 1,
+        #     "messages": history.messages,
+        #     "table_details": table_info
+        # })
+        # print("Question:", question)
+        # print("Response:", json_output)
+
+        # tables_data = {}
+        # query = SQL_Statement
+        # print(f"submit query --> invoke_chain: Executing SQL Query: {query}")
+        # if selected_database == "GCP":
+        #     rows = db.query(query).result()
+        #     result_json = [dict(row) for row in rows]
+        #     logger.info(f"submit query --> invoke_chain : result after executing : \n{result_json}")
+        #     df = pd.DataFrame(result_json)
+        #     tables_data["Table data"] = df
+        # Rama commented finish
 
 
 
