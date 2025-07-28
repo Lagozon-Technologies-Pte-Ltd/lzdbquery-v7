@@ -6,9 +6,13 @@ def get_llm(request: Request):
 def get_embeddings(request: Request):
     return request.app.state.schema_collection
 
-def get_bq_client(request: Request):
-    """Dependency to provide the BigQuery client"""
-    return request.app.state.bq_client
+def get_db(request: Request):
+    SessionLocal = request.app.state.SessionLocal
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 # def get_db(request: Request):
 #     SessionLocal = request.app.state.SessionLocal

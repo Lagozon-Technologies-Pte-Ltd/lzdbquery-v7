@@ -36,10 +36,11 @@ from logger_config import configure_logging, log_execution_time
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
+from sqlalchemy import create_engine
 
 # from sqlalchemy import create_engine
-# from sqlalchemy.orm import sessionmaker, Session
-from dependencies import  get_bq_client
+from sqlalchemy.orm import sessionmaker, Session
+from dependencies import  get_db
 from contextlib import asynccontextmanager
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -51,7 +52,8 @@ DEFAULT_RATE_LIMIT = os.getenv("DEFAULT_RATE_LIMIT", "100/minute")
 SENSITIVE_RATE_LIMIT = os.getenv("SENSITIVE_RATE_LIMIT", "11/minute") 
 HEALTH_CHECK_LIMIT = os.getenv("HEALTH_CHECK_LIMIT", "10/second")
 FILE_UPLOAD_LIMIT = os.getenv("FILE_UPLOAD_LIMIT", "5/minute")
-
+SQL_POOL_SIZE=os.getenv("SQL_POOL_SIZE")
+SQL_MAX_OVERFLOW=os.getenv("SQL_MAX_OVERFLOW")
 # import redis
 configure_logging()
 # Create main application logger
@@ -109,39 +111,28 @@ async def keep_all_connections_alive(engine, pool_size, interval=keep_alive_inte
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize credentials
-    credentials_info = {
-        "type": os.getenv('GOOGLE_CREDENTIALS_TYPE'),
-        "project_id": os.getenv('GOOGLE_CREDENTIALS_PROJECT_ID'),
-        "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCb4SAdl5MMn2LH\n5LUJkdIKYZOtFtZCbgZB+5KvLHrm6T1tdnCAkFIhYZhlRVHcJQcQMJ9oh1KnTrKI\notk02B3DQCTtr2eJ0E3fh+8f44Kd5dSFfjmnD0YFEn3nNyLvxOuepTHyYHsGDxEe\nGQaL1AnlsbDgYt/hACSKYaX4d2s6QUb9U82WY/a92h/M5MlFIJZETSkE2LIHHQah\ntiMN8vpIhj+vOAmg5MukFrRr3NRv3xYhDjivxv7bggVaZ0l3eoAriszsZkvMmPtt\nTLq4gSj4ZkoMs5yjkctDqyskv9VT65DA4D4NV4gs8r5lqorH3+K2J817BKhW7aMm\nx1nVjnenAgMBAAECggEAQ5b1Nv+fWmzOB0DrIvAgtDGlN/tcAkf03K156A0QaYmf\nAhTGKWjqw+CulNLe8Ob5ThLXPBrZQwSDs21xY1GGbkAlAw74hTBWY+NsU1ZyL4cV\nhKC73O1pfg+LmjM1KeQoCo00wBUHoxPrZzKQvRa/B+LpgBI/Yy+NqJc4wSj+zK4N\n/v74ylZDtFQadM2AXTGY/rWLE4gUwjUxuadEPRipAph6LVQVXnk55YJg+M2mEarJ\nzo6PzdG70ydkbm9vEmlRMLArnLSTzzLi3tI4putQSeKCMf5yAz5MIAmxkBuVHP8H\nTpU7NhQ/tR51vtB++gdJLVtjKrRvCyqeAJmakikPSQKBgQDPZZxuoM8u5HzuH0lt\nB6a7nXwOKemg2AV/yw5IKuUZIJE8er3FYvpPKERRQf+UrEPO8tXeo4WI51ZHZVbt\nk0WnOPBVUUbngwKxFe2YYbaVZzYlYiyaDtdzwHqUocm7VU9SG5p8ppuMqg9gSRuK\nUMMCmSNcK+UEf2hFzfnYtbGCCwKBgQDAaNE8n9hPN6RImNw4rTO/LB9iI+u9hIND\nI7mhUXBKHTJBcqKehZ6qcHyFbAS8PkwWXkvTRj+ywSTIM6O1pXwCvStqE3WCnNtu\ndbP7lRYz2RaYBuNCT663odbIrHsobieY8XaRAPobu2g88Geivj45SNuJ1sMWQ875\nH4wLssMeVQKBgQDFWkCoePeN/Ljw8u6xBJXhdDOnWrTJbKaW+4eEnuTQq0/pCDdr\nDAt6pauU00O8mswPsr5XFK2uH8zXNZSpj/m47ZKs7SGWjfFSx7YGyfyvYL6ChlBA\n7RySNjevFeFcFQrc7A1uzi+4g98L1aWSUdWvtD+UpuRQClkUC7PTRto6DwKBgQCH\nwWzf+WgFfJzNHA1Fb+8y007RT8bk0LpMhMhUqcEwiakLxHY4os5wMy2oda5hoxLM\nNXwKdWY8GUp6dvTrFPeKdy5KibA/l6y7IxD6URZ5PpJScYmnH9GGfwmsTQYYYKBP\nqQ6fALF3H6NMW9LDYLdGc8FyX7UF4JIH89o75sUEgQKBgFkJcEbeHqFLrTQzpnXN\niZFaa+hkXFf/asBSx2boG8HTcPrexodk52CqewkA904lIMwk8jgIfuoHDrEyoziq\nLKjyQ/qR/U5CP10VNAC5ocrGVKDcG+lIt+LkfwywnB3kddn4Q5j6psjy73oVY9GI\nO08uuzQLim/KEH99o14ENg6M\n-----END PRIVATE KEY-----\n",
-        "client_email": os.getenv('GOOGLE_CREDENTIALS_CLIENT_EMAIL'),
-        "client_id": os.getenv('GOOGLE_CREDENTIALS_CLIENT_ID'),
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://oauth2.googleapis.com/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": os.getenv('GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL'),
-        "universe_domain": "googleapis.com"
-    }
+    engine = create_engine(
+      
 
-    credentials = service_account.Credentials.from_service_account_info(
-        credentials_info,
-        scopes=["https://www.googleapis.com/auth/bigquery"]
+        SQL_DATABASE_URL,
+        pool_size=int(SQL_POOL_SIZE),
+        max_overflow=int(SQL_MAX_OVERFLOW),
+        echo=False,
+        pool_recycle=1200,  # Recycle every 20 minutes
+        pool_pre_ping=True  # Validate connection before using
     )
+    app.state.engine = engine
+    app.state.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
     # Initialize BigQuery client with explicit project
-    app.state.bq_client = bigquery.Client(
-    credentials=credentials,
-    project=credentials.project_id,
-    default_query_job_config=bigquery.QueryJobConfig(
-        default_dataset="mdp-ad-gld-dta-dev-133464.mdp_ad_gld_bqd_services_non_oh"
-    )
-)
+    
     
     # Set default dataset reference
     try:
         yield
     finally:
         # No explicit cleanup needed for BigQuery client
-        pass
+        engine.dispose()
     # Azure OpenAI LLM
     # app.state.azure_openai_client = AzureOpenAI(
     #     azure_deployment=os.environ["AZURE_DEPLOYMENT_NAME"],
@@ -290,7 +281,7 @@ azure_openai_client = AzureOpenAI(
 #     api_key=AZURE_OPENAI_API_KEY,
 # )
 
-databases = ["GCP"]
+databases = ["Azure SQL"]
 # question_dropdown = os.getenv('Question_dropdown')
 
 import datetime
@@ -857,7 +848,7 @@ async def submit_query(
     page: int = Query(1),
     records_per_page: int = Query(10),
     model: Optional[str] = Form(AZURE_DEPLOYMENT_NAME),
-    db: bigquery.Client = Depends(get_bq_client),
+    db: Session = Depends(get_db),
 
 ):
     logger.info(f"Endpoint:  /submit request with query: {user_query}, section: {section}, database: {database}")

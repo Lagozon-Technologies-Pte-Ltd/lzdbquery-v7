@@ -118,19 +118,19 @@ from operator import itemgetter
 db_tables =  json.loads(os.getenv("db_tables"))
 
 
-# SQL_DB_SERVER = os.getenv("SQL_DB_SERVER")
-# SQL_DB_PORT = os.getenv("SQL_DB_PORT")
-# SQL_DB_NAME = os.getenv("SQL_DB_NAME")
-# SQL_DB_USER = os.getenv("SQL_DB_USER")
-# SQL_DB_PASSWORD = os.getenv("SQL_DB_PASSWORD")
-# SQL_DB_DRIVER = os.getenv("SQL_DB_DRIVER").replace(" ", "+")  # URL encode spaces
-# SQL_POOL_SIZE = int(os.getenv("SQL_POOL_SIZE", 5))
-# SQL_MAX_OVERFLOW = int(os.getenv("SQL_MAX_OVERFLOW", 10))
+SQL_DB_SERVER = os.getenv("SQL_DB_SERVER")
+SQL_DB_PORT = os.getenv("SQL_DB_PORT")
+SQL_DB_NAME = os.getenv("SQL_DB_NAME")
+SQL_DB_USER = os.getenv("SQL_DB_USER")
+SQL_DB_PASSWORD = os.getenv("SQL_DB_PASSWORD")
+SQL_DB_DRIVER = os.getenv("SQL_DB_DRIVER").replace(" ", "+")  # URL encode spaces
+SQL_POOL_SIZE = int(os.getenv("SQL_POOL_SIZE", 5))
+SQL_MAX_OVERFLOW = int(os.getenv("SQL_MAX_OVERFLOW", 10))
 
-# SQL_DATABASE_URL = (
-#     f"mssql+pyodbc://{SQL_DB_USER}:{SQL_DB_PASSWORD}@{SQL_DB_SERVER}:{SQL_DB_PORT}/{SQL_DB_NAME}"
-#     f"?driver={SQL_DB_DRIVER}&Connection+Timeout=120"
-# )
+SQL_DATABASE_URL = (
+    f"mssql+pyodbc://{SQL_DB_USER}:{SQL_DB_PASSWORD}@{SQL_DB_SERVER}:{SQL_DB_PORT}/{SQL_DB_NAME}"
+    f"?driver={SQL_DB_DRIVER}&Connection+Timeout=120"
+)
 
 
 # from sqlalchemy.exc import SQLAlchemyError
@@ -329,11 +329,11 @@ def create_bigquery_uri(project_id, dataset_id):
 
 def get_chain(question, selected_database, table_details, selected_business_rule,question_type,relationships, examples,final_query_instruction):
     print(" final_query_instruction  inside the get chain" ,  final_query_instruction)
-    if selected_database == 'GCP':
-        prompt_file = "Generic_GCP_prompt.txt" if question_type == "generic" else "GCP_prompt.txt"
-    elif selected_database == 'PostgreSQL-Azure':
-        prompt_file = "Generic_postgres_prompt.txt" if question_type == "generic" else "Postgres_prompt.txt"
-    elif selected_database == 'Azure SQL':
+    # if selected_database == 'GCP':
+    #     prompt_file = "Generic_GCP_prompt.txt" if question_type == "generic" else "GCP_prompt.txt"
+    # elif selected_database == 'PostgreSQL-Azure':
+    #     prompt_file = "Generic_postgres_prompt.txt" if question_type == "generic" else "Postgres_prompt.txt"
+    if selected_database == 'Azure SQL':
         print("prompt for azure is loaded!!")
         prompt_file = "Generic_azure_prompt.txt" if question_type == "generic" else "Azure_prompt.txt"
     
@@ -488,12 +488,12 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
         tables_data = {}
         query = SQL_Statement
         print(f"submit query --> invoke_chain: Executing SQL Query: {query}")
-        if selected_database == "GCP":
-            rows = db.query(query).result()
-            result_json = [dict(row) for row in rows]
-            logger.info(f"submit query --> invoke_chain : result after executing : \n{result_json}")
-            df = pd.DataFrame(result_json)
-            tables_data["Table data"] = df
+        # if selected_database == "GCP":
+        #     rows = db.query(query).result()
+        #     result_json = [dict(row) for row in rows]
+        #     logger.info(f"submit query --> invoke_chain : result after executing : \n{result_json}")
+        #     df = pd.DataFrame(result_json)
+        #     tables_data["Table data"] = df
             # break
         # elif selected_database == "PostgreSQL-Azure":
         #     alchemyEngine = create_engine(f'postgresql+psycopg2://{quote_plus(db_user)}:{quote_plus(db_password)}@{db_host}:{db_port}/{db_database}')
@@ -501,30 +501,27 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
         #         df = pd.read_sql(sql=query, con=conn.connection)
         #     tables_data[table] = df
         #     print(table)
-        #     break 
-        # if selected_database == "Azure SQL":
-        #     # db = get_sql_db()
+            # break 
+        if selected_database == "Azure SQL":
+            # db = get_sql_db()
 
-        #     result = db.query(query)
-        #     logger.info(f"submit query --> invoke_chain : result after executing : \n{result}")
-        #     try:
-        #         rows = result.fetchall()
-        #         columns = result.keys()
-        #         df = pd.DataFrame(rows, columns=columns)
-        #         tables_data["Table data"] = df
-        #     except Exception as e:
-        #         logger.error(f"submit query --> invoke_chain : table data has some issues.{e}")
+            result = db.execute(query)
+            logger.info(f"submit query --> invoke_chain : result after executing \n{query} : \n{result}")
+            try:
+                rows = result.fetchall()
+                columns = result.keys()
+                df = pd.DataFrame(rows, columns=columns)
+                tables_data["Table data"] = df
+            except Exception as e:
+                logger.error(f"submit query --> invoke_chain : table data has some issues.{e}")
         # Include SQL_Statement in the return tuple
-        return response, db_tables, tables_data, final_prompt ,description
-
-
+        return json_output, db_tables, tables_data, final_prompt,description
 
     except Exception as e:
         print("submit query --> invoke_chain :", e)
         # Return whatever response was generated, or None if none was generated
         # Also return SQL_Statement and final_prompt if available
-        return response, [], {}, final_prompt, None
-
+        return response, [], {}, final_prompt,None
 
 # def create_history(messages):
 #     history = ChatMessageHistory()
