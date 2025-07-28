@@ -2818,7 +2818,7 @@
     "metadata": {
       "type": "column",
       "table_name": "MH_RO_HDR_DETAILS",
-      "data_type": "STRING",
+      "data_type": "INT64",
       "nullable": true,
       "is_primary_key": false,
       "is_foreign_key": false
