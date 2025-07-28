@@ -1,3 +1,62 @@
+# Rama adding
+        logger.info(f"AI query description: {description}")
+        logger.info(f"AI-generated SQL: {SQL_Statement}")
+        tables_data = {}
+        query = SQL_Statement
+        logger.info(f"submit query --> invoke_chain: Begin Executing SQL Query: {query}")
+        if selected_database == "GCP":
+            # Proactively log client and credentials info for debugging
+            logger.info("BigQuery client info: %s, credentials: %s", db, getattr(db, "_credentials", None))
+            logger.info("About to execute BigQuery SQL: %s", query)
+            # BigQuery Python client is synchronous; run in thread if heavy (for async).
+            rows = db.query(query).result()
+            logger.info("BigQuery ran and returned rows.")
+            result_json = [dict(row) for row in rows]
+            logger.info(f"BigQuery Results (sample): {result_json[:3]}")
+            df = pd.DataFrame(result_json)
+            tables_data["Table data"] = df
+            logger.info(f"submit query --> invoke_chain : After query execution success.")
+            return response, db_tables, tables_data, final_prompt ,description
+        else:
+            logger.warning("Selected database not GCP; skipping execution.")
+            return {"error": "Unsupported database"}
+
+    except Exception as e:
+        logger.error("Error in submit_query: %s\n%s", e, traceback.format_exc())
+        return {"error": "Query execution failed", "details": str(e)}
+
+    except BaseException as e:
+        logger.critical("Fatal error: %s", e)
+        return {"error": "Unexpected fatal error", "details": str(e)}
+
+        # Rama finish
+        # Rama commented start
+        # print("This is our description", description)
+
+        # SQL_Statement = SQL_Statement.replace("SQL Query:", "").strip()
+
+        # response = chain.invoke({
+        #     "question": question,
+        #     "top_k": 1,
+        #     "messages": history.messages,
+        #     "table_details": table_info
+        # })
+        # print("Question:", question)
+        # print("Response:", json_output)
+
+        # tables_data = {}
+        # query = SQL_Statement
+        # print(f"submit query --> invoke_chain: Executing SQL Query: {query}")
+        # if selected_database == "GCP":
+        #     rows = db.query(query).result()
+        #     result_json = [dict(row) for row in rows]
+        #     logger.info(f"submit query --> invoke_chain : result after executing : \n{result_json}")
+        #     df = pd.DataFrame(result_json)
+        #     tables_data["Table data"] = df
+        # Rama commented finish
+
+
+
 
 GOOGLE_CREDENTIALS_CLIENT_EMAIL = "mdp-ad-gld-dev-talkto-dta-view@mdp-ad-gld-dta-dev-133464.iam.gserviceaccount.com"
 GOOGLE_CREDENTIALS_CLIENT_ID = "114267503023593270821"
@@ -6,9 +65,66 @@ GOOGLE_CREDENTIALS_PROJECT_ID = "mdp-ad-gld-dta-dev-133464"
 GOOGLE_CREDENTIALS_TYPE = "service_account"
 GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL = https://www.googleapis.com/robot/v1/metadata/x509/mdp-ad-gld-dev-talkto-dta-view%40mdp-ad-gld-dta-dev-133464.iam.gserviceaccount.com,
 
+- Question
+  --Get all distinct details related to Model Family Desc and Dealer details about this RO RO25D000730
+  --SQL QUERY: 
+	SELECT DISTINCT `MM`.`FAMLY_DESC` AS `MODEL_FAMILY_DESC`, `AD`.`DELR_NAME` AS `DEALER_NAME`, `AD`.`LOCTN_NAME` AS `DEALER_LOCATI
+	ON` 
+	FROM `MH_RO_HDR_DETAILS` AS `ROHDR` 
+	INNER JOIN `srv_mst_dim_model_master` AS `MM` 
+	ON `ROHDR`.`MODL_CD` = `MM`.`MODL_CD` 
+	INNER JOIN `ddp_ad_ai_final_dimension` AS `AD` 
+	ON `ROHDR`.`LOCTN_CD` = `AD`.`LOCTN_CD` AND `ROHDR`.`PARNT_GROP` = `AD`.`PARNT_GROP` AND `ROHDR`.`PRODCT_DIVSN` = `AD`.`PRODCT_DIVSN` 
+	WHERE `ROHDR`.`RO_ID` = 'RO25D000730' LIMIT 1000;
+	
+- Question 
+  --List all dealers in a North zone along with their Locations
+  --SQL QUERY:
+    SELECT `AD`.`DELR_NAME` AS `DEALER_NAME`, `AD`.`LOCTN_NAME` AS `LOCATI
+	ON_NAME` 
+	FROM `ddp_ad_ai_final_dimension` AS `AD` 
+	WHERE LOWER(`AD`.`Z
+	ONE_NAME`) = 'north zone' LIMIT 1000;
+ 
+- Question
+  --Show the number of ROs per dealer for the month of Jan'25
+  --SQL QUERY:
+ 	SELECT `AD`.`DELR_NAME` AS `DEALER_NAME`, COUNT(`ROHDR`.`RO_ID`) AS `REPAIR_ORDER_COUNT` 
+	FROM `MH_RO_HDR_DETAILS` AS `ROHDR` 
+	INNER JOIN `ddp_ad_ai_final_dimension` AS `AD` 
+	ON `ROHDR`.`LOCTN_CD` = `AD`.`LOCTN_CD` AND `ROHDR`.`PARNT_GROP` = `AD`.`PARNT_GROP` AND `ROHDR`.`PRODCT_DIVSN` = 	   `AD`.`PRODCT_DIVSN` 
+	WHERE `ROHDR`.`RO_DATE` BETWEEN DATE '2025-01-01' AND DATE '2025-01-31' 
+	GROUP BY `AD`.`DELR_NAME` 
+ 
+ 
+- Question
+  --List all models and their associated variants and fuel types.
+  --SQL QUERY:
+    SELECT `AD`.`DELR_NAME` AS `DEALER_NAME`, COUNT(`ROHDR`.`RO_ID`) AS `REPAIR_ORDER_COUNT` 
+	FROM `MH_RO_HDR_DETAILS` AS `ROHDR` 
+	INNER JOIN `ddp_ad_ai_final_dimension` AS `AD` 
+	ON `ROHDR`.`LOCTN_CD` = `AD`.`LOCTN_CD` AND `ROHDR`.`PARNT_GROP` = `AD`.`PARNT_GROP` AND `ROHDR`.`PRODCT_DIVSN` = `AD`.`PRODCT_DIVSN` 
+	WHERE `ROHDR`.`RO_DATE` BETWEEN DATE '2025-01-01' AND DATE '2025-01-31' 
+	GROUP BY `AD`.`DELR_NAME` 
+	ORDER BY `REPAIR_ORDER_COUNT` DESC LIMIT 1;
+ 
+- Question
+  -- Show the BATCH codes where both ELECTRIC and DIESEL fuel types exist. For each such BATCH, return the total number of    model entries and count of each FUEL_TYPE.
+  -- SQL QUERY:
+	SELECT `MM`.`BATCH` AS `BATCH_CODE`, COUNT(*) AS `TOTAL_MODEL_COUNT`, SUM(CASE WHEN LOWER(`MM`.`FUEL_TYPE`) = 'electric' THEN 1 ELSE 0 END) AS `ELECTRIC_FUEL_TYPE_COUNT`, SUM(CASE WHEN LOWER(`MM`.`FUEL_TYPE`) = 'diesel' THEN 1 ELSE 0 END) AS `DIESEL_FUEL_TYPE_COUNT` 
+	FROM `srv_mst_dim_model_master` AS `MM` 
+	GROUP BY `MM`.`BATCH` 
+	HAVING SUM(CASE WHEN LOWER(`MM`.`FUEL_TYPE`) = 'electric' THEN 1 ELSE 0 END) > 0 AND SUM(CASE WHEN LOWER(`MM`.`FUEL_TYPE`) = 'diesel' THEN 1 ELSE 0 END) > 0 
+	ORDER BY `MM`.`BATCH` LIMIT 1000;
+ 
+- Question
+  
+ 
+ 
+	ORDER BY `REPAIR_ORDER_COUNT` DESC LIMIT 1000;
 
 
-
+"-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCb4SAdl5MMn2LH\n5LUJkdIKYZOtFtZCbgZB+5KvLHrm6T1tdnCAkFIhYZhlRVHcJQcQMJ9oh1KnTrKI\notk02B3DQCTtr2eJ0E3fh+8f44Kd5dSFfjmnD0YFEn3nNyLvxOuepTHyYHsGDxEe\nGQaL1AnlsbDgYt/hACSKYaX4d2s6QUb9U82WY/a92h/M5MlFIJZETSkE2LIHHQah\ntiMN8vpIhj+vOAmg5MukFrRr3NRv3xYhDjivxv7bggVaZ0l3eoAriszsZkvMmPtt\nTLq4gSj4ZkoMs5yjkctDqyskv9VT65DA4D4NV4gs8r5lqorH3+K2J817BKhW7aMm\nx1nVjnenAgMBAAECggEAQ5b1Nv+fWmzOB0DrIvAgtDGlN/tcAkf03K156A0QaYmf\nAhTGKWjqw+CulNLe8Ob5ThLXPBrZQwSDs21xY1GGbkAlAw74hTBWY+NsU1ZyL4cV\nhKC73O1pfg+LmjM1KeQoCo00wBUHoxPrZzKQvRa/B+LpgBI/Yy+NqJc4wSj+zK4N\n/v74ylZDtFQadM2AXTGY/rWLE4gUwjUxuadEPRipAph6LVQVXnk55YJg+M2mEarJ\nzo6PzdG70ydkbm9vEmlRMLArnLSTzzLi3tI4putQSeKCMf5yAz5MIAmxkBuVHP8H\nTpU7NhQ/tR51vtB++gdJLVtjKrRvCyqeAJmakikPSQKBgQDPZZxuoM8u5HzuH0lt\nB6a7nXwOKemg2AV/yw5IKuUZIJE8er3FYvpPKERRQf+UrEPO8tXeo4WI51ZHZVbt\nk0WnOPBVUUbngwKxFe2YYbaVZzYlYiyaDtdzwHqUocm7VU9SG5p8ppuMqg9gSRuK\nUMMCmSNcK+UEf2hFzfnYtbGCCwKBgQDAaNE8n9hPN6RImNw4rTO/LB9iI+u9hIND\nI7mhUXBKHTJBcqKehZ6qcHyFbAS8PkwWXkvTRj+ywSTIM6O1pXwCvStqE3WCnNtu\ndbP7lRYz2RaYBuNCT663odbIrHsobieY8XaRAPobu2g88Geivj45SNuJ1sMWQ875\nH4wLssMeVQKBgQDFWkCoePeN/Ljw8u6xBJXhdDOnWrTJbKaW+4eEnuTQq0/pCDdr\nDAt6pauU00O8mswPsr5XFK2uH8zXNZSpj/m47ZKs7SGWjfFSx7YGyfyvYL6ChlBA\n7RySNjevFeFcFQrc7A1uzi+4g98L1aWSUdWvtD+UpuRQClkUC7PTRto6DwKBgQCH\nwWzf+WgFfJzNHA1Fb+8y007RT8bk0LpMhMhUqcEwiakLxHY4os5wMy2oda5hoxLM\nNXwKdWY8GUp6dvTrFPeKdy5KibA/l6y7IxD6URZ5PpJScYmnH9GGfwmsTQYYYKBP\nqQ6fALF3H6NMW9LDYLdGc8FyX7UF4JIH89o75sUEgQKBgFkJcEbeHqFLrTQzpnXN\niZFaa+hkXFf/asBSx2boG8HTcPrexodk52CqewkA904lIMwk8jgIfuoHDrEyoziq\nLKjyQ/qR/U5CP10VNAC5ocrGVKDcG+lIt+LkfwywnB3kddn4Q5j6psjy73oVY9GI\nO08uuzQLim/KEH99o14ENg6M\n-----END PRIVATE KEY-----\n"
 
 
 
