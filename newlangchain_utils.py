@@ -1,4 +1,4 @@
-import os, ast
+import os, ast,traceback
 import pandas as pd
 # from google.cloud import bigquery
 import datetime, yaml
@@ -426,9 +426,9 @@ def get_chain(question, selected_database, table_details, selected_business_rule
         # print(f"Description: {json_output.get('description')}")
 
         SQL_Statement = json_output.get('query')
-        # logger.info(f"Query: {json_output.get('query')}")
+        logger.info(f"submit query --> invoke_chain --> get_chain : AI-generated SQL: {SQL_Statement}")
         logger.info(f"submit query --> invoke_chain --> get_chain :LLM SQL Generation Error: {json_output.get('error')}")
-        logger.info(f"submit query --> invoke_chain --> get_chain : Description: {json_output.get('description')}")
+        logger.info(f"submit query --> invoke_chain --> get_chain : AI query description: {json_output.get('description')}")
     except Exception as e:
         logger.error(f"Error in submit query --> invoke_chain --> get_chain : {e}")
 
@@ -489,11 +489,22 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
         query = SQL_Statement
         print(f"submit query --> invoke_chain: Executing SQL Query: {query}")
         if selected_database == "GCP":
+            # Proactively log client and credentials info for debugging
+            logger.info("submit query --> invoke_chain: BigQuery client info: %s, credentials: %s", db, getattr(db, "_credentials", None))
+            logger.info("submit query --> invoke_chain: About to execute BigQuery SQL: %s", query)
+            # BigQuery Python client is synchronous; run in thread if heavy (for async).
             rows = db.query(query).result()
+            logger.info("submit query --> invoke_chain: BigQuery ran and returned rows.")
             result_json = [dict(row) for row in rows]
-            logger.info(f"submit query --> invoke_chain : result after executing : \n{result_json}")
+            logger.info(f"submit query --> invoke_chain: BigQuery Results (sample): {result_json[:3]}")
             df = pd.DataFrame(result_json)
-            tables_data["Table data"] = df
+            tables_data["submit query --> invoke_chain: Table data"] = df
+            logger.info(f"submit query --> invoke_chain : After query execution success.")
+            return response, db_tables, tables_data, final_prompt ,description
+        else:
+            logger.warning("submit query --> invoke_chain: Selected database not GCP; skipping execution.")
+            return {"error": "Unsupported database"}
+
             # break
         # elif selected_database == "PostgreSQL-Azure":
         #     alchemyEngine = create_engine(f'postgresql+psycopg2://{quote_plus(db_user)}:{quote_plus(db_password)}@{db_host}:{db_port}/{db_database}')
@@ -515,16 +526,14 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
         #     except Exception as e:
         #         logger.error(f"submit query --> invoke_chain : table data has some issues.{e}")
         # Include SQL_Statement in the return tuple
-        return response, db_tables, tables_data, final_prompt ,description
+        # return response, db_tables, tables_data, final_prompt ,description
+
 
 
 
     except Exception as e:
-        print("submit query --> invoke_chain :", e)
-        # Return whatever response was generated, or None if none was generated
-        # Also return SQL_Statement and final_prompt if available
-        return response, [], {}, final_prompt, None
-
+        logger.error("Error in submit_query: %s\n%s", e, traceback.format_exc())
+        return {"error": "Query execution failed", "details": str(e)}
 
 # def create_history(messages):
 #     history = ChatMessageHistory()
