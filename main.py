@@ -5,7 +5,7 @@ from starlette.requests import Request
 from fastapi.staticfiles import StaticFiles
 # from langchain_openai import ChatOpenAI
 import plotly.graph_objects as go, plotly.express as px
-import openai, yaml, os, csv,pandas as pd, base64, uuid
+import openai, yaml, os, csv,pandas as pd, base64, uuid, decimal, numpy as np
 from configure import gauge_config
 # from pydantic import BaseModel
 from io import BytesIO, StringIO
@@ -600,12 +600,20 @@ async def download_table(payload: TableDownloadRequest):
     return response
 # Replace APIRouter with direct app.post
 def format_number(x):
-    if isinstance(x, int):  # Check if x is an integer
-        return f"{x:d}"
-    elif isinstance(x, float) and x.is_integer():  # Check if x is a float and is equivalent to an integer
+    # None check (in case of nulls)
+    if x is None:
+        return ""
+    if isinstance(x, (int, np.integer)):
         return f"{int(x):d}"
-    else:
-        return f"{x:.1f}"  # For other floats, format with one decimal place
+    if isinstance(x, (float, np.floating)) and float(x).is_integer():
+        return f"{int(x):d}"
+    if isinstance(x, (float, np.floating)):
+        return f"{float(x):.1f}"
+    if isinstance(x, decimal.Decimal) and x == int(x):
+        return f"{int(x):d}"
+    if isinstance(x, decimal.Decimal):
+        return f"{float(x):.1f}"
+    return str(x)
 @app.post("/transcribe-audio/")
 async def transcribe_audio(file: UploadFile = File(...)):
     """
