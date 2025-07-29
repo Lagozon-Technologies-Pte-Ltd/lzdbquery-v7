@@ -103,7 +103,7 @@ from operator import itemgetter
 
 
 # from table_details import get_table_details , get_tables , itemgetter ,  Table 
-# from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text
 # from sqlalchemy.orm import sessionmaker
 
 # import configure
@@ -466,12 +466,12 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
     final_prompt = None
     try:
         # history = create_history(messages)
-        response, final_prompt = get_chain(
+        json_output, final_prompt = get_chain(
             question, 
             selected_database, table_info, selected_business_rule, question_type, relationships, examples,final_query_instruction
         )  ##we get query output from get chain
-        SQL_Statement = response["query"]
-        description = response["description"]
+        SQL_Statement = json_output["query"]
+        description = json_output["description"]
         print("This is our description", description)
 
         # SQL_Statement = SQL_Statement.replace("SQL Query:", "").strip()
@@ -504,8 +504,8 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
             # break 
         if selected_database == "Azure SQL":
             # db = get_sql_db()
-
-            result = db.execute(query)
+            logger.info("in if of azure sql")
+            result = db.execute(text(query))
             logger.info(f"submit query --> invoke_chain : result after executing \n{query} : \n{result}")
             try:
                 rows = result.fetchall()
