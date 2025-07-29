@@ -5,7 +5,7 @@ from starlette.requests import Request
 from fastapi.staticfiles import StaticFiles
 # from langchain_openai import ChatOpenAI
 import plotly.graph_objects as go, plotly.express as px
-import openai, yaml, os, csv,pandas as pd, base64, uuid, decimal
+import openai, yaml, os, csv,pandas as pd, base64, uuid, decimal, numpy as np
 from configure import gauge_config
 # from pydantic import BaseModel
 from io import BytesIO, StringIO
