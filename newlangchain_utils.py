@@ -498,7 +498,7 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
             result_json = [dict(row) for row in rows]
             logger.info(f"submit query --> invoke_chain: BigQuery Results (sample): {result_json[:3]}")
             df = pd.DataFrame(result_json)
-            tables_data["submit query --> invoke_chain: Table data"] = df
+            tables_data["Table data"] = df
             logger.info(f"submit query --> invoke_chain : After query execution success.")
             return response, db_tables, tables_data, final_prompt ,description
         else:
