@@ -5,8 +5,8 @@
 - Always base your SQL SELECT columns strictly on the content of the user message.
 {final_query_instruction}
 Example:
-  {{  "User message": "Find the top 5 models with the highest seat capacity.",
-  "query": "SELECT `MM`.`MODL_DESC` AS `MODEL_DESCRIPTION`, `MM`.`SEAT_CAPCTY` AS `SEAT_CAPACITY` FROM `srv_mst_dim_model_master` AS `MM` ORDER BY `MM`.`SEAT_CAPCTY` DESC, `MM`.`MODL_DESC` ASC LIMIT 5"}}
+  {{  "User message": "List all companies with their vendor IDs and names.",
+  "query": "SELECT [ID] AS CompanyID, [VendorId], [CompanyName] FROM [Company]"}}
 
 
 {Business_Glossary}    
@@ -82,8 +82,8 @@ Example:
 ## Data Type Safety and Casting (Azure SQL Specific)
 - Always apply TRY_CAST(column AS FLOAT) in the WHERE clause when comparing against numeric values if the column is not explicitly numeric or may contain strings (e.g., VARCHAR).
 - This applies to all filters like column > 10, column = 0, etc.
-  -- Correct: WHERE TRY_CAST([rp].[discnt_rate] AS FLOAT) > 10
-  -- Incorrect: WHERE [rp].[discnt_rate] > 10
+  -- Correct: WHERE TRY_CAST([table_alias].[column_name] AS FLOAT) > 10
+  -- Incorrect: WHERE [table_alias].[column_name] > 10
 - Missing this will lead to conversion errors if the column contains decimal strings or non-integer text values.
 - If any column used in aggregation (e.g., SUM, AVG) may be stored as VARCHAR or not explicitly numeric in the schema, use TRY_CAST(column AS FLOAT) before applying the aggregation.
   - Example: SUM(TRY_CAST(rp.partamount AS FLOAT))
@@ -206,19 +206,19 @@ FULL OUTER JOIN
 - After generating the query, re-validate every rule before finalizing the JSON output. If any rule is violated, regenerate the SQL and the JSON structure until all rules are satisfied.
 
 Example 1:
-Input: what are distinct labour type names used in this RO RO25D000730
+Input: Show the top 5 most frequently ordered products across all channels.
 output:
 
-"description": "This SQL query selects distinct values from the column [labour_type_name] in the table [MH_RO_LABOUR] (aliased as [LAB]). It performs an INNER JOIN between [MH_RO_LABOUR] and [MH_RO_HDR_DETAILS] (aliased as [ROHDR]) using the column [sv_ro_hdr_sk]. The query filters records where [ROHDR].[ro_id] equals 'RO25D000730'.",
-"query": "SELECT DISTINCT [LAB].[labour_type_name] FROM [MH_RO_LABOUR] AS [LAB] INNER JOIN [MH_RO_HDR_DETAILS] AS [ROHDR] ON [LAB].[sv_ro_hdr_sk] = [ROHDR].[sv_ro_hdr_sk] WHERE [ROHDR].[ro_id] = 'RO25D000730';",
+"description": "This SQL query retrieves the top 5 products with the highest number of total orders by aggregating order data from three different sources: tbl_OTCSale, tbl_Amazon, and AF_OrderItemS. Each of these sources may refer to different types of sales—offline, online (Amazon), or Autofurnish platform orders. The query first unifies product identifiers from all three tables into a single combined set using UNION ALL, ensuring duplicates are preserved for accurate counting. In the Amazon and Autofurnish cases, it uses SKU values to map to the internal product ID via the ProductMaster table. Once all product IDs are consolidated, the query joins this combined result with the ProductMaster table to retrieve each product’s SKU and ProductName. Finally, it groups the data by SKU and name, counts how many times each product was ordered, sorts them in descending order of count, and returns the top 5 most frequently ordered products.",
+"query": "SELECT TOP 5 p.[SKU], p.[ProductName], COUNT(*) AS OrderCount FROM ( SELECT [ProductID] FROM [tbl_OTCSale] WHERE [ProductID] IS NOT NULL UNION ALL SELECT pm.[ID] FROM [tbl_Amazon] a JOIN [AmazonListing] al ON a.[SKU] = al.[Sku] JOIN [ProductMaster] pm ON al.[OriginalSku] = pm.[SKU] UNION ALL SELECT pm.[ID] FROM [AF_OrderItemS] o JOIN [ProductMaster] pm ON o.[Lineitem_sku] = pm.[SKU] ) AS combined JOIN [ProductMaster] p ON combined.[ProductID] = p.[ID] GROUP BY p.[SKU], p.[ProductName] ORDER BY OrderCount DESC ;" 
 "error": null
 
 Example 2:
-Input: Show the number of ROs per dealer for the month of Jan'25
+Input: Find products that are listed on Amazon but have no inventory in the warehouse.
 Output:
 
-"description": "This SQL query retrieves the count of repair orders per dealer from the tables [MH_RO_HDR_DETAILS] (aliased as [ROHDR]) and [ddp_ad_ai_final_dimension] (aliased as [AD]). It performs an INNER JOIN between [ROHDR] and [AD] using the columns [LOCTN_CD], [PARNT_GROP], and [PRODCT_DIVSN]. The selected columns are [AD].[DELR_NAME] as [DEALER_NAME] and the count of [ROHDR].[RO_ID] as [REPAIR_ORDER_COUNT]. The query filters records where [ROHDR].[RO_DATE] is between '2025-01-01' and '2025-01-31'. The results are grouped by [AD].[DELR_NAME] and ordered in descending order by [REPAIR_ORDER_COUNT].",
-"query": "SELECT [AD].[DELR_NAME] AS [DEALER_NAME], COUNT([ROHDR].[RO_ID]) AS [REPAIR_ORDER_COUNT] FROM [MH_RO_HDR_DETAILS] AS [ROHDR] INNER JOIN [ddp_ad_ai_final_dimension] AS [AD] ON [ROHDR].[LOCTN_CD] = [AD].[LOCTN_CD] AND [ROHDR].[PARNT_GROP] = [AD].[PARNT_GROP] AND [ROHDR].[PRODCT_DIVSN] = [AD].[PRODCT_DIVSN] WHERE [ROHDR].[RO_DATE] BETWEEN '2025-01-01' AND '2025-01-31' GROUP BY [AD].[DELR_NAME] ORDER BY [REPAIR_ORDER_COUNT] DESC;",
+"description": "This query retrieves Amazon-listed products that are missing in the inventory. It joins AmazonListing with ProductMaster using the OriginalSku, then left joins InventoryDetail using MSKU. It filters for rows where UniqueCode is NULL, meaning no matching inventory exists, and ensures OriginalSku is not null. The output includes the product's OriginalSku, MSKU, and ProductName.",
+"query": "SELECT a.[OriginalSku], a.[MSKU], p.[ProductName] FROM [AmazonListing] a JOIN [ProductMaster] p ON a.[OriginalSku] = p.[SKU] LEFT JOIN [InventoryDetail] i ON p.[MSKU] = i.[MSKU] WHERE i.[UniqueCode] IS NULL AND a.[OriginalSku] IS NOT NULLC;",
 "error": null
 
 Important:

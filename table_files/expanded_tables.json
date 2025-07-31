@@ -1,130 +1,288 @@
 [
   {
-    "id": " mh_ro_hdr_details",
-    "document": "Repair Order Header: Central table for repair lifecycle. Use as the primary (left) table in joins. Related tables (labor, parts, customer feedback) may not always have matching records for every repair order; use LEFT OUTER JOIN when querying them.",
+    "id": "company",
+    "document": "Company: Core company information. Join with Company_mapping using Company.ID.",
     "metadata": {
       "type": "table",
-      "primary_key": "SV_RO_BILL_HDR_SK",
+      "primary_key": "ID",
       "join_guidance": [
         {
-          "table": "MH_RO_LABOUR",
-          "on": "SV_RO_BILL_HDR_SK",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Not all repair orders have labor records."
-        },
-        {
-          "table": "MH_RO_PARTS",
-          "on": "SV_RO_BILL_HDR_SK",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Not all repair orders have parts records."
-        },
-        {
-          "table": "MH_CUST_VERBATIM",
-          "on": "sv_ro_hdr_sk",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Not all repair orders have customer feedback."
-        },
-        {
-          "table": "MH_MODEL_MASTER",
-          "on": "MODL_CD",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Some repair orders may not have a matching model master."
-        },
-        {
-          "table": "MH_AD_AI_DIMENSION",
-          "on": "parnt_grop LOCTN_CD prodct_divsn",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Some repair orders may not have a matching dealer/location."
-        }
-      ]
-    }
-  },
-  {
-    "id": " mh_ro_labour",
-    "document": "Repair Order Labour: Details of labor for repair orders. Use LEFT OUTER JOIN from repair order header, as not every order has labor.",
-    "metadata": {
-      "type": "table",
-      "primary_key": "SV_RO_BILL_HDR_SK",
-      "join_guidance": [
-        {
-          "table": "MH_RO_HDR_DETAILS",
-          "on": "SV_RO_BILL_HDR_SK",
+          "table": "company_mapping",
+          "on": "ID = CompanyId",
           "join_type": "INNER JOIN",
           "optional": false,
-          "description": "Labor always references a repair order."
+          "description": "Each mapping belongs to a company."
         }
       ]
     }
   },
   {
-    "id": " mh_ro_parts",
-    "document": "Repair Order Parts: Details of parts for repair orders. Use LEFT OUTER JOIN from repair order header, as not every order has parts.",
+    "id": "company_mapping",
+    "document": "Company Mapping: Extended company contact and billing/shipping data. Join with tbl_OTCSale using ID.",
     "metadata": {
       "type": "table",
-      "primary_key": "SV_RO_BILL_HDR_SK",
+      "primary_key": "Id",
       "join_guidance": [
         {
-          "table": "MH_RO_HDR_DETAILS",
-          "on": "SV_RO_BILL_HDR_SK",
+          "table": "company",
+          "on": "CompanyId = ID",
           "join_type": "INNER JOIN",
           "optional": false,
-          "description": "Parts always reference a repair order."
+          "description": "Mapped to parent company."
+        },
+        {
+          "table": "tbl_otcsale",
+          "on": "Id = CustomerShippingAddress OR Id = CompanyBillID",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Used for customer and billing address references."
         }
       ]
     }
   },
   {
-    "id": " mh_cust_verbatim",
-    "document": "Customer Verbatim: Customer feedback for repair orders. Use LEFT OUTER JOIN from repair order header, as not every order has feedback.",
+    "id": "tbl_otcsale",
+    "document": "OTC Sales: Sale transactions. References product and address info via ProductID, CustomerShippingAddress, and CompanyBillID.",
     "metadata": {
       "type": "table",
-      "primary_key": "sv_ro_hdr_sk",
+      "primary_key": "OTCID",
       "join_guidance": [
         {
-          "table": "MH_RO_HDR_DETAILS",
-          "on": "sv_ro_hdr_sk",
+          "table": "productmaster",
+          "on": "ProductID = Id",
           "join_type": "INNER JOIN",
           "optional": false,
-          "description": "Verbatim feedback always references a repair order."
+          "description": "Each sale is for a product."
+        },
+        {
+          "table": "company_mapping",
+          "on": "CustomerShippingAddress = Id",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "May include shipping address from mapping."
+        },
+        {
+          "table": "company_mapping",
+          "on": "CompanyBillID = Id",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "May include billing address from mapping."
         }
       ]
     }
   },
   {
-    "id": " mh_model_master",
-    "document": "Vehicle Model Master: Details about vehicle models. Use LEFT OUTER JOIN from repair order header, as not every order has a model code.",
+    "id": "productmaster",
+    "document": "Product Master: Full product catalog. Join with OTC sales, Amazon listings, and inventory.",
     "metadata": {
       "type": "table",
-      "primary_key": "MODL_CD",
+      "primary_key": "Id",
       "join_guidance": [
         {
-          "table": "MH_RO_HDR_DETAILS",
-          "on": "MODL_CD",
+          "table": "tbl_otcsale",
+          "on": "Id = ProductID",
+          "join_type": "INNER JOIN",
+          "optional": false,
+          "description": "Product referenced in OTC sales."
+        },
+        {
+          "table": "amazonlisting",
+          "on": "SKU = OriginalSku OR MSKU = MSKU",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
-          "description": "Some repair orders may not have a model code."
+          "description": "Amazon listing refers to product's SKU or MSKU."
+        },
+        {
+          "table": "af_orderitems",
+          "on": "SKU = Lineitem_sku",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Autofurnish order item refers to product via SKU."
+        },
+        {
+          "table": "inventorydetail",
+          "on": "MSKU = MSKU",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Inventory tracked via MSKU."
         }
       ]
     }
   },
   {
-    "id": " mh_ad_ai_dimension",
-    "document": "Dealer & Sales Hierarchy: Dealer and sales hierarchy data. Use LEFT OUTER JOIN from repair order header, as not every order has a location code.",
+    "id": "amazonlisting",
+    "document": "Amazon Listing: Product mapping to Amazon. Join with ProductMaster using OriginalSku or MSKU.",
     "metadata": {
       "type": "table",
-      "primary_key": "parnt_grop loctn_cd prodct_divsn",
+      "primary_key": "Id",
       "join_guidance": [
         {
-          "table": "MH_RO_HDR_DETAILS",
-          "on": "parnt_grop loctn_cd prodct_divsn",
+          "table": "productmaster",
+          "on": "OriginalSku = SKU OR MSKU = MSKU",
+          "join_type": "INNER JOIN",
+          "optional": false,
+          "description": "Maps listing to master product."
+        },
+        {
+          "table": "tbl_amazon",
+          "on": "Sku = SKU",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
-          "description": "Some repair orders may not have a location code."
+          "description": "Amazon sales reference listing SKU."
+        }
+      ]
+    }
+  },
+  {
+    "id": "tbl_amazon",
+    "document": "Amazon Orders: Amazon transaction details. Join with AmazonListing via SKU.",
+    "metadata": {
+      "type": "table",
+      "primary_key": "BillID",
+      "join_guidance": [
+        {
+          "table": "amazonlisting",
+          "on": "SKU = Sku",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "SKU links to Amazon listing."
+        }
+      ]
+    }
+  },
+  {
+    "id": "autofurnish_orders",
+    "document": "Autofurnish Orders: Master orders from Autofurnish. Join with AF_OrderItems via OrderNo.",
+    "metadata": {
+      "type": "table",
+      "primary_key": "AFId",
+      "join_guidance": [
+        {
+          "table": "af_orderitems",
+          "on": "OrderNo = AFOrderId",
+          "join_type": "INNER JOIN",
+          "optional": false,
+          "description": "Each Autofurnish item links to a master order."
+        }
+      ]
+    }
+  },
+  {
+    "id": "af_orderitems",
+    "document": "Autofurnish Order Items: Line items from Autofurnish orders. Join with ProductMaster via SKU.",
+    "metadata": {
+      "type": "table",
+      "primary_key": "Id",
+      "join_guidance": [
+        {
+          "table": "autofurnish_orders",
+          "on": "AFOrderId = OrderNo",
+          "join_type": "INNER JOIN",
+          "optional": false,
+          "description": "Belongs to an Autofurnish order."
+        },
+        {
+          "table": "productmaster",
+          "on": "Lineitem_sku = SKU",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "SKU links item to product."
+        }
+      ]
+    }
+  },
+  {
+    "id": "inventorydetail",
+    "document": "Inventory Detail: Inventory movement and tracking. Join with ProductMaster, Rack, Warehouse, and StatusMaster.",
+    "metadata": {
+      "type": "table",
+      "primary_key": "Id",
+      "join_guidance": [
+        {
+          "table": "productmaster",
+          "on": "MSKU = MSKU",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Inventory identified via MSKU."
+        },
+        {
+          "table": "tbl_warehouse",
+          "on": "WarehouseId = Id",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Inventory location by warehouse."
+        },
+        {
+          "table": "tbl_rack",
+          "on": "RackId = Id",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Inventory storage rack."
+        },
+        {
+          "table": "statusmaster",
+          "on": "Status = Id",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Status of the inventory item."
+        }
+      ]
+    }
+  },
+  {
+    "id": "tbl_rack",
+    "document": "Rack: Storage rack data. Join with tbl_warehouse via WarehouseId.",
+    "metadata": {
+      "type": "table",
+      "primary_key": "Id",
+      "join_guidance": [
+        {
+          "table": "tbl_warehouse",
+          "on": "WarehouseId = Id",
+          "join_type": "INNER JOIN",
+          "optional": false,
+          "description": "Each rack belongs to a warehouse."
+        }
+      ]
+    }
+  },
+  {
+    "id": "tbl_warehouse",
+    "document": "Warehouse: Warehouse data for inventory management. Join with racks and inventory details.",
+    "metadata": {
+      "type": "table",
+      "primary_key": "Id",
+      "join_guidance": [
+        {
+          "table": "inventorydetail",
+          "on": "Id = WarehouseId",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Warehouse reference for inventory."
+        },
+        {
+          "table": "tbl_rack",
+          "on": "Id = WarehouseId",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Racks are located within warehouses."
+        }
+      ]
+    }
+  },
+  {
+    "id": "statusmaster",
+    "document": "Status Master: Lookup for inventory item statuses. Join with InventoryDetail using Status ID.",
+    "metadata": {
+      "type": "table",
+      "primary_key": "Id",
+      "join_guidance": [
+        {
+          "table": "inventorydetail",
+          "on": "Id = Status",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Status of an inventory entry."
         }
       ]
     }
