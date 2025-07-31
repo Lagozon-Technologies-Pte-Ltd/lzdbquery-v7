@@ -38,6 +38,9 @@ from sqlalchemy.orm import sessionmaker, Session
 from dependencies import  get_db
 from contextlib import asynccontextmanager
 import redis
+from celery import Celery
+from celery.result import AsyncResult
+
 class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Log the request details
@@ -52,45 +55,41 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         return response
 
 load_dotenv()  # Load environment variables from .env file
+redis_host = os.getenv('REDIS_HOST')
+redis_key = os.getenv('REDIS_KEY')
+redis_port = os.getenv('REDIS_PORT', '6380')
+# At the top of your file
+SessionLocal = None
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Azure OpenAI LLM
-    # app.state.azure_openai_client = AzureOpenAI(
-    #     azure_deployment=os.environ["AZURE_DEPLOYMENT_NAME"],
-    #     api_key=os.environ["AZURE_OPENAI_API_KEY"],
-    #     api_version=os.environ.get("AZURE_OPENAI_API_VERSION", "2024-02-01"),
-    #     azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"]
-    # )
-
-    # Azure SQL DB
+    global SessionLocal  # Make it available globally
+    
     engine = create_engine(
-      
-
         SQL_DATABASE_URL,
         pool_size=int(SQL_POOL_SIZE),
         max_overflow=int(SQL_MAX_OVERFLOW),
         echo=False,
-        pool_recycle=1200,  # Recycle every 20 minutes
-        pool_pre_ping=True  # Validate connection before using
+        pool_recycle=1200,
+        pool_pre_ping=True
     )
-    app.state.engine = engine
-    app.state.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    app.state.SessionLocal = SessionLocal
 
     # Azure Redis Cache (async)
     app.state.redis_client = redis.Redis(
-        host=os.environ["REDIS_HOST"],
-        port=int(os.environ.get("REDIS_PORT", 6380)),
-        password=os.environ["REDIS_KEY"],
+        host=redis_host,
+        port=redis_port,
+        password=redis_key,
         ssl=True,
         decode_responses=True,
         max_connections=20
     )
     # Azure Redis Cache (async)
     app.state.redis_client = redis.Redis(
-        host=os.environ["REDIS_HOST"],
-        port=int(os.environ.get("REDIS_PORT", 6380)),
-        password=os.environ["REDIS_KEY"],
+        host=redis_host,
+        port=redis_port,
+        password=redis_key,
         ssl=True,
         decode_responses=True,
         max_connections=20
@@ -102,6 +101,29 @@ async def lifespan(app: FastAPI):
 
     engine.dispose()
 
+celery_broker_url = f"rediss://:{redis_key}@{redis_host}:{redis_port}/0?ssl_cert_reqs=CERT_NONE"
+celery_result_backend = f"rediss://:{redis_key}@{redis_host}:{redis_port}/1?ssl_cert_reqs=CERT_NONE"
+
+
+celery_app = Celery(
+    'tasks',
+    broker=celery_broker_url,
+    backend=celery_result_backend,
+    include=['main']
+)
+
+
+# In your Celery app configuration
+celery_app.conf.update(
+    result_extended=True,  # Store full task metadata
+    result_backend_transport_options={
+        'retry_policy': {
+            'timeout': 5.0  # Wait longer for Redis operations
+        },
+        'visibility_timeout': 3600  # 1 hour visibility
+    },
+    result_expires=86400  # Keep results for 24 hours
+)
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET", "your-secret-key-here"))
@@ -494,10 +516,20 @@ def generate_chart_figure(data_df: pd.DataFrame, x_axis: str, y_axis: str, chart
             text_data = data_df[x_axis].dropna().astype(str).tolist()
             text = ' '.join(text_data)
             
+            excluded_words = {
+            "check", "service", "rep", "km", "vehicle", "gaadi",
+            "hai", "kar", "me", "ka", "ki", "ko", "se", "ke",
+            "schedule", "washing", "1000", "10000", "maxicare",
+            "wheel", "alignment", "balance", "pickup", "cleaning", "wash", "rahi", "nhi", "rha", "krne", "rhe", "hona", "par", "lag", "clean",
+            "CLU", "ENG", "BOD", "CLN", "GEN", "STG", "WHT", "IFT", "BRK", "ELC", "TRN", "FUE", "HVA", "SER", "EPT", "SUS", "DRL", "EXH", "SAF", "VAS", "RE-",
+            "708", "013", "405", "SWU"
+            }
+
+            
             # Generate word cloud
             wordcloud = WordCloud(width=800, height=400, 
                                 background_color='white',
-                                max_words=200).generate(text)
+                                max_words=200, stopwords=excluded_words).generate(text)
             
             # Convert to Plotly figure
             fig = px.imshow(wordcloud.to_array())
@@ -510,7 +542,7 @@ def generate_chart_figure(data_df: pd.DataFrame, x_axis: str, y_axis: str, chart
             
         return fig
     except Exception as e:
-        logger.info(f"Error generating {chart_type} chart: {str(e)}")
+        logger.info(f"generate_chart_figure in main.py, Error generating {chart_type} chart: {str(e)}")
         raise
 
 class ChartRequest(BaseModel):
@@ -854,57 +886,122 @@ async def submit_query(
     page: int = Query(1),
     records_per_page: int = Query(10),
     model: Optional[str] = Form(AZURE_DEPLOYMENT_NAME),
-    db: Session = Depends(get_db),
     session_data: dict = Depends(get_session_data_dep),
-    redis_client=Depends(get_redis_client),
-    session_id: str = Depends(get_session_id_dep)
     
 
 ):
-    # cache_key = get_cache_key(
-    #     "submit_query",
-    #     user_query=user_query,
-    #     section=section,
-    #     database=database,
-    #     question_type=request.session.get("current_question_type", "generic")
-    # )
-    
-    # Check cache first
-    # redis_client = request.app.state.redis_client
-    # cached_response = await get_cached_response(redis_client, cache_key)
-    # if cached_response:
-    #     logger.info(f"Cache HIT for key: {cache_key}")
-    #     logger.info("Returning cached response")
-    #     return JSONResponse(content=cached_response)
-    # else:
-    #     logger.info(f"Cache MISS for key: {cache_key}")
-    # cache_key = get_cache_key(
-    #     "submit_query",
-    #     user_query=user_query,
-    #     section=section,
-    #     database=database,
-    #     question_type=request.session.get("current_question_type", "generic")
-    # )
-    
-    # Check cache first
-    # redis_client = request.app.state.redis_client
-    # cached_response = await get_cached_response(redis_client, cache_key)
-    # if cached_response:
-    #     logger.info(f"Cache HIT for key: {cache_key}")
-    #     logger.info("Returning cached response")
-    #     return JSONResponse(content=cached_response)
-    # else:
-    #     logger.info(f"Cache MISS for key: {cache_key}")
     logger.info(f"Received /submit request with query: {user_query}, section: {section}, database: {database}")
     
+    
+    try:
+        # Prepare task data
+        task_data = {
+            "user_query": user_query,
+            "query": "",
+            "tables": [],
+            "llm_response": "",
+            "chat_response": "",
+            "history":  session_data.get('messages', []),
+            "interprompt": "",
+            "langprompt": "",
+            "section": section,
+            "database": database,
+            "model": model,
+            "error": None     }
+        
+        # Start Celery task
+        task = process_query_task.delay(task_data)
+        logger.info("celery task completed")
+        # Store task ID in session so we can check status later
+        session_data['task_id'] = task.id
+        logger.info(f" task completed:{task.id}")
+
+        
+        # Return immediate response with task ID
+        return JSONResponse(content={
+            "status": "processing",
+            "task_id": task.id,
+            "message": "Your query is being processed"
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in Submit Endpoint(Celery): {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+@app.get("/task/result/{task_id}")
+async def get_task_result(task_id: str):
+    try:
+        task = AsyncResult(task_id)
+        
+        if not task.ready():
+            # Return JSONResponse directly for 202 status
+            return JSONResponse(
+                status_code=202,
+                content={
+                    "status": "processing",
+                    "task_id": task_id,
+                    "message": "Task still processing"
+                }
+            )
+            
+        if task.failed():
+            # For errors, use HTTPException without content parameter
+            raise HTTPException(
+                status_code=500,
+                detail=str(task.result)
+            )
+        
+        # For successful results
+        return JSONResponse(task.result)
+        
+    except Exception as e:
+        logger.error(f"Failed to get task result: {str(e)}")
+        # For other errors, use HTTPException without content parameter
+        raise HTTPException(
+            status_code=404,
+            detail=f"Task result unavailable: {str(e)}"
+        )        
+
+
+@celery_app.task(bind=True)
+def process_query_task(self, task_data):
+    """
+    Celery task to handle the query processing asynchronously
+    """
+    
+    
+    redis_client = redis.Redis(
+        host=redis_host,
+        port=redis_port,
+        password=redis_key,
+        ssl=True,
+        decode_responses=True,
+        max_connections=20
+    )
+    session_id = task_data.get('session_id')
+    raw_session_data = redis_client.get(f"session:{session_id}")
+    session_data = json.loads(raw_session_data) if raw_session_data else {}
+    engine = create_engine(
+        SQL_DATABASE_URL,
+        pool_size=int(SQL_POOL_SIZE),
+        max_overflow=int(SQL_MAX_OVERFLOW),
+        echo=False,
+        pool_recycle=1200,
+        pool_pre_ping=True
+    )
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    # 3. Initialize database session
     # Initialize response structure
     response_data = {
-        "user_query": user_query,
+        "user_query":  task_data['user_query'],
         "query": "",
         "tables": [],
         "llm_response": "",
         "chat_response": "",
-        "history":  session_data.get('messages', []),
+        "history":  task_data.get('messages', []),
         "interprompt": "",
         "langprompt": "",
         "error": None
@@ -920,7 +1017,7 @@ async def submit_query(
         current_question_type = session_data.get("current_question_type", "generic")
         # prompts = request.session.get("prompts", load_prompts("generic_prompt.yaml")
         prompts = load_prompts("generic_prompt.yaml")
-        session_data['user_query'] = user_query  # Still store original query separately if needed
+        session_data['user_query'] = task_data['user_query']  # Still store original query separately if needed
 
         # Handle session messages
         if "messages" not in session_data:
@@ -937,7 +1034,7 @@ async def submit_query(
         # Step 1: Generate unified prompt based on question type
         try:
             logger.info(f"Inside /submit request and user has chosen  {current_question_type}.")
-
+            user_query = task_data['user_query']
             if current_question_type == "usecase":
                 key_parameters = get_key_parameters()
                 keyphrases = get_keyphrases()
@@ -1035,11 +1132,12 @@ async def submit_query(
             # Now add the reframed query to messages instead of original user_query
             # logger.info(f"Now, adding message to history: {llm_reframed_query}")
             session_data['messages'] = [{"role": "user", "content": llm_reframed_query}]
-            await set_session_data(redis_client, session_id, session_data) 
+            set_session_data(redis_client, session_id, session_data) 
             # logger.info(f"messages in session: {request.session['messages']}")
             response_data["llm_response"] = llm_reframed_query
             response_data["interprompt"] = unified_prompt
-            
+            self.update_state(state='PROGRESS', meta={'status': 'Generating SQL query'})
+
         except Exception as e:
             logger.error(f"Prompt generation error: {str(e)}")
             raise HTTPException(
@@ -1055,7 +1153,9 @@ async def submit_query(
             examples = get_examples(llm_reframed_query, current_question_type)
             logger.info(f"relationships: {relationships}")
             logger.info(f"messages in session just before invoke chain: {session_data['messages']}")
-
+            model = task_data['model']
+            database = task_data['database']
+            section = task_data['section']
             response, chosen_tables, tables_data, final_prompt = invoke_chain(
                 db,
                 llm_reframed_query,  # Using the reframed query here
@@ -1081,6 +1181,7 @@ async def submit_query(
                 session_data['generated_query'] = response.get("query", "")
                 session_data['chosen_tables'] = chosen_tables
                 # request.session['tables_data'] = tables_data
+            self.update_state(state='PROGRESS', meta={'status': 'Processing results'})
 
         except Exception as e:
             logger.error(f"LangChain invocation error: {str(e)}", exc_info=True)
@@ -1107,6 +1208,19 @@ async def submit_query(
             # data_preview = next(iter(session_state['tables_data'].values())).head(5).to_string(index=False)
             # response_data["chat_response"] = ""  # Placeholder for actual insights
             
+            logger.info(f"Task {self.request.id} completed successfully")
+            self.update_state(
+            state='SUCCESS',
+            meta=response_data,
+            # Force immediate result storage
+            publish_result=True  
+            )
+             # Also store directly in backend
+            self.backend.store_result(
+                self.request.id,
+                response_data,
+                'SUCCESS'
+            )
         except Exception as e:
             logger.error(f"Data processing error: {str(e)}")
             response_data["chat_response"] = f"Data retrieved but processing failed: {str(e)}"
@@ -1144,11 +1258,11 @@ async def submit_query(
         
     except Exception as e:
         # Unexpected errors
-        logger.error(f"Unexpected error: {str(e)}", exc_info=True)
+        logger.error(f"Error in Celery task {self.request.id}: {str(e)}", exc_info=True)
         response_data.update({
             "chat_response": "An unexpected error occurred",
             "error": str(e),
-            "history":  session_data['messages'],
+            "history":  task_data['messages'],
             "langprompt": str(final_prompt) if 'final_prompt' in locals() else "Not generated due to error",
             "interprompt": unified_prompt if 'unified_prompt' in locals() else "Not generated due to error"
         })
@@ -1157,12 +1271,13 @@ async def submit_query(
             "role": "user",
             "content": "An unexpected error occurred"
         })
-        await set_session_data(redis_client, session_id, session_data) 
+        set_session_data(redis_client, session_id, session_data) 
         return JSONResponse(
             content=response_data,
             status_code=500
         )
-
+    finally:
+        db.close()
 # Replace APIRouter with direct app.post
 
 @app.post("/reset-session")
@@ -1236,7 +1351,6 @@ async def read_root(
         "user_email": user_data.get('preferred_username', ''),
         "databases": databases,
         "tables": [],
-        "question_dropdown": question_dropdown.split(',')
     })
 
  
