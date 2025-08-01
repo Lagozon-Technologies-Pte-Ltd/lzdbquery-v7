@@ -1,50 +1,82 @@
 [
-    {
-        "input": "List all companies with their vendor IDs and names.",
-        "query": "SELECT [ID] AS CompanyID, [VendorId], [CompanyName] FROM [Company]"
-    },
-    {
-        "input": "Show all products with their SKUs and MRP prices.",
-        "query": "SELECT [SKU], [MSKU], [ProductName], TRY_CAST([MRP] AS DECIMAL(10,2)) AS MRP FROM [ProductMaster] WHERE [MRP] IS NOT NULL"
-    },
-    {
-        "input": "Find all Amazon listings with their ASINs and available quantities.",
-        "query": "SELECT [Asin], [OriginalSku], [MSKU], [Quantity] FROM [AmazonListing] WHERE [Asin] <> '#N/A'"
-    },
-    {
-        "input": "Show OTC sales with order numbers, quantities, and amounts for orders placed in 2023.",
-        "query": "SELECT [OrderNo], TRY_CAST([Quantity] AS INT) AS Quantity, TRY_CAST([Amount] AS DECIMAL(10,2)) AS Amount FROM [tbl_OTCSale] WHERE TRY_CONVERT(DATE, [OrderDate], 105) BETWEEN '2023-01-01' AND '2023-12-31'"
-    },
-    {
-        "input": "List all Autofurnish orders with their totals, ordered by highest amount first.",
-        "query": "SELECT [OrderNo], [Total] FROM [Autofurnish_OrderS] WHERE [Total] IS NOT NULL ORDER BY [Total] DESC"
-    },
-    {
-        "input": "Show inventory details with warehouse and rack information for products with status 'Active'.",
-        "query": "SELECT i.[UniqueCode], i.[MSKU], w.[Name] AS Warehouse, r.[Name] AS Rack, s.[StatusName] FROM [InventoryDetail] i LEFT JOIN [tbl_Warehouse] w ON i.[WarehouseId] = w.[ID] LEFT JOIN [tbl_Rack] r ON i.[RackId] = r.[ID] LEFT JOIN [StatusMaster] s ON i.[Status] = s.[Id] WHERE s.[StatusName] = 'Active'"
-    },
-    {
-        "input": "Find all Amazon orders with their SKUs and quantities.",
-        "query": "SELECT [OrderId], [SKU], TRY_CAST([Quantity] AS INT) AS Quantity FROM [tbl_Amazon] WHERE [OrderId] IS NOT NULL"
-    },
-    {
-        "input": "List order items with their SKUs, quantities, and prices for order INV-GMPL-15192.",
-        "query": "SELECT [Lineitem_sku], [Lineitem_quantity], [Lineitem_price] FROM [AF_OrderItemS] WHERE [AFOrderId] = 'INV-GMPL-15192'"
-    },
-    {
-        "input": "Show the total sales amount by company for OTC sales.",
-        "query": "SELECT c.[CompanyName], SUM(TRY_CAST(o.[Amount] AS DECIMAL(10,2))) AS TotalSales FROM [tbl_OTCSale] o JOIN [Company_mapping] m ON TRY_CAST(o.[CompanyBillID] AS INT) = m.[ID] JOIN [Company] c ON m.[CompanyId] = c.[ID] GROUP BY c.[CompanyName] HAVING SUM(TRY_CAST(o.[Amount] AS DECIMAL(10,2))) > 0"
-    },
-    {
-        "input": "Find products that are listed on Amazon but have no inventory in the warehouse.",
-        "query": "SELECT a.[OriginalSku], a.[MSKU], p.[ProductName] FROM [AmazonListing] a JOIN [ProductMaster] p ON a.[OriginalSku] = p.[SKU] LEFT JOIN [InventoryDetail] i ON p.[MSKU] = i.[MSKU] WHERE i.[UniqueCode] IS NULL AND a.[OriginalSku] IS NOT NULL"
-    },
-    {
-        "input": "Show the top 5 most frequently ordered products across all channels.",
-        "query": "SELECT TOP 5 p.[SKU], p.[ProductName], COUNT(*) AS OrderCount FROM ( SELECT [ProductID] FROM [tbl_OTCSale] WHERE [ProductID] IS NOT NULL UNION ALL SELECT pm.[ID] FROM [tbl_Amazon] a JOIN [AmazonListing] al ON a.[SKU] = al.[Sku] JOIN [ProductMaster] pm ON al.[OriginalSku] = pm.[SKU] UNION ALL SELECT pm.[ID] FROM [AF_OrderItemS] o JOIN [ProductMaster] pm ON o.[Lineitem_sku] = pm.[SKU] ) AS combined JOIN [ProductMaster] p ON combined.[ProductID] = p.[ID] GROUP BY p.[SKU], p.[ProductName] ORDER BY OrderCount DESC"
-    },
-    {
-        "input": "Calculate inventory turnover by warehouse for the last 6 months.",
-        "query": "WITH InventoryChanges AS ( SELECT [WarehouseId], [MSKU], [Status], COUNT(*) AS ChangeCount FROM [InventoryDetail] WHERE [ModifiedDate] >= DATEADD(MONTH, -6, GETDATE()) GROUP BY [WarehouseId], [MSKU], [Status] ) SELECT w.[Name] AS Warehouse, ROUND(SUM(CASE WHEN ic.[Status] = 0 THEN ic.[ChangeCount] ELSE 0 END) * 1.0 / NULLIF(SUM(CASE WHEN ic.[Status] = 4 THEN ic.[ChangeCount] ELSE 0 END), 0), 2) AS TurnoverRatio FROM InventoryChanges ic JOIN [tbl_Warehouse] w ON ic.[WarehouseId] = w.[ID] GROUP BY w.[Name] HAVING SUM(CASE WHEN ic.[Status] = 4 THEN ic.[ChangeCount] ELSE 0 END) > 0"
-    }
+  {
+    "input": "Get all racks and their corresponding warehouse names.",
+    "query": "SELECT r.[Name] AS RackName, w.[Name] AS WarehouseName FROM [tbl_Rack_GMPL] r INNER JOIN [tbl_Warehouse_GMPL] w ON r.[WarehouseId] = w.[ID]"
+  },
+  {
+    "input": "Show all active products with their MSKU and status.",
+    "query": "SELECT [SKU], [MSKU], [ProductName], [ProductStatus] FROM [ProductMaster_GMPL] WHERE [IsActive] = 1 AND [IsDeleted] = 0"
+  },
+  {
+    "input": "Find orders placed by Autofurnish customers in June 2024.",
+    "query": "SELECT [OrderNo], [Created_at], [Total] FROM [Autofurnish_OrderS_GMPL] WHERE TRY_CONVERT(DATE, [Created_at], 105) BETWEEN '2024-06-01' AND '2024-06-30'"
+  },
+  {
+    "input": "Show all Amazon listings that are inactive but have quantity more than 0.",
+    "query": "SELECT [OriginalSku], [MSKU], [Quantity], [IsActive] FROM [AmazonListing_GMPL] WHERE [IsActive] = 0 AND [Quantity] > 0"
+  },
+  {
+    "input": "List all warehouses with the number of inventory items they hold.",
+    "query": "SELECT w.[Name] AS Warehouse, COUNT(i.[Id]) AS InventoryCount FROM [tbl_Warehouse_GMPL] w LEFT JOIN [InventoryDetail_GMPL] i ON w.[ID] = i.[WarehouseId] GROUP BY w.[Name]"
+  },
+  {
+    "input": "Find all OTC sales where the selling price is more than \u20b91000.",
+    "query": "SELECT [OrderNo], [SKU], TRY_CAST([Selling_Price] AS DECIMAL(10,2)) AS SellingPrice FROM [tbl_OTCSale_GMPL] WHERE TRY_CAST([Selling_Price] AS DECIMAL(10,2)) > 1000"
+  },
+  {
+    "input": "Show all Amazon orders where invoice was generated.",
+    "query": "SELECT [OrderId], [InvoiceNo], [ProductName], [SKU] FROM [tbl_Amazon_GMPL] WHERE [IsInvoice] = 1"
+  },
+  {
+    "input": "Get all order items where price is above \u20b9500 and has discount.",
+    "query": "SELECT [Lineitem_sku], [Lineitem_price], [Lineitem_discount] FROM [AF_OrderItemS_GMPL] WHERE [Lineitem_price] > 500 AND [Lineitem_discount] > 0"
+  },
+  {
+    "input": "Show inventory items that were modified in the last 30 days.",
+    "query": "SELECT [Id], [MSKU], [ModifiedDate], [UniqueCode] FROM [InventoryDetail_GMPL] WHERE [ModifiedDate] >= DATEADD(DAY, -30, GETDATE())"
+  },
+  {
+    "input": "Find products with missing HSN codes.",
+    "query": "SELECT [SKU], [MSKU], [ProductName] FROM [ProductMaster_GMPL] WHERE [HSNCode] IS NULL OR [HSNCode] = ''"
+  },
+  {
+    "input": "List all active warehouses with their locations.",
+    "query": "SELECT [Name], [Location] FROM [tbl_Warehouse_GMPL] WHERE [IsActive] = 1"
+  },
+  {
+    "input": "Get all Amazon listings with missing ASIN values.",
+    "query": "SELECT [MSKU], [OriginalSku], [Asin] FROM [AmazonListing_GMPL] WHERE [Asin] IS NULL OR [Asin] = '#N/A'"
+  },
+  {
+    "input": "Find total OTC sale amount per product.",
+    "query": "SELECT [SKU], SUM(TRY_CAST([Amount] AS DECIMAL(10,2))) AS TotalAmount FROM [tbl_OTCSale_GMPL] GROUP BY [SKU]"
+  },
+  {
+    "input": "Show product inventory across all warehouses.",
+    "query": "SELECT i.[MSKU], p.[ProductName], w.[Name] AS WarehouseName FROM [InventoryDetail_GMPL] i JOIN [ProductMaster_GMPL] p ON i.[MSKU] = p.[MSKU] JOIN [tbl_Warehouse_GMPL] w ON i.[WarehouseId] = w.[ID]"
+  },
+  {
+    "input": "Get all Autofurnish orders with more than 3 items.",
+    "query": "SELECT [OrderNo], [Total], [Created_at] FROM [Autofurnish_OrderS_GMPL] WHERE [TotalItems] > 3"
+  },
+  {
+    "input": "Show average selling price of Amazon orders by SKU.",
+    "query": "SELECT [SKU], AVG(TRY_CAST([Selling_Price] AS DECIMAL(10,2))) AS AvgPrice FROM [tbl_Amazon_GMPL] GROUP BY [SKU]"
+  },
+  {
+    "input": "List all order items with zero quantity.",
+    "query": "SELECT [Lineitem_sku], [Lineitem_quantity] FROM [AF_OrderItemS_GMPL] WHERE TRY_CAST([Lineitem_quantity] AS INT) = 0"
+  },
+  {
+    "input": "Find products that are active but not listed on Amazon.",
+    "query": "SELECT p.[SKU], p.[ProductName] FROM [ProductMaster_GMPL] p LEFT JOIN [AmazonListing_GMPL] a ON p.[SKU] = a.[OriginalSku] WHERE a.[OriginalSku] IS NULL AND p.[IsActive] = 1"
+  },
+  {
+    "input": "Count the number of racks per warehouse.",
+    "query": "SELECT w.[Name] AS WarehouseName, COUNT(r.[ID]) AS RackCount FROM [tbl_Warehouse_GMPL] w LEFT JOIN [tbl_Rack_GMPL] r ON w.[ID] = r.[WarehouseId] GROUP BY w.[Name]"
+  },
+  {
+    "input": "List all products with their last modified date, sorted by most recent.",
+    "query": "SELECT [SKU], [ProductName], [ModifiedDate] FROM [ProductMaster_GMPL] ORDER BY [ModifiedDate] DESC"
+  }
 ]

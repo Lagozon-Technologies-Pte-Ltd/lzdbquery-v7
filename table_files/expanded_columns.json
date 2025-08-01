@@ -784,12 +784,7 @@
       "Example2",
       "Example3"
     ]
-  }
-
-
-  /* ============================ */
-  /*     ProductMaster_GMPL       */
-  /* ============================ */
+  },
   {
     "column_name": "ProductMaster_GMPL.Id",
     "column_desc": "Primary key for ProductMaster table. Unique identifier for products.",
@@ -801,7 +796,12 @@
       "is_primary_key": true,
       "is_foreign_key": false
     },
-    "examples": [1, 2, 3, 1001, 1002]
+    "examples": [
+      1,
+      2,
+      3,
+      1001
+    ]
   },
   {
     "column_name": "ProductMaster_GMPL.SKU",
@@ -814,16 +814,1198 @@
       "is_primary_key": false,
       "is_foreign_key": false
     },
-    "examples": ["SKU001", "SKU002", "SKU003"]
+    "examples": [
+      "SKU001",
+      "SKU002",
+      "SKU003"
+    ]
   },
-  /* ... CONTINUE FOR ALL 60+ COLUMNS IN ProductMaster_GMPL ... */
-
-  /* ============================ */
-  /*     AmazonListing_GMPL       */
-  /* ============================ */
+  {
+    "column_name": "ProductMaster_GMPL.PSKU",
+    "column_desc": "PSKU of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example PSKU 1",
+      "Example PSKU 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ProductStatus",
+    "column_desc": "ProductStatus of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "nvarchar(150)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ProductStatus 1",
+      "Example ProductStatus 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.MasterCategoryId",
+    "column_desc": "MasterCategoryId value.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "int",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": true
+    },
+    "examples": [
+      0,
+      10,
+      50
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Category1",
+    "column_desc": "Category1 of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Category1 1",
+      "Example Category1 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Category2",
+    "column_desc": "Category2 of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Category2 1",
+      "Example Category2 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Category3",
+    "column_desc": "Category3 of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Category3 1",
+      "Example Category3 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Category4",
+    "column_desc": "Category4 of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Category4 1",
+      "Example Category4 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.SubCategory",
+    "column_desc": "SubCategory of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example SubCategory 1",
+      "Example SubCategory 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.CarBrand",
+    "column_desc": "CarBrand of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example CarBrand 1",
+      "Example CarBrand 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.CarModel",
+    "column_desc": "CarModel of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example CarModel 1",
+      "Example CarModel 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.CarYear",
+    "column_desc": "CarYear of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(20)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example CarYear 1",
+      "Example CarYear 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ProductSource",
+    "column_desc": "ProductSource of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "nvarchar(500)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ProductSource 1",
+      "Example ProductSource 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.MaterialSource",
+    "column_desc": "MaterialSource of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "nvarchar(500)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example MaterialSource 1",
+      "Example MaterialSource 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ProductModel",
+    "column_desc": "ProductModel of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ProductModel 1",
+      "Example ProductModel 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Manufacture",
+    "column_desc": "Manufacture of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Manufacture 1",
+      "Example Manufacture 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ProductName",
+    "column_desc": "ProductName of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(500)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ProductName 1",
+      "Example ProductName 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Weight",
+    "column_desc": "Weight of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(20)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Weight 1",
+      "Example Weight 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.HSNCode",
+    "column_desc": "HSNCode of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(20)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example HSNCode 1",
+      "Example HSNCode 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.GSTRate",
+    "column_desc": "GSTRate of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(20)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example GSTRate 1",
+      "Example GSTRate 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.MSP",
+    "column_desc": "MSP value.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "decimal(16, 2)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      0,
+      10,
+      50
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.WSPrice",
+    "column_desc": "WSPrice of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(20)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example WSPrice 1",
+      "Example WSPrice 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.RP",
+    "column_desc": "RP of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example RP 1",
+      "Example RP 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.AFcom",
+    "column_desc": "AFcom of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example AFcom 1",
+      "Example AFcom 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.MPPrice",
+    "column_desc": "MPPrice of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example MPPrice 1",
+      "Example MPPrice 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.MRP",
+    "column_desc": "MRP of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example MRP 1",
+      "Example MRP 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.MPTHProfit",
+    "column_desc": "MPTHProfit of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example MPTHProfit 1",
+      "Example MPTHProfit 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ProductDescription",
+    "column_desc": "ProductDescription of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ProductDescription 1",
+      "Example ProductDescription 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.TechSpecifications",
+    "column_desc": "TechSpecifications of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example TechSpecifications 1",
+      "Example TechSpecifications 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Highlights",
+    "column_desc": "Highlights of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Highlights 1",
+      "Example Highlights 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.AFHightlights",
+    "column_desc": "AFHightlights of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example AFHightlights 1",
+      "Example AFHightlights 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.AFProductDescription",
+    "column_desc": "AFProductDescription of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example AFProductDescription 1",
+      "Example AFProductDescription 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Varients",
+    "column_desc": "Varients of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Varients 1",
+      "Example Varients 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Color",
+    "column_desc": "Color of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Color 1",
+      "Example Color 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Material",
+    "column_desc": "Material of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Material 1",
+      "Example Material 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Height",
+    "column_desc": "Height of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Height 1",
+      "Example Height 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Width",
+    "column_desc": "Width of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Width 1",
+      "Example Width 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Length",
+    "column_desc": "Length of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Length 1",
+      "Example Length 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.Warranty",
+    "column_desc": "Warranty of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "nvarchar(600)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Warranty 1",
+      "Example Warranty 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.InTheBox",
+    "column_desc": "InTheBox of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example InTheBox 1",
+      "Example InTheBox 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink1",
+    "column_desc": "URL to product image 1.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink1.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink2",
+    "column_desc": "URL to product image 2.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink2.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink3",
+    "column_desc": "URL to product image 3.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink3.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink4",
+    "column_desc": "URL to product image 4.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink4.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink5",
+    "column_desc": "URL to product image 5.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink5.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink6",
+    "column_desc": "URL to product image 6.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink6.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink7",
+    "column_desc": "URL to product image 7.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink7.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink8",
+    "column_desc": "URL to product image 8.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink8.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink9",
+    "column_desc": "URL to product image 9.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink9.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink10",
+    "column_desc": "URL to product image 0.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink10.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink11",
+    "column_desc": "URL to product image 1.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink11.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink12",
+    "column_desc": "URL to product image 2.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink12.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink13",
+    "column_desc": "URL to product image 3.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink13.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink14",
+    "column_desc": "URL to product image 4.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink14.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink15",
+    "column_desc": "URL to product image 5.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink15.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink16",
+    "column_desc": "URL to product image 6.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink16.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink17",
+    "column_desc": "URL to product image 7.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink17.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink18",
+    "column_desc": "URL to product image 8.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink18.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink19",
+    "column_desc": "URL to product image 9.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink19.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ImageLink20",
+    "column_desc": "URL to product image 0.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "https://example.com/images/imagelink20.jpg"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.MetaTitle",
+    "column_desc": "MetaTitle of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example MetaTitle 1",
+      "Example MetaTitle 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.MetaKeywords",
+    "column_desc": "MetaKeywords of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example MetaKeywords 1",
+      "Example MetaKeywords 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.MetaDescription",
+    "column_desc": "MetaDescription of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example MetaDescription 1",
+      "Example MetaDescription 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ProductLink",
+    "column_desc": "ProductLink of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ProductLink 1",
+      "Example ProductLink 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.MSKU",
+    "column_desc": "MSKU of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(400)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example MSKU 1",
+      "Example MSKU 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.MName",
+    "column_desc": "MName of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example MName 1",
+      "Example MName 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.CreatedDate",
+    "column_desc": "Date when the Created was recorded.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "datetime",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "2024-01-01T00:00:00",
+      "2025-07-31T12:34:56"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.CreatedBy",
+    "column_desc": "CreatedBy of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example CreatedBy 1",
+      "Example CreatedBy 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ModifiedDate",
+    "column_desc": "Date when the Modified was recorded.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "datetime",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "2024-01-01T00:00:00",
+      "2025-07-31T12:34:56"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.ModifiedBy",
+    "column_desc": "ModifiedBy of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ModifiedBy 1",
+      "Example ModifiedBy 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.IsActive",
+    "column_desc": "Boolean flag for IsActive.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "bool",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      true,
+      false
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.IsDeleted",
+    "column_desc": "Boolean flag for IsDeleted.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "bool",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      true,
+      false
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.DWeight",
+    "column_desc": "DWeight of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "varchar(20)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example DWeight 1",
+      "Example DWeight 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.WarrantyInMonth",
+    "column_desc": "WarrantyInMonth value.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "int",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      0,
+      10,
+      50
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.EANNumber",
+    "column_desc": "EANNumber of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "nvarchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example EANNumber 1",
+      "Example EANNumber 2"
+    ]
+  },
+  {
+    "column_name": "ProductMaster_GMPL.OldMSKU",
+    "column_desc": "OldMSKU of the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "ProductMaster_GMPL",
+      "data_type": "nvarchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example OldMSKU 1",
+      "Example OldMSKU 2"
+    ]
+  },
   {
     "column_name": "AmazonListing_GMPL.Id",
-    "column_desc": "Primary key for AmazonListing table.",
+    "column_desc": "Primary key for AmazonListing table. Unique identifier for listings.",
     "metadata": {
       "type": "column",
       "table_name": "AmazonListing_GMPL",
@@ -832,36 +2014,225 @@
       "is_primary_key": true,
       "is_foreign_key": false
     },
-    "examples": [1, 2, 3]
+    "examples": [
+      101,
+      102,
+      103
+    ]
+  },
+  {
+    "column_name": "AmazonListing_GMPL.ProductName",
+    "column_desc": "ProductName of the listing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AmazonListing_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ProductName 1",
+      "Example ProductName 2"
+    ]
   },
   {
     "column_name": "AmazonListing_GMPL.OriginalSku",
-    "column_desc": "References ProductMaster_GMPL.SKU. Original SKU of the product listed on Amazon.",
+    "column_desc": "OriginalSku of the listing.",
     "metadata": {
       "type": "column",
       "table_name": "AmazonListing_GMPL",
       "data_type": "nvarchar(500)",
-      "nullable": false,
+      "nullable": true,
       "is_primary_key": false,
-      "is_foreign_key": true,
-      "joins": [
-        {
-          "table": "ProductMaster_GMPL",
-          "on": "SKU",
-          "join_type": "INNER JOIN"
-        }
-      ]
+      "is_foreign_key": false
     },
-    "examples": ["SKU001", "SKU002"]
+    "examples": [
+      "Example OriginalSku 1",
+      "Example OriginalSku 2"
+    ]
   },
-  /* ... CONTINUE FOR ALL COLUMNS IN AmazonListing_GMPL ... */
-
-  /* ============================ */
-  /*       tbl_Amazon_GMPL        */
-  /* ============================ */
+  {
+    "column_name": "AmazonListing_GMPL.Sku",
+    "column_desc": "Stock Keeping Unit (SKU) used for Amazon listings.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AmazonListing_GMPL",
+      "data_type": "nvarchar(255)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "AMZSKU123",
+      "AMZSKU456"
+    ]
+  },
+  {
+    "column_name": "AmazonListing_GMPL.Asin",
+    "column_desc": "Amazon Standard Identification Number (ASIN) for the product.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AmazonListing_GMPL",
+      "data_type": "nvarchar(255)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "B01N1SE4EP",
+      "B07HGBMJT6"
+    ]
+  },
+  {
+    "column_name": "AmazonListing_GMPL.ZooCode",
+    "column_desc": "ZooCode of the listing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AmazonListing_GMPL",
+      "data_type": "nvarchar(255)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ZooCode 1",
+      "Example ZooCode 2"
+    ]
+  },
+  {
+    "column_name": "AmazonListing_GMPL.MRP",
+    "column_desc": "MRP value for the product listing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AmazonListing_GMPL",
+      "data_type": "int",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      0,
+      10,
+      100
+    ]
+  },
+  {
+    "column_name": "AmazonListing_GMPL.Brand",
+    "column_desc": "Brand of the listing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AmazonListing_GMPL",
+      "data_type": "nvarchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Brand 1",
+      "Example Brand 2"
+    ]
+  },
+  {
+    "column_name": "AmazonListing_GMPL.Type",
+    "column_desc": "Type of the listing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AmazonListing_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Type 1",
+      "Example Type 2"
+    ]
+  },
+  {
+    "column_name": "AmazonListing_GMPL.Sellable",
+    "column_desc": "Sellable of the listing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AmazonListing_GMPL",
+      "data_type": "nvarchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Sellable 1",
+      "Example Sellable 2"
+    ]
+  },
+  {
+    "column_name": "AmazonListing_GMPL.Quantity",
+    "column_desc": "Quantity value for the product listing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AmazonListing_GMPL",
+      "data_type": "int",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      0,
+      10,
+      100
+    ]
+  },
+  {
+    "column_name": "AmazonListing_GMPL.IsActive",
+    "column_desc": "Boolean flag indicating if the listing is active.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AmazonListing_GMPL",
+      "data_type": "bool",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      true,
+      false
+    ]
+  },
+  {
+    "column_name": "AmazonListing_GMPL.MSP",
+    "column_desc": "MSP of the listing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AmazonListing_GMPL",
+      "data_type": "nvarchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example MSP 1",
+      "Example MSP 2"
+    ]
+  },
+  {
+    "column_name": "AmazonListing_GMPL.MSKU",
+    "column_desc": "MSKU of the listing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AmazonListing_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example MSKU 1",
+      "Example MSKU 2"
+    ]
+  },
   {
     "column_name": "tbl_Amazon_GMPL.BillID",
-    "column_desc": "Primary key for tbl_Amazon table.",
+    "column_desc": "Primary key for tbl_Amazon. Unique bill identifier.",
     "metadata": {
       "type": "column",
       "table_name": "tbl_Amazon_GMPL",
@@ -870,36 +2241,2396 @@
       "is_primary_key": true,
       "is_foreign_key": false
     },
-    "examples": [1, 2, 3]
+    "examples": [
+      1001,
+      1002
+    ]
   },
   {
-    "column_name": "tbl_Amazon_GMPL.SKU",
-    "column_desc": "References AmazonListing_GMPL.Sku. Amazon-specific SKU for the product.",
+    "column_name": "tbl_Amazon_GMPL.OrderId",
+    "column_desc": "OrderId related to the order.",
     "metadata": {
       "type": "column",
       "table_name": "tbl_Amazon_GMPL",
       "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example OrderId 1",
+      "Example OrderId 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.OrderItemId",
+    "column_desc": "OrderItemId related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example OrderItemId 1",
+      "Example OrderItemId 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.PurchaseDate",
+    "column_desc": "PurchaseDate for the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "2024-01-01",
+      "2025-07-31"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.PaymentDate",
+    "column_desc": "PaymentDate for the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "2024-01-01",
+      "2025-07-31"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.BuyerName",
+    "column_desc": "BuyerName related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example BuyerName 1",
+      "Example BuyerName 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.BuyerPhoneNo",
+    "column_desc": "BuyerPhoneNo related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example BuyerPhoneNo 1",
+      "Example BuyerPhoneNo 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.SKU",
+    "column_desc": "SKU related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example SKU 1",
+      "Example SKU 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ProductName",
+    "column_desc": "ProductName related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ProductName 1",
+      "Example ProductName 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.Quantity",
+    "column_desc": "Quantity related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Quantity 1",
+      "Example Quantity 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ItemPrice",
+    "column_desc": "ItemPrice related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ItemPrice 1",
+      "Example ItemPrice 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ShippAddress1",
+    "column_desc": "ShippAddress1 related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ShippAddress1 1",
+      "Example ShippAddress1 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ShippAddress2",
+    "column_desc": "ShippAddress2 related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ShippAddress2 1",
+      "Example ShippAddress2 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ShippAddress3",
+    "column_desc": "ShippAddress3 related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ShippAddress3 1",
+      "Example ShippAddress3 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ShippCity",
+    "column_desc": "ShippCity related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ShippCity 1",
+      "Example ShippCity 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ShippState",
+    "column_desc": "ShippState related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ShippState 1",
+      "Example ShippState 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ShippCode",
+    "column_desc": "ShippCode related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ShippCode 1",
+      "Example ShippCode 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.IsInvoice",
+    "column_desc": "Boolean flag indicating if Invoice is applicable.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "bit",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      true,
+      false
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.InvoiceNo",
+    "column_desc": "InvoiceNo related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example InvoiceNo 1",
+      "Example InvoiceNo 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.Fulfilled",
+    "column_desc": "Fulfilled related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Fulfilled 1",
+      "Example Fulfilled 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.Status",
+    "column_desc": "Status related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Status 1",
+      "Example Status 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ModifiedOn",
+    "column_desc": "ModifiedOn related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ModifiedOn 1",
+      "Example ModifiedOn 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ModifiedBy",
+    "column_desc": "ModifiedBy related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ModifiedBy 1",
+      "Example ModifiedBy 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.Tax",
+    "column_desc": "Tax related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Tax 1",
+      "Example Tax 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.AirwaybillNo",
+    "column_desc": "AirwaybillNo related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(150)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example AirwaybillNo 1",
+      "Example AirwaybillNo 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.CourierName",
+    "column_desc": "CourierName related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(150)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example CourierName 1",
+      "Example CourierName 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.IsManifest",
+    "column_desc": "Boolean flag indicating if Manifest is applicable.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "bool",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      true,
+      false
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ManifestDate",
+    "column_desc": "ManifestDate for the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "datetime",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "2024-01-01",
+      "2025-07-31"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.HSN_Code",
+    "column_desc": "HSN Code related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example HSN_Code 1",
+      "Example HSN_Code 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.DRTO_Remarks",
+    "column_desc": "DRTO Remarks related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example DRTO_Remarks 1",
+      "Example DRTO_Remarks 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ShippingPrice",
+    "column_desc": "ShippingPrice related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ShippingPrice 1",
+      "Example ShippingPrice 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ShippingTax",
+    "column_desc": "ShippingTax related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ShippingTax 1",
+      "Example ShippingTax 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.ItemTax",
+    "column_desc": "ItemTax related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "varchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ItemTax 1",
+      "Example ItemTax 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.RTOType",
+    "column_desc": "RTOType related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "nvarchar(500)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example RTOType 1",
+      "Example RTOType 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.RTODeliveryDate",
+    "column_desc": "RTODeliveryDate for the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "nvarchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "2024-01-01",
+      "2025-07-31"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.RTOTrackingId",
+    "column_desc": "RTOTrackingId related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "nvarchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example RTOTrackingId 1",
+      "Example RTOTrackingId 2"
+    ]
+  },
+  {
+    "column_name": "tbl_Amazon_GMPL.RTOCourierName",
+    "column_desc": "RTOCourierName related to the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Amazon_GMPL",
+      "data_type": "nvarchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example RTOCourierName 1",
+      "Example RTOCourierName 2"
+    ]
+  },
+    {
+    "column_name": "tbl_AmazonFlex_GMPL.Id",
+    "column_desc": "Primary key for tbl_AmazonFlex. Unique identifier for each record.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "int",
+      "nullable": false,
+      "is_primary_key": true,
+      "is_foreign_key": false
+    },
+    "examples": [
+      1,
+      2,
+      100
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.amazonorderid",
+    "column_desc": "Amazonorderid related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example amazonorderid 1",
+      "Example amazonorderid 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.merchantorderid",
+    "column_desc": "Merchantorderid related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example merchantorderid 1",
+      "Example merchantorderid 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.purchasedate",
+    "column_desc": "purchasedate related to order lifecycle.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "2024-01-01",
+      "2025-07-31"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.lastupdateddate",
+    "column_desc": "lastupdateddate related to order lifecycle.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "2024-01-01",
+      "2025-07-31"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.orderstatus",
+    "column_desc": "Orderstatus related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example orderstatus 1",
+      "Example orderstatus 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.fulfillmentchannel",
+    "column_desc": "Fulfillmentchannel related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example fulfillmentchannel 1",
+      "Example fulfillmentchannel 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.saleschannel",
+    "column_desc": "Saleschannel related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example saleschannel 1",
+      "Example saleschannel 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.orderchannel",
+    "column_desc": "Orderchannel related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example orderchannel 1",
+      "Example orderchannel 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.url",
+    "column_desc": "Url related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example url 1",
+      "Example url 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.shipservicelevel",
+    "column_desc": "Shipservicelevel related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example shipservicelevel 1",
+      "Example shipservicelevel 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.productname",
+    "column_desc": "Productname related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example productname 1",
+      "Example productname 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.sku",
+    "column_desc": "Sku related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example sku 1",
+      "Example sku 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.asin",
+    "column_desc": "Asin related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example asin 1",
+      "Example asin 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.itemstatus",
+    "column_desc": "Itemstatus related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example itemstatus 1",
+      "Example itemstatus 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.quantity",
+    "column_desc": "Numeric value representing quantity.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "int",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      10,
+      100,
+      999
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.currency",
+    "column_desc": "Currency related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example currency 1",
+      "Example currency 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.itemprice",
+    "column_desc": "Numeric value representing itemprice.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "decimal(16, 0)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      10,
+      100,
+      999
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.itemtax",
+    "column_desc": "Itemtax related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(255)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example itemtax 1",
+      "Example itemtax 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.shippingprice",
+    "column_desc": "Shippingprice related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(255)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example shippingprice 1",
+      "Example shippingprice 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.shippingtax",
+    "column_desc": "Shippingtax related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(255)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example shippingtax 1",
+      "Example shippingtax 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.giftwrapprice",
+    "column_desc": "Giftwrapprice related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(255)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example giftwrapprice 1",
+      "Example giftwrapprice 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.giftwraptax",
+    "column_desc": "Giftwraptax related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(255)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example giftwraptax 1",
+      "Example giftwraptax 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.itempromotiondiscount",
+    "column_desc": "Itempromotiondiscount related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example itempromotiondiscount 1",
+      "Example itempromotiondiscount 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.shippromotiondiscount",
+    "column_desc": "Shippromotiondiscount related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example shippromotiondiscount 1",
+      "Example shippromotiondiscount 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.shipcity",
+    "column_desc": "Shipcity related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example shipcity 1",
+      "Example shipcity 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.shipstate",
+    "column_desc": "Shipstate related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example shipstate 1",
+      "Example shipstate 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.shippostalcode",
+    "column_desc": "Numeric value representing shippostalcode.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "int",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      10,
+      100,
+      999
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.shipcountry",
+    "column_desc": "Shipcountry related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example shipcountry 1",
+      "Example shipcountry 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.promotionids",
+    "column_desc": "Promotionids related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example promotionids 1",
+      "Example promotionids 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.isbusinessorder",
+    "column_desc": "Boolean flag for Businessorder.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "bool",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      true,
+      false
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.purchaseordernumber",
+    "column_desc": "Purchaseordernumber related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example purchaseordernumber 1",
+      "Example purchaseordernumber 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.pricedesignation",
+    "column_desc": "Pricedesignation related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example pricedesignation 1",
+      "Example pricedesignation 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.fulfilledby",
+    "column_desc": "Fulfilledby related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example fulfilledby 1",
+      "Example fulfilledby 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.buyercompanyname",
+    "column_desc": "Buyercompanyname related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example buyercompanyname 1",
+      "Example buyercompanyname 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.buyercstnumber",
+    "column_desc": "Buyercstnumber related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example buyercstnumber 1",
+      "Example buyercstnumber 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.buyervatnumber",
+    "column_desc": "Buyervatnumber related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example buyervatnumber 1",
+      "Example buyervatnumber 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.buyertaxregistrationid",
+    "column_desc": "Buyertaxregistrationid related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example buyertaxregistrationid 1",
+      "Example buyertaxregistrationid 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.buyertaxregistrationcountry",
+    "column_desc": "Buyertaxregistrationcountry related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example buyertaxregistrationcountry 1",
+      "Example buyertaxregistrationcountry 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.buyertaxregistrationtype",
+    "column_desc": "Buyertaxregistrationtype related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example buyertaxregistrationtype 1",
+      "Example buyertaxregistrationtype 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.isInvoice",
+    "column_desc": "Boolean flag for Invoice.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "bool",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      true,
+      false
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.ModifiedOn",
+    "column_desc": "ModifiedOn detail.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "datetime",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample value 1",
+      "Sample value 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.ModifiedBy",
+    "column_desc": "Modifiedby related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(150)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example ModifiedBy 1",
+      "Example ModifiedBy 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.Tax",
+    "column_desc": "Tax related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example Tax 1",
+      "Example Tax 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.HSN_Code",
+    "column_desc": "Hsn code related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "varchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example HSN_Code 1",
+      "Example HSN_Code 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.DRTO_Remarks",
+    "column_desc": "Drto remarks related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example DRTO_Remarks 1",
+      "Example DRTO_Remarks 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.RTOType",
+    "column_desc": "Rtotype related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "nvarchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example RTOType 1",
+      "Example RTOType 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.RTODeliveryDate",
+    "column_desc": "RTODeliveryDate related to order lifecycle.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "nvarchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "2024-01-01",
+      "2025-07-31"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.RTOTrackingId",
+    "column_desc": "Rtotrackingid related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "nvarchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example RTOTrackingId 1",
+      "Example RTOTrackingId 2"
+    ]
+  },
+  {
+    "column_name": "tbl_AmazonFlex_GMPL.RTOCourierName",
+    "column_desc": "Rtocouriername related information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_AmazonFlex_GMPL",
+      "data_type": "nvarchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Example RTOCourierName 1",
+      "Example RTOCourierName 2"
+    ]
+  },
+    {
+    "column_name": "Autofurnish_OrderS.AFId",
+    "column_desc": "Primary key for Autofurnish_OrderS table. Unique identifier for each order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "int",
+      "nullable": false,
+      "is_primary_key": true,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.OrderNo",
+    "column_desc": "Order number as assigned by the system.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Email",
+    "column_desc": "Email address of the customer placing the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Financial_Status",
+    "column_desc": "Status of the payment, e.g., paid or pending.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Paid_at",
+    "column_desc": "Timestamp when the payment was completed.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Fulfillment_Status",
+    "column_desc": "Status of the order fulfillment.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Fulfilled_at",
+    "column_desc": "Timestamp when the order was fulfilled.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Accepts_Marketing",
+    "column_desc": "Indicates if the customer accepts marketing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Currency",
+    "column_desc": "Currency used for the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Subtotal",
+    "column_desc": "Subtotal of the order before taxes and discounts.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "decimal(16, 2)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping",
+    "column_desc": "Shipping amount or details.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Taxes",
+    "column_desc": "Tax amount or details.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Total",
+    "column_desc": "Total amount of the order after all charges.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "decimal(16, 2)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Discount_Code",
+    "column_desc": "Discount code used, if any.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Discount_Amount",
+    "column_desc": "Amount discounted from the total.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "decimal(16, 2)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping_Method",
+    "column_desc": "Method used for shipping.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Created_at",
+    "column_desc": "Timestamp when the order was created.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Billing_Name",
+    "column_desc": "Name on the billing information.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Billing_Street",
+    "column_desc": "Street address for billing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Billing_Address1",
+    "column_desc": "First line of billing address.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Billing_Address2",
+    "column_desc": "Second line of billing address.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Billing_Company",
+    "column_desc": "Company name for billing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Billing_City",
+    "column_desc": "City for billing address.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Billing_Zip",
+    "column_desc": "ZIP/postal code for billing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Billing_Province",
+    "column_desc": "Province/state for billing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Billing_Country",
+    "column_desc": "Country for billing.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Billing_Phone",
+    "column_desc": "Phone number for billing contact.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping_Name",
+    "column_desc": "Recipient's name for shipping.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping_Street",
+    "column_desc": "Street address for shipping.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping_Address1",
+    "column_desc": "First line of shipping address.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping_Address2",
+    "column_desc": "Second line of shipping address.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping_Company",
+    "column_desc": "Company name for shipping.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping_City",
+    "column_desc": "City for shipping address.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping_Zip",
+    "column_desc": "ZIP/postal code for shipping.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping_Province",
+    "column_desc": "Province/state for shipping.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping_Country",
+    "column_desc": "Country for shipping.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping_Phone",
+    "column_desc": "Phone number for shipping contact.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Notes",
+    "column_desc": "Additional notes on the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Note_Attributes",
+    "column_desc": "Attributes related to the note.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Cancelled_at",
+    "column_desc": "Timestamp when the order was cancelled.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Payment_Method",
+    "column_desc": "Method used for payment.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Payment_Reference",
+    "column_desc": "Reference ID for payment.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Refunded_Amount",
+    "column_desc": "Amount refunded for the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "decimal(16, 2)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Id",
+    "column_desc": "Shopify or external platform ID.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Tags",
+    "column_desc": "Tags or labels associated with the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Risk_Level",
+    "column_desc": "Risk level of the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Source",
+    "column_desc": "Source platform or channel of the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Tax1_Name",
+    "column_desc": "Name of the first tax applied.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Tax1_Value",
+    "column_desc": "Value of the first tax applied.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "decimal(16, 2)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Tax2_Name",
+    "column_desc": "Name of the second tax applied.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Tax2_Value",
+    "column_desc": "Value of the second tax applied.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "decimal(16, 2)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Tax3_Name",
+    "column_desc": "Name of the third tax applied.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Tax3_Value",
+    "column_desc": "Value of the third tax applied.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "decimal(16, 2)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Tax4_Name",
+    "column_desc": "Name of the fourth tax applied.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Tax4_Value",
+    "column_desc": "Value of the fourth tax applied.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "decimal(16, 2)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Tax5_Name",
+    "column_desc": "Name of the fifth tax applied.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Tax5_Value",
+    "column_desc": "Value of the fifth tax applied.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "decimal(16, 2)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Phone",
+    "column_desc": "Phone number of the customer.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Receipt_Number",
+    "column_desc": "Receipt number for the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Duties",
+    "column_desc": "Duties or fees applied.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Billing_Province_Name",
+    "column_desc": "Full name of billing province.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Shipping_Province_Name",
+    "column_desc": "Full name of shipping province.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Payment_ID",
+    "column_desc": "Unique identifier for payment.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Payment_Terms_Name",
+    "column_desc": "Name of the payment terms.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Next_Payment_Due_At",
+    "column_desc": "Timestamp for next payment due.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+  {
+    "column_name": "Autofurnish_OrderS.Payment_References",
+    "column_desc": "Reference IDs for payments.",
+    "metadata": {
+      "type": "column",
+      "table_name": "Autofurnish_OrderS",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": []
+  },
+{
+    "column_name": "AF_OrderItemS_GMPL.Id",
+    "column_desc": "Primary key for the order item.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AF_OrderItemS_GMPL",
+      "data_type": "int",
+      "nullable": false,
+      "is_primary_key": true,
+      "is_foreign_key": false
+    },
+    "examples": [1, 2, 3]
+  },
+  {
+    "column_name": "AF_OrderItemS_GMPL.AFOrderId",
+    "column_desc": "Reference ID for the order to which this item belongs.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AF_OrderItemS_GMPL",
+      "data_type": "nvarchar(MAX)",
       "nullable": false,
       "is_primary_key": false,
-      "is_foreign_key": true,
-      "joins": [
-        {
-          "table": "AmazonListing_GMPL",
-          "on": "Sku",
-          "join_type": "INNER JOIN"
-        }
-      ]
+      "is_foreign_key": false
     },
-    "examples": ["AMZSKU001", "AMZSKU002"]
+    "examples": ["ORD123", "ORD456"]
   },
-  /* ... CONTINUE FOR ALL 30+ COLUMNS IN tbl_Amazon_GMPL ... */
+  {
+    "column_name": "AF_OrderItemS_GMPL.Lineitem_quantity",
+    "column_desc": "Quantity of the item in the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AF_OrderItemS_GMPL",
+      "data_type": "int",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [1, 3, 5]
+  },
+  {
+    "column_name": "AF_OrderItemS_GMPL.Lineitem_name",
+    "column_desc": "Name of the item in the order.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AF_OrderItemS_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["Car Seat Cover", "Steering Wheel"]
+  },
+  {
+    "column_name": "AF_OrderItemS_GMPL.Lineitem_price",
+    "column_desc": "Price of the line item.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AF_OrderItemS_GMPL",
+      "data_type": "decimal(16, 2)",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [499.99, 1299.50]
+  },
+  {
+    "column_name": "AF_OrderItemS_GMPL.Lineitem_compare_at_price",
+    "column_desc": "Original price before discount.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AF_OrderItemS_GMPL",
+      "data_type": "decimal(16, 2)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [599.99, 1399.00]
+  },
+  {
+    "column_name": "AF_OrderItemS_GMPL.Lineitem_sku",
+    "column_desc": "Stock Keeping Unit (SKU) for the item.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AF_OrderItemS_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["SKU001", "SKU002"]
+  },
+  {
+    "column_name": "AF_OrderItemS_GMPL.Lineitem_requires_shipping",
+    "column_desc": "Specifies if the item requires shipping.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AF_OrderItemS_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["true", "false"]
+  },
+  {
+    "column_name": "AF_OrderItemS_GMPL.Lineitem_taxable",
+    "column_desc": "Specifies if the item is taxable.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AF_OrderItemS_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["true", "false"]
+  },
+  {
+    "column_name": "AF_OrderItemS_GMPL.Lineitem_fulfillment_status",
+    "column_desc": "Fulfillment status of the item (e.g., fulfilled, unfulfilled).",
+    "metadata": {
+      "type": "column",
+      "table_name": "AF_OrderItemS_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["fulfilled", "unfulfilled"]
+  },
+  {
+    "column_name": "AF_OrderItemS_GMPL.Lineitem_discount",
+    "column_desc": "Discount applied to the item.",
+    "metadata": {
+      "type": "column",
+      "table_name": "AF_OrderItemS_GMPL",
+      "data_type": "decimal(16, 2)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [0.00, 150.75]
+  },
 
-  /* ============================ */
-  /*     InventoryDetail_GMPL     */
-  /* ============================ */
   {
     "column_name": "InventoryDetail_GMPL.Id",
-    "column_desc": "Primary key for InventoryDetail table.",
+    "column_desc": "Id column of the InventoryDetail_GMPL table.",
     "metadata": {
       "type": "column",
       "table_name": "InventoryDetail_GMPL",
@@ -908,7 +4639,399 @@
       "is_primary_key": true,
       "is_foreign_key": false
     },
-    "examples": [1, 2, 3]
+    "examples": [
+      4453
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.WarehouseId",
+    "column_desc": "WarehouseId column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "int",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": true
+    },
+    "examples": [
+      6376
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.RackId",
+    "column_desc": "RackId column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "int",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": true
+    },
+    "examples": [
+      1411
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.ManufactureUnitId",
+    "column_desc": "ManufactureUnitId column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "int",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": true
+    },
+    "examples": [
+      2463
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.BatchNo",
+    "column_desc": "BatchNo column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "int",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      4166
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.MSKU",
+    "column_desc": "MSKU column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "nvarchar(500)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample98"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.UniqueCode",
+    "column_desc": "UniqueCode column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "nvarchar(500)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample88"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.IsOut",
+    "column_desc": "IsOut column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "bit",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample34"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.OpenInventory",
+    "column_desc": "OpenInventory column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "bit",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample25"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.InventoryType",
+    "column_desc": "InventoryType column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "nvarchar(500)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample54"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.Published",
+    "column_desc": "Published column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "bit",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample100"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.CreatedBy",
+    "column_desc": "CreatedBy column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "nvarchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample14"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.CreatedDate",
+    "column_desc": "CreatedDate column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "datetime",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample88"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.ModifiedBy",
+    "column_desc": "ModifiedBy column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "nvarchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample56"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.ModifiedDate",
+    "column_desc": "ModifiedDate column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "datetime",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample61"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.Comment",
+    "column_desc": "Comment column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample78"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.IsHold",
+    "column_desc": "IsHold column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "bool",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample13"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.Status",
+    "column_desc": "Status column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "int",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      7201
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.MoveFromWarehouseId",
+    "column_desc": "MoveFromWarehouseId column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "int",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": true
+    },
+    "examples": [
+      3905
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.MoveBy",
+    "column_desc": "MoveBy column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "nvarchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample59"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.MoveDate",
+    "column_desc": "MoveDate column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "datetime",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample43"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.Description",
+    "column_desc": "Description column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample85"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.IsDeleted",
+    "column_desc": "IsDeleted column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "bool",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample38"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.ReferenceNo",
+    "column_desc": "ReferenceNo column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "nvarchar(500)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample97"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.MSP",
+    "column_desc": "MSP column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "decimal(16, 2)",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      2775
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.HandoverSticker",
+    "column_desc": "HandoverSticker column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "nvarchar(200)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample14"
+    ]
+  },
+  {
+    "column_name": "InventoryDetail_GMPL.EANNumber",
+    "column_desc": "EANNumber column of the InventoryDetail_GMPL table.",
+    "metadata": {
+      "type": "column",
+      "table_name": "InventoryDetail_GMPL",
+      "data_type": "nvarchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [
+      "Sample19"
+    ]
   },
   {
     "column_name": "InventoryDetail_GMPL.MSKU",
@@ -930,14 +5053,9 @@
     },
     "examples": ["MSKU001", "MSKU002"]
   },
-  /* ... CONTINUE FOR ALL COLUMNS IN InventoryDetail_GMPL ... */
-
-  /* ============================ */
-  /*     tbl_Warehouse_GMPL       */
-  /* ============================ */
   {
-    "column_name": "tbl_Warehouse_GMPL.ID",
-    "column_desc": "Primary key for tbl_Warehouse table. Unique identifier for warehouses.",
+    "column_name": "tbl_Warehouse_GMPL.Id",
+    "column_desc": "Primary key for the warehouse.",
     "metadata": {
       "type": "column",
       "table_name": "tbl_Warehouse_GMPL",
@@ -948,14 +5066,152 @@
     },
     "examples": [1, 2, 3]
   },
-  /* ... CONTINUE FOR ALL COLUMNS IN tbl_Warehouse_GMPL ... */
-
-  /* ============================ */
-  /*       tbl_Rack_GMPL          */
-  /* ============================ */
   {
-    "column_name": "tbl_Rack_GMPL.ID",
-    "column_desc": "Primary key for tbl_Rack table.",
+    "column_name": "tbl_Warehouse_GMPL.Name",
+    "column_desc": "Name of the warehouse.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Warehouse_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["Main Warehouse", "Secondary Depot"]
+  },
+  {
+    "column_name": "tbl_Warehouse_GMPL.UniqueId",
+    "column_desc": "Unique identifier for the warehouse.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Warehouse_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": false,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["WH001", "WH002"]
+  },
+  {
+    "column_name": "tbl_Warehouse_GMPL.Address",
+    "column_desc": "Full address of the warehouse.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Warehouse_GMPL",
+      "data_type": "nvarchar(MAX)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["123 Industrial Area, Sector 5", "Plot 45, Phase 2, Bypass Road"]
+  },
+  {
+    "column_name": "tbl_Warehouse_GMPL.City",
+    "column_desc": "City where the warehouse is located.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Warehouse_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["Delhi", "Mumbai"]
+  },
+  {
+    "column_name": "tbl_Warehouse_GMPL.State",
+    "column_desc": "State where the warehouse is located.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Warehouse_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["Maharashtra", "Haryana"]
+  },
+  {
+    "column_name": "tbl_Warehouse_GMPL.Country",
+    "column_desc": "Country where the warehouse is located.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Warehouse_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["India"]
+  },
+  {
+    "column_name": "tbl_Warehouse_GMPL.Pincode",
+    "column_desc": "Postal code of the warehouse location.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Warehouse_GMPL",
+      "data_type": "nvarchar(6)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["110001", "400053"]
+  },
+  {
+    "column_name": "tbl_Warehouse_GMPL.PhoneNo",
+    "column_desc": "Contact number of the warehouse.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Warehouse_GMPL",
+      "data_type": "nvarchar(10)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["9876543210", "9123456789"]
+  },
+  {
+    "column_name": "tbl_Warehouse_GMPL.CreatedBy",
+    "column_desc": "User who created the warehouse entry.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Warehouse_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["admin", "system"]
+  },
+  {
+    "column_name": "tbl_Warehouse_GMPL.CreatedOn",
+    "column_desc": "Timestamp of when the warehouse was added.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Warehouse_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["2023-06-01", "2023-08-10"]
+  },
+  {
+    "column_name": "tbl_Warehouse_GMPL.IsActive",
+    "column_desc": "Indicates whether the warehouse is currently active.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Warehouse_GMPL",
+      "data_type": "bool",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [true, false]
+  },
+{
+    "column_name": "tbl_Rack_GMPL.Id",
+    "column_desc": "Primary key for the rack.",
     "metadata": {
       "type": "column",
       "table_name": "tbl_Rack_GMPL",
@@ -967,33 +5223,86 @@
     "examples": [1, 2, 3]
   },
   {
+    "column_name": "tbl_Rack_GMPL.Name",
+    "column_desc": "Name or label of the rack.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Rack_GMPL",
+      "data_type": "nvarchar(100)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["Rack A1", "Rack B2", "Rack C3"]
+  },
+  {
     "column_name": "tbl_Rack_GMPL.WarehouseId",
-    "column_desc": "Foreign key referencing tbl_Warehouse_GMPL.ID. Links racks to their warehouse.",
+    "column_desc": "Foreign key referencing the warehouse where the rack is located.",
     "metadata": {
       "type": "column",
       "table_name": "tbl_Rack_GMPL",
       "data_type": "int",
-      "nullable": false,
+      "nullable": true,
       "is_primary_key": false,
-      "is_foreign_key": true,
-      "joins": [
-        {
-          "table": "tbl_Warehouse_GMPL",
-          "on": "ID",
-          "join_type": "INNER JOIN"
-        }
-      ]
+      "is_foreign_key": true
     },
-    "examples": [1, 2, 3]
+    "examples": [10, 12, 14]
   },
-  /* ... CONTINUE FOR ALL COLUMNS IN tbl_Rack_GMPL ... */
-
-  /* ============================ */
-  /*     StatusMaster_GMPL        */
-  /* ============================ */
   {
-    "column_name": "StatusMaster_GMPL.ID",
-    "column_desc": "Primary key for StatusMaster table. Unique identifier for status types.",
+    "column_name": "tbl_Rack_GMPL.Floor",
+    "column_desc": "Floor number or level of the rack in the warehouse.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Rack_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["Ground", "First", "Second"]
+  },
+  {
+    "column_name": "tbl_Rack_GMPL.UniqueId",
+    "column_desc": "System-generated unique identifier for the rack.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Rack_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["RCK123", "RCK456", "RCK789"]
+  },
+  {
+    "column_name": "tbl_Rack_GMPL.CreatedBy",
+    "column_desc": "Name or ID of the user who created the rack entry.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Rack_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["admin", "system", "user1"]
+  },
+  {
+    "column_name": "tbl_Rack_GMPL.CreatedOn",
+    "column_desc": "Date and time the rack entry was created.",
+    "metadata": {
+      "type": "column",
+      "table_name": "tbl_Rack_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["2023-07-01", "2023-08-15"]
+  },
+  {
+    "column_name": "StatusMaster_GMPL.Id",
+    "column_desc": "Primary key for StatusMaster table.",
     "metadata": {
       "type": "column",
       "table_name": "StatusMaster_GMPL",
@@ -1003,5 +5312,70 @@
       "is_foreign_key": false
     },
     "examples": [1, 2, 3]
+  },
+  {
+    "column_name": "StatusMaster_GMPL.StatusType",
+    "column_desc": "Type/category of the status.",
+    "metadata": {
+      "type": "column",
+      "table_name": "StatusMaster_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["Order", "Invoice", "Shipping"]
+  },
+  {
+    "column_name": "StatusMaster_GMPL.StatusName",
+    "column_desc": "Descriptive name of the status.",
+    "metadata": {
+      "type": "column",
+      "table_name": "StatusMaster_GMPL",
+      "data_type": "nvarchar(500)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["Pending", "Completed", "Cancelled"]
+  },
+  {
+    "column_name": "StatusMaster_GMPL.IsActive",
+    "column_desc": "Boolean flag indicating if the status is active.",
+    "metadata": {
+      "type": "column",
+      "table_name": "StatusMaster_GMPL",
+      "data_type": "bool",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": [true, false]
+  },
+  {
+    "column_name": "StatusMaster_GMPL.CreatedBy",
+    "column_desc": "Name of the user who created the status.",
+    "metadata": {
+      "type": "column",
+      "table_name": "StatusMaster_GMPL",
+      "data_type": "nvarchar(50)",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["admin", "system", "user123"]
+  },
+  {
+    "column_name": "StatusMaster_GMPL.CreatedDate",
+    "column_desc": "Date and time when the status was created.",
+    "metadata": {
+      "type": "column",
+      "table_name": "StatusMaster_GMPL",
+      "data_type": "datetime",
+      "nullable": true,
+      "is_primary_key": false,
+      "is_foreign_key": false
+    },
+    "examples": ["2023-01-01T10:00:00", "2023-05-15T14:30:00"]
   }
 ]

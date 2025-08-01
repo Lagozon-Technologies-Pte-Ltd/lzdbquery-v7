@@ -6,7 +6,7 @@
 {final_query_instruction}
 Example:
   {{  "User message": "List all companies with their vendor IDs and names.",
-  "query": "SELECT [ID] AS CompanyID, [VendorId], [CompanyName] FROM [Company]"}}
+  "query": "SELECT [ID] AS CompanyID, [VendorId], [CompanyName] FROM [Company_GMPL]"}}
 
 
 {Business_Glossary}    
@@ -210,7 +210,7 @@ Input: Show the top 5 most frequently ordered products across all channels.
 output:
 
 "description": "This SQL query retrieves the top 5 products with the highest number of total orders by aggregating order data from three different sources: tbl_OTCSale, tbl_Amazon, and AF_OrderItemS. Each of these sources may refer to different types of sales—offline, online (Amazon), or Autofurnish platform orders. The query first unifies product identifiers from all three tables into a single combined set using UNION ALL, ensuring duplicates are preserved for accurate counting. In the Amazon and Autofurnish cases, it uses SKU values to map to the internal product ID via the ProductMaster table. Once all product IDs are consolidated, the query joins this combined result with the ProductMaster table to retrieve each product’s SKU and ProductName. Finally, it groups the data by SKU and name, counts how many times each product was ordered, sorts them in descending order of count, and returns the top 5 most frequently ordered products.",
-"query": "SELECT TOP 5 p.[SKU], p.[ProductName], COUNT(*) AS OrderCount FROM ( SELECT [ProductID] FROM [tbl_OTCSale] WHERE [ProductID] IS NOT NULL UNION ALL SELECT pm.[ID] FROM [tbl_Amazon] a JOIN [AmazonListing] al ON a.[SKU] = al.[Sku] JOIN [ProductMaster] pm ON al.[OriginalSku] = pm.[SKU] UNION ALL SELECT pm.[ID] FROM [AF_OrderItemS] o JOIN [ProductMaster] pm ON o.[Lineitem_sku] = pm.[SKU] ) AS combined JOIN [ProductMaster] p ON combined.[ProductID] = p.[ID] GROUP BY p.[SKU], p.[ProductName] ORDER BY OrderCount DESC ;" 
+"query": "SELECT TOP 5 p.[SKU], p.[ProductName], COUNT(*) AS OrderCount FROM ( SELECT [ProductID] FROM [tbl_OTCScale_GMPL] WHERE [ProductID] IS NOT NULL UNION ALL SELECT pm.[ID] FROM [tbl_Amazon_GMPL] a JOIN [AmazonListing_GMPL] al ON a.[SKU] = al.[Sku] JOIN [ProductMaster_GMPL] pm ON al.[OriginalSku] = pm.[SKU] UNION ALL SELECT pm.[ID] FROM [AF_OrderItemS_GMPL] o JOIN [ProductMaster_GMPL] pm ON o.[Lineitem_sku] = pm.[SKU] ) AS combined JOIN [ProductMaster_GMPL] p ON combined.[ProductID] = p.[ID] GROUP BY p.[SKU], p.[ProductName] ORDER BY OrderCount DESC ;" 
 "error": null
 
 Example 2:
@@ -218,7 +218,7 @@ Input: Find products that are listed on Amazon but have no inventory in the ware
 Output:
 
 "description": "This query retrieves Amazon-listed products that are missing in the inventory. It joins AmazonListing with ProductMaster using the OriginalSku, then left joins InventoryDetail using MSKU. It filters for rows where UniqueCode is NULL, meaning no matching inventory exists, and ensures OriginalSku is not null. The output includes the product's OriginalSku, MSKU, and ProductName.",
-"query": "SELECT a.[OriginalSku], a.[MSKU], p.[ProductName] FROM [AmazonListing] a JOIN [ProductMaster] p ON a.[OriginalSku] = p.[SKU] LEFT JOIN [InventoryDetail] i ON p.[MSKU] = i.[MSKU] WHERE i.[UniqueCode] IS NULL AND a.[OriginalSku] IS NOT NULLC;",
+"query": "SELECT a.[OriginalSku], a.[MSKU], p.[ProductName] FROM [AmazonListing_GMPL] a JOIN [ProductMaster_GMPL] p ON a.[OriginalSku] = p.[SKU] LEFT JOIN [InventoryDetail_GMPL] i ON p.[MSKU] = i.[MSKU] WHERE i.[UniqueCode] IS NULL AND a.[OriginalSku] IS NOT NULLC;",
 "error": null
 
 Important:

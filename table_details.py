@@ -1,6 +1,5 @@
 import pandas as pd
 import os, json
-import configure
 from operator import itemgetter
 # from langchain.chains.openai_tools import create_extraction_chain_pydantic 
 from pydantic import BaseModel, Field

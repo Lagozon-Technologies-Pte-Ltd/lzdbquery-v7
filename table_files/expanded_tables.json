@@ -1,68 +1,44 @@
 [
   {
-    "id": "company",
-    "document": "Company: Core company information. Join with Company_mapping using Company.ID.",
-    "metadata": {
-      "type": "table",
-      "primary_key": "ID",
-      "join_guidance": [
-        {
-          "table": "company_mapping",
-          "on": "ID = CompanyId",
-          "join_type": "INNER JOIN",
-          "optional": false,
-          "description": "Each mapping belongs to a company."
-        }
-      ]
-    }
-  },
-  {
-    "id": "company_mapping",
-    "document": "Company Mapping: Extended company contact and billing/shipping data. Join with tbl_OTCSale using ID.",
+    "id": "company_mapping_GMPL",
+    "document": "Company Mapping: Extended company contact and billing/shipping data.",
     "metadata": {
       "type": "table",
       "primary_key": "Id",
       "join_guidance": [
         {
-          "table": "company",
+          "table": "company_GMPL",
           "on": "CompanyId = ID",
           "join_type": "INNER JOIN",
           "optional": false,
           "description": "Mapped to parent company."
-        },
-        {
-          "table": "tbl_otcsale",
-          "on": "Id = CustomerShippingAddress OR Id = CompanyBillID",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Used for customer and billing address references."
         }
       ]
     }
   },
   {
-    "id": "tbl_otcsale",
-    "document": "OTC Sales: Sale transactions. References product and address info via ProductID, CustomerShippingAddress, and CompanyBillID.",
+    "id": "tbl_OTCScale_GMPL",
+    "document": "OTC Sales: Sale transactions.",
     "metadata": {
       "type": "table",
       "primary_key": "OTCID",
       "join_guidance": [
         {
-          "table": "productmaster",
+          "table": "productmaster_GMPL",
           "on": "ProductID = Id",
           "join_type": "INNER JOIN",
           "optional": false,
           "description": "Each sale is for a product."
         },
         {
-          "table": "company_mapping",
+          "table": "company_mapping_GMPL",
           "on": "CustomerShippingAddress = Id",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
           "description": "May include shipping address from mapping."
         },
         {
-          "table": "company_mapping",
+          "table": "company_mapping_GMPL",
           "on": "CompanyBillID = Id",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
@@ -72,76 +48,31 @@
     }
   },
   {
-    "id": "productmaster",
-    "document": "Product Master: Full product catalog. Join with OTC sales, Amazon listings, and inventory.",
+    "id": "amazonlisting_GMPL",
+    "document": "Amazon Listing: Product mapping to Amazon.",
     "metadata": {
       "type": "table",
       "primary_key": "Id",
       "join_guidance": [
         {
-          "table": "tbl_otcsale",
-          "on": "Id = ProductID",
-          "join_type": "INNER JOIN",
-          "optional": false,
-          "description": "Product referenced in OTC sales."
-        },
-        {
-          "table": "amazonlisting",
-          "on": "SKU = OriginalSku OR MSKU = MSKU",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Amazon listing refers to product's SKU or MSKU."
-        },
-        {
-          "table": "af_orderitems",
-          "on": "SKU = Lineitem_sku",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Autofurnish order item refers to product via SKU."
-        },
-        {
-          "table": "inventorydetail",
-          "on": "MSKU = MSKU",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Inventory tracked via MSKU."
-        }
-      ]
-    }
-  },
-  {
-    "id": "amazonlisting",
-    "document": "Amazon Listing: Product mapping to Amazon. Join with ProductMaster using OriginalSku or MSKU.",
-    "metadata": {
-      "type": "table",
-      "primary_key": "Id",
-      "join_guidance": [
-        {
-          "table": "productmaster",
+          "table": "productmaster_GMPL",
           "on": "OriginalSku = SKU OR MSKU = MSKU",
           "join_type": "INNER JOIN",
           "optional": false,
           "description": "Maps listing to master product."
-        },
-        {
-          "table": "tbl_amazon",
-          "on": "Sku = SKU",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Amazon sales reference listing SKU."
         }
       ]
     }
   },
   {
-    "id": "tbl_amazon",
-    "document": "Amazon Orders: Amazon transaction details. Join with AmazonListing via SKU.",
+    "id": "tbl_amazon_GMPL",
+    "document": "Amazon Orders: Amazon transaction details.",
     "metadata": {
       "type": "table",
       "primary_key": "BillID",
       "join_guidance": [
         {
-          "table": "amazonlisting",
+          "table": "amazonlisting_GMPL",
           "on": "SKU = Sku",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
@@ -151,38 +82,21 @@
     }
   },
   {
-    "id": "autofurnish_orders",
-    "document": "Autofurnish Orders: Master orders from Autofurnish. Join with AF_OrderItems via OrderNo.",
-    "metadata": {
-      "type": "table",
-      "primary_key": "AFId",
-      "join_guidance": [
-        {
-          "table": "af_orderitems",
-          "on": "OrderNo = AFOrderId",
-          "join_type": "INNER JOIN",
-          "optional": false,
-          "description": "Each Autofurnish item links to a master order."
-        }
-      ]
-    }
-  },
-  {
-    "id": "af_orderitems",
-    "document": "Autofurnish Order Items: Line items from Autofurnish orders. Join with ProductMaster via SKU.",
+    "id": "af_orderitems_GMPL",
+    "document": "Autofurnish Order Items: Line items from Autofurnish orders.",
     "metadata": {
       "type": "table",
       "primary_key": "Id",
       "join_guidance": [
         {
-          "table": "autofurnish_orders",
+          "table": "autofurnish_orders_GMPL",
           "on": "AFOrderId = OrderNo",
           "join_type": "INNER JOIN",
           "optional": false,
           "description": "Belongs to an Autofurnish order."
         },
         {
-          "table": "productmaster",
+          "table": "productmaster_GMPL",
           "on": "Lineitem_sku = SKU",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
@@ -192,35 +106,35 @@
     }
   },
   {
-    "id": "inventorydetail",
-    "document": "Inventory Detail: Inventory movement and tracking. Join with ProductMaster, Rack, Warehouse, and StatusMaster.",
+    "id": "inventorydetail_GMPL",
+    "document": "Inventory Detail: Inventory movement and tracking.",
     "metadata": {
       "type": "table",
       "primary_key": "Id",
       "join_guidance": [
         {
-          "table": "productmaster",
-          "on": "MSKU = MSKU",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Inventory identified via MSKU."
-        },
-        {
-          "table": "tbl_warehouse",
+          "table": "tbl_warehouse_GMPL",
           "on": "WarehouseId = Id",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
           "description": "Inventory location by warehouse."
         },
         {
-          "table": "tbl_rack",
+          "table": "tbl_rack_GMPL",
           "on": "RackId = Id",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
           "description": "Inventory storage rack."
         },
         {
-          "table": "statusmaster",
+          "table": "productmaster_GMPL",
+          "on": "MSKU = MSKU",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Inventory identified via MSKU."
+        },
+        {
+          "table": "statusmaster_GMPL",
           "on": "Status = Id",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
@@ -230,59 +144,18 @@
     }
   },
   {
-    "id": "tbl_rack",
-    "document": "Rack: Storage rack data. Join with tbl_warehouse via WarehouseId.",
+    "id": "tbl_rack_GMPL",
+    "document": "Rack: Storage rack data.",
     "metadata": {
       "type": "table",
       "primary_key": "Id",
       "join_guidance": [
         {
-          "table": "tbl_warehouse",
+          "table": "tbl_warehouse_GMPL",
           "on": "WarehouseId = Id",
           "join_type": "INNER JOIN",
           "optional": false,
           "description": "Each rack belongs to a warehouse."
-        }
-      ]
-    }
-  },
-  {
-    "id": "tbl_warehouse",
-    "document": "Warehouse: Warehouse data for inventory management. Join with racks and inventory details.",
-    "metadata": {
-      "type": "table",
-      "primary_key": "Id",
-      "join_guidance": [
-        {
-          "table": "inventorydetail",
-          "on": "Id = WarehouseId",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Warehouse reference for inventory."
-        },
-        {
-          "table": "tbl_rack",
-          "on": "Id = WarehouseId",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Racks are located within warehouses."
-        }
-      ]
-    }
-  },
-  {
-    "id": "statusmaster",
-    "document": "Status Master: Lookup for inventory item statuses. Join with InventoryDetail using Status ID.",
-    "metadata": {
-      "type": "table",
-      "primary_key": "Id",
-      "join_guidance": [
-        {
-          "table": "inventorydetail",
-          "on": "Id = Status",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Status of an inventory entry."
         }
       ]
     }
