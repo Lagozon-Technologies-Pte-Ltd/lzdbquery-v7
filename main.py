@@ -250,7 +250,6 @@ azure_openai_client = AzureOpenAI(
 # )
 
 databases = ["Azure SQL"]
-question_dropdown = os.getenv('Question_dropdown')
 
 import datetime
 

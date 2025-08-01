@@ -318,33 +318,24 @@ async function sendMessage() {
         formData.append('section', selectedSection);
         formData.append('database', selectedDatabase);
 
-        const response = await fetch("/submit", {
+    // 1. Submit the query and get task ID
+    const submitResponse = await fetch("/submit", {
             method: "POST",
             body: formData
         });
 
-        const data = await response.json();
-        if (data.tables_data) {
-            // Convert the table data from server to a format we can use
-            clientTableData = {};
-            for (const tableName in data.tables_data) {
-                if (data.tables_data[tableName] && data.tables_data[tableName]['Table data']) {
-                    clientTableData[tableName] = data.tables_data[tableName]['Table data'];
-                }
-            }
-        }
-        // Always show these elements regardless of success/error
-        sqlQueryContent.textContent = data.query || "";
-        interpPromptContent.textContent = data.interprompt || "";
+    if (!submitResponse.ok) {
+        throw new Error("Failed to submit query");
+    }
 
-        // Format and display langprompt
-        const langdata = data.langprompt?.match(/template='([\s\S]*?)'\)\),/);
-        let promptText = langdata ? langdata[1] : data.langprompt || "Not available";
-        promptText = promptText.replace(/\\n/g, '\n');
-        langPromptContent.textContent = promptText;
-        Prism.highlightElement(langPromptContent);
-
-        // Hide typing indicator
+    const { task_id } = await submitResponse.json();
+    
+    // 2. Poll for results with proper promise handling
+    const result = await pollForResult(task_id);
+    processFinalResult(result);
+    
+} catch (error) {
+    console.error("Error:", error);
         typingIndicator.style.display = "none";
         table_data = data.tables_data;
         glob_table_data = table_data
@@ -357,15 +348,119 @@ async function sendMessage() {
                     </div>
                 </div>
             `;
-        } else {
+}
+}
+}
+async function pollForResult(taskId) {
+    let attempts = 0;
+    const maxAttempts = 30;
+    const initialDelay = 1000;
+    const maxDelay = 5000;
+    
+    console.log(`Starting polling for task ${taskId}`);
+    console.log(`Initial delay: ${initialDelay}ms, Max attempts: ${maxAttempts}, Max delay: ${maxDelay}ms`);
+    
+    return new Promise(async (resolve, reject) => {
+        const checkResult = async (delay) => {
+            attempts++;
+            const attemptTime = new Date().toISOString();
+            
+            console.log(`Attempt ${attempts} at ${attemptTime} with delay ${delay}ms`);
+            
+            try {
+                const resultResponse = await fetch(`/task/result/${taskId}`);
+                
+                // Handle 202 (processing) response properly
+                if (resultResponse.status === 202) {
+                    if (attempts >= maxAttempts) {
+                        console.error(`Max attempts (${maxAttempts}) reached, giving up`);
+                        reject(new Error("Processing timed out"));
+                        return;
+                    }
+                    
+                    const nextDelay = Math.min(delay * 2, maxDelay);
+                    console.log(`Task still processing, next attempt in ${nextDelay}ms`);
+                    setTimeout(() => checkResult(nextDelay), delay);
+                    return;
+                }
+                
+                // Handle 404 and other errors
+                if (!resultResponse.ok) {
+                    const errorText = await resultResponse.text();
+                    console.error(`Attempt ${attempts} failed with status ${resultResponse.status}: ${errorText}`);
+                    
+                    // Special case: If we get a 404 with "Task still processing" message, continue polling
+                    if (resultResponse.status === 404 && errorText.includes("Task still processing")) {
+                        if (attempts >= maxAttempts) {
+                            reject(new Error("Processing timed out"));
+                            return;
+                        }
+                        const nextDelay = Math.min(delay * 2, maxDelay);
+                        setTimeout(() => checkResult(nextDelay), delay);
+                        return;
+                    }
+                    
+                    reject(new Error(errorText));
+                    return;
+                }
+                
             // Success case
-            let botResponse = "";
-
-            if (!data.query) {
-                botResponse = data.chat_response || "I couldn't find any insights for this query.";
-            } else {
-                botResponse = data.chat_response || "";
+                console.log(`Attempt ${attempts} succeeded!`);
+                const data = await resultResponse.json();
+                resolve(data);
+                
+            } catch (error) {
+                console.error(`Attempt ${attempts} failed with error:`, error);
+                reject(error);
             }
+        };
+        
+        checkResult(initialDelay);
+    });
+}
+function processFinalResult(data) {
+    const sqlQueryContent = document.getElementById("sql-query-content");
+    const typingIndicator = document.getElementById("typing-indicator");
+    const interpPromptContent = document.getElementById("interp-prompt-content");
+    const chatMessages = document.getElementById("chat-messages");
+    const langPromptContent = document.getElementById("lang-prompt-content");
+
+    try {
+        // Defensive handling for tables_data
+        let clientTableData = {};
+        if (data.tables_data) {
+            for (const tableName in data.tables_data) {
+                const tableEntry = data.tables_data[tableName];
+                if (tableEntry && Array.isArray(tableEntry['Table data'])) {
+                    clientTableData[tableName] = tableEntry['Table data'];
+            } else {
+                    console.warn(`Invalid or missing "Table data" for table: ${tableName}`);
+                }
+            }
+        }
+
+        sqlQueryContent.textContent = data.query || "";
+        interpPromptContent.textContent = data.interprompt || "";
+
+        let promptText = "Not available";
+        if (typeof data.langprompt === 'string') {
+            const langdata = data.langprompt.match(/template='([\s\S]*?)'\)\),/);
+            promptText = langdata ? langdata[1] : data.langprompt;
+            promptText = promptText.replace(/\\n/g, '\n');
+        }
+        langPromptContent.textContent = promptText;
+
+        Prism.highlightElement(langPromptContent);
+
+        typingIndicator.style.display = "none";
+
+        // Save for later use globally
+        window.table_data = data.tables_data || {};
+        window.glob_table_data = window.table_data;
+
+        let botResponse = !data.query
+            ? data.chat_response || "I couldn't find any insights for this query."
+            : data.chat_response || "";
 
             chatMessages.innerHTML += `
                 <div class="message ai-message">
@@ -376,30 +471,25 @@ async function sendMessage() {
                 </div>
             `;
 
-            if (data.tables) {
-                console.log()
-                const rows = table_data["Table data"];
-                const columnNames = (rows && rows.length > 0) ? Object.keys(rows[0]) : [];
-
-                // Now call your function with the column names
-                loadTableColumns(columnNames);
-                updatePageContent(data);
+        if (data.tables && window.table_data) {
+            const tableNames = Object.keys(window.table_data);
+            if (tableNames.length > 0) {
+                const firstTableRows = window.table_data[tableNames[0]];
+                if (firstTableRows && firstTableRows.length > 0) {
+                    loadTableColumns(Object.keys(firstTableRows[0]));
+                } else {
+                    console.warn("No rows found in first table to load columns");
+                }
+            } else{
+                console.warn("No table names found to load columns");
             }
         }
+
+        console.log("Updating page content with data:", data);
         updatePageContent(data);
 
         chatMessages.scrollTop = chatMessages.scrollHeight;
-        table_data = data.tables_data;
 
-        if (data.tables) {
-            console.log()
-            const rows = table_data["Table data"];
-            const columnNames = (rows && rows.length > 0) ? Object.keys(rows[0]) : [];
-
-            // Now call your function with the column names
-            loadTableColumns(columnNames);
-            updatePageContent(data);
-        }
     } catch (error) {
         console.error("Error:", error);
         typingIndicator.style.display = "none";
