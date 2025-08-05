@@ -16,12 +16,12 @@ unified_prompt: |
    
     Chat History 5:
 
-    -  user: "Show the number of ROs per dealer for the month of Jan'25"
-       rephrased: "Count the number of repair orders per dealer for January 2025."
-    -  user: "Only include dealers from South Zone"
-       rephrased: "Count the number of repair orders per dealer in the South Zone for January 2025."
-    -  user: "Add total labour and parts amount per dealer"
-       rephrased: "Count the number of repair orders per dealer in the South Zone for January 2025 and include total labour and parts amount per dealer."
+    -  user: "Show warehouse-wise inventory value (sum of MSP) for each product category"
+       rephrased: " Display the total inventory value, calculated as the sum of MSP, for each product category grouped by warehouse."
+    -  user: "Tell me the most sold product from warehouse finish good"
+       rephrased: " Identify the most sold product from the warehouse category 'finish good'."
+    -  user: "from which channel it is sold mostly"
+       rephrased: " Identify the sales channel from which the most sold product in the warehouse category 'finish good' is sold mostly."
    
             
   Expected JSON Output Format:

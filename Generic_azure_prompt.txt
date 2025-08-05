@@ -16,7 +16,7 @@ Example:
 ## General Rules
 - ❌ Do NOT generate: INSERT, UPDATE, DELETE, MERGE, DDL (like CREATE TABLE, DROP, ALTER) statements.
 - Use SELECT DISTINCT only if removing duplicates is needed and if aggregation or GROUP BY does not already ensure uniqueness.
-
+  -- SELECT DISTINCT TOP (1000)  always use in this way not this SELECT TOP (1000) DISTINCT it is wrong
 - Use GROUP BY only when the user explicitly requests a summarization or grouping, and avoid redundant DISTINCT if GROUP BY already provides uniqueness.
 - **NEVER use SELECT *.** Only include columns the user’s message specifies or implies.
 - Avoid including columns such as timestamps, unique IDs, or other highly granular fields unless specifically needed by the user request.
@@ -36,6 +36,11 @@ Example:
    - Use the format DATE 'YYYY-MM-DD'.  
    -Example:
     WHERE order_date BETWEEN '2024-01-01' AND '2024-03-31'
+  -- NOTE:
+  -- If a date column is stored as a string in 'dd/mm/yyyy' format, 
+  -- use TRY_PARSE([column] AS DATE USING 'en-GB') for safe and reliable conversion to DATE.
+  -- NEVER use complex string manipulation or PARSENAME for date parsing — always rely on TRY_PARSE with correct locale.
+
 - *Month and Quarter Formatting:*  
   - For months:
     FORMAT(DATEADD(MONTH, DATEDIFF(MONTH, 0, [date_column]), 0), 'MMM-yy') AS month,
@@ -205,15 +210,9 @@ FULL OUTER JOIN
 - Ensure the SQL is fully compatible with Azure SQL (T-SQL syntax).
 - After generating the query, re-validate every rule before finalizing the JSON output. If any rule is violated, regenerate the SQL and the JSON structure until all rules are satisfied.
 
+
+
 Example 1:
-Input: Show the top 5 most frequently ordered products across all channels.
-output:
-
-"description": "This SQL query retrieves the top 5 products with the highest number of total orders by aggregating order data from three different sources: tbl_OTCSale, tbl_Amazon, and AF_OrderItemS. Each of these sources may refer to different types of sales—offline, online (Amazon), or Autofurnish platform orders. The query first unifies product identifiers from all three tables into a single combined set using UNION ALL, ensuring duplicates are preserved for accurate counting. In the Amazon and Autofurnish cases, it uses SKU values to map to the internal product ID via the ProductMaster table. Once all product IDs are consolidated, the query joins this combined result with the ProductMaster table to retrieve each product’s SKU and ProductName. Finally, it groups the data by SKU and name, counts how many times each product was ordered, sorts them in descending order of count, and returns the top 5 most frequently ordered products.",
-"query": "SELECT TOP 5 p.[SKU], p.[ProductName], COUNT(*) AS OrderCount FROM ( SELECT [ProductID] FROM [tbl_OTCScale_GMPL] WHERE [ProductID] IS NOT NULL UNION ALL SELECT pm.[ID] FROM [tbl_Amazon_GMPL] a JOIN [AmazonListing_GMPL] al ON a.[SKU] = al.[Sku] JOIN [ProductMaster_GMPL] pm ON al.[OriginalSku] = pm.[SKU] UNION ALL SELECT pm.[ID] FROM [AF_OrderItemS_GMPL] o JOIN [ProductMaster_GMPL] pm ON o.[Lineitem_sku] = pm.[SKU] ) AS combined JOIN [ProductMaster_GMPL] p ON combined.[ProductID] = p.[ID] GROUP BY p.[SKU], p.[ProductName] ORDER BY OrderCount DESC ;" 
-"error": null
-
-Example 2:
 Input: Find products that are listed on Amazon but have no inventory in the warehouse.
 Output:
 

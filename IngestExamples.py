@@ -84,7 +84,7 @@ def ingest_examples(examples, collection_name):
     
     ids = [f"{collection_name}pair{i}" for i in range(len(inputs))]
     
-    collection.add(
+    collection.upsert(
         ids=ids,
         documents=inputs,
         metadatas=metadatas  # Use our prepared metadata list

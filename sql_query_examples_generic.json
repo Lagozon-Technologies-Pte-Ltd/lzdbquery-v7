@@ -1,82 +1,63 @@
 [
   {
-    "input": "Get all racks and their corresponding warehouse names.",
-    "query": "SELECT r.[Name] AS RackName, w.[Name] AS WarehouseName FROM [tbl_Rack_GMPL] r INNER JOIN [tbl_Warehouse_GMPL] w ON r.[WarehouseId] = w.[ID]"
+    "input": "Get all active products with their SKU and product name.",
+    "query": "SELECT [SKU], [ProductName] FROM [ProductMaster_GMPL] WHERE [IsActive] = 1 AND [IsDeleted] = 0"
   },
   {
-    "input": "Show all active products with their MSKU and status.",
-    "query": "SELECT [SKU], [MSKU], [ProductName], [ProductStatus] FROM [ProductMaster_GMPL] WHERE [IsActive] = 1 AND [IsDeleted] = 0"
+    "input": "Show all warehouses with their city and state.",
+    "query": "SELECT [Name], [City], [State] FROM [tbl_Warehouse_GMPL] WHERE [IsActive] = 1"
   },
   {
-    "input": "Find orders placed by Autofurnish customers in June 2024.",
-    "query": "SELECT [OrderNo], [Created_at], [Total] FROM [Autofurnish_OrderS_GMPL] WHERE TRY_CONVERT(DATE, [Created_at], 105) BETWEEN '2024-06-01' AND '2024-06-30'"
+    "input": "List all OTC sales orders with order number and customer name.",
+    "query": "SELECT [OrderNo], [CustomerName] FROM [tbl_OTCSale_GMPL]"
   },
   {
-    "input": "Show all Amazon listings that are inactive but have quantity more than 0.",
-    "query": "SELECT [OriginalSku], [MSKU], [Quantity], [IsActive] FROM [AmazonListing_GMPL] WHERE [IsActive] = 0 AND [Quantity] > 0"
+    "input": "Display all Amazon listings with their SKU and product name.",
+    "query": "SELECT [Sku], [ProductName] FROM [AmazonListing_GMPL]"
   },
   {
-    "input": "List all warehouses with the number of inventory items they hold.",
-    "query": "SELECT w.[Name] AS Warehouse, COUNT(i.[Id]) AS InventoryCount FROM [tbl_Warehouse_GMPL] w LEFT JOIN [InventoryDetail_GMPL] i ON w.[ID] = i.[WarehouseId] GROUP BY w.[Name]"
+    "input": "Show all racks with their warehouse IDs.",
+    "query": "SELECT [Name], [WarehouseId] FROM [tbl_Rack_GMPL]"
   },
   {
-    "input": "Find all OTC sales where the selling price is more than \u20b91000.",
-    "query": "SELECT [OrderNo], [SKU], TRY_CAST([Selling_Price] AS DECIMAL(10,2)) AS SellingPrice FROM [tbl_OTCSale_GMPL] WHERE TRY_CAST([Selling_Price] AS DECIMAL(10,2)) > 1000"
+    "input": "Find all OTC sales where the amount is greater than ₹5000 and payment status is 'Paid'.",
+    "query": "SELECT [OrderNo], [CustomerName], TRY_CAST([Amount] AS DECIMAL(10,2)) AS Amount FROM [tbl_OTCSale_GMPL] WHERE TRY_CAST([Amount] AS DECIMAL(10,2)) > 5000 AND [Payment_Status] = 'Paid'"
   },
   {
-    "input": "Show all Amazon orders where invoice was generated.",
-    "query": "SELECT [OrderId], [InvoiceNo], [ProductName], [SKU] FROM [tbl_Amazon_GMPL] WHERE [IsInvoice] = 1"
+    "input": "Show products with their inventory count across all warehouses.",
+    "query": "SELECT p.[SKU], p.[ProductName], COUNT(i.[Id]) AS InventoryCount FROM [ProductMaster_GMPL] p LEFT JOIN [InventoryDetail_GMPL] i ON p.[MSKU] = i.[MSKU] GROUP BY p.[SKU], p.[ProductName]"
   },
   {
-    "input": "Get all order items where price is above \u20b9500 and has discount.",
-    "query": "SELECT [Lineitem_sku], [Lineitem_price], [Lineitem_discount] FROM [AF_OrderItemS_GMPL] WHERE [Lineitem_price] > 500 AND [Lineitem_discount] > 0"
+    "input": "List all Amazon orders with their order status and fulfillment channel.",
+    "query": "SELECT [amazonorderid], [orderstatus], [fulfillmentchannel] FROM [tbl_AmazonFlex_GMPL]"
+  },
+  
+  {
+    "input": "Find Autofurnish orders with total amount greater than ₹10000 and their shipping country.",
+    "query": "SELECT [OrderNo], [Total], [Shipping_Country] FROM [Autofurnish_OrderS_GMPL] WHERE [Total] > 10000"
   },
   {
-    "input": "Show inventory items that were modified in the last 30 days.",
-    "query": "SELECT [Id], [MSKU], [ModifiedDate], [UniqueCode] FROM [InventoryDetail_GMPL] WHERE [ModifiedDate] >= DATEADD(DAY, -30, GETDATE())"
+    "input": "Show all products with missing images (ImageLink1 is null or empty).",
+    "query": "SELECT [SKU], [ProductName] FROM [ProductMaster_GMPL] WHERE [ImageLink1] IS NULL OR [ImageLink1] = ''"
   },
   {
-    "input": "Find products with missing HSN codes.",
-    "query": "SELECT [SKU], [MSKU], [ProductName] FROM [ProductMaster_GMPL] WHERE [HSNCode] IS NULL OR [HSNCode] = ''"
+    "input": "Find the top 5 selling products by quantity across all sales channels (OTC, Amazon, Autofurnish).",
+    "query": "SELECT TOP 5 p.[SKU], p.[ProductName], SUM(COALESCE(TRY_CAST(o.[Quantity] AS INT), 0) + COALESCE(a.[quantity], 0) + COALESCE(af.[Lineitem_quantity], 0)) AS TotalQuantity FROM [ProductMaster_GMPL] p LEFT JOIN [tbl_OTCSale_GMPL] o ON p.[ID] = o.[ProductID] LEFT JOIN [tbl_Amazon_GMPL] a ON p.[SKU] = a.[SKU] LEFT JOIN [AF_OrderItemS_GMPL] af ON p.[SKU] = af.[Lineitem_sku] GROUP BY p.[SKU], p.[ProductName] ORDER BY TotalQuantity DESC"
   },
   {
-    "input": "List all active warehouses with their locations.",
-    "query": "SELECT [Name], [Location] FROM [tbl_Warehouse_GMPL] WHERE [IsActive] = 1"
+    "input": "Show monthly sales report for Amazon and Autofurnish orders with tax breakdown.",
+    "query": "WITH AmazonSales AS ( SELECT FORMAT(TRY_CONVERT(DATE, [tA].[PaymentDate], 105), 'MMM-yy') AS [Month], DATEADD(MONTH, DATEDIFF(MONTH, 0, TRY_CONVERT(DATE, [tA].[PaymentDate], 105)), 0) AS [_Month_Start], SUM(ROUND(TRY_CAST([tA].[ItemPrice] AS FLOAT), 1)) AS [TotalSales], SUM(ROUND(TRY_CAST([tA].[ItemTax] AS FLOAT), 1)) AS [TotalTax] FROM [tbl_Amazon_GMPL] AS [tA] WHERE [tA].[PaymentDate] IS NOT NULL GROUP BY FORMAT(TRY_CONVERT(DATE, [tA].[PaymentDate], 105), 'MMM-yy'), DATEADD(MONTH, DATEDIFF(MONTH, 0, TRY_CONVERT(DATE, [tA].[PaymentDate], 105)), 0) ), AutofurnishSales AS ( SELECT FORMAT(TRY_CONVERT(DATE, [tAF].[Created_at], 105), 'MMM-yy') AS [Month], DATEADD(MONTH, DATEDIFF(MONTH, 0, TRY_CONVERT(DATE, [tAF].[Created_at], 105)), 0) AS [_Month_Start], SUM(ROUND(TRY_CAST([tAF].[Total] AS FLOAT), 1)) AS [TotalSales], SUM(ROUND(TRY_CAST([tAF].[Tax1_Value] AS FLOAT) + TRY_CAST([tAF].[Tax2_Value] AS FLOAT) + TRY_CAST([tAF].[Tax3_Value] AS FLOAT) + TRY_CAST([tAF].[Tax4_Value] AS FLOAT) + TRY_CAST([tAF].[Tax5_Value] AS FLOAT), 1)) AS [TotalTax] FROM [Autofurnish_OrderS_GMPL] AS [tAF] WHERE [tAF].[Created_at] IS NOT NULL GROUP BY FORMAT(TRY_CONVERT(DATE, [tAF].[Created_at], 105), 'MMM-yy'), DATEADD(MONTH, DATEDIFF(MONTH, 0, TRY_CONVERT(DATE, [tAF].[Created_at], 105)), 0) ) SELECT TOP (1000) [Channel], [Month], [TotalSales], [TotalTax] FROM ( SELECT 'Amazon' AS [Channel], [Month], [TotalSales], [TotalTax], [_Month_Start] FROM AmazonSales UNION ALL SELECT 'Autofurnish' AS [Channel], [Month], [TotalSales], [TotalTax], [_Month_Start] FROM AutofurnishSales ) AS [CombinedSales] ORDER BY E [tA].[PaymentDate] IS NOT NULL GROUP BY FORMAT(TRY_CONVERT(DATE, [tA].[PaymentDate], 105), 'MMM-yy'), DATEADD(MONTH, DATEDIFF(MONTH, 0, TRY_CONVERT(DATE, [tA].[PaymentDate], 105)), 0) ), AutofurnishSales AS ( SELECT FORMAT(TRY_CONVERT(DATE, [tAF].[Created_at], 105), 'MMM-yy') AS [Month], DATEADD(MONTH, DATEDIFF(MONTH, 0, TRY_CONVERT(DATE, [tAF].[Created_at], 105)), 0) AS [_Month_Start], SUM(ROUND(TRY_CAST([tAF].[Total] AS FLOAT), 1)) AS [TotalSales], SUM(ROUND(TRY_CAST([tAF].[Tax1_Value] AS FLOAT) + TRY_CAST([tAF].[Tax2_Value] AS FLOAT) + TRY_CAST([tAF].[Tax3_Value] AS FLOAT) + TRY_CAST([tAF].[Tax4_Value] AS FLOAT) + TRY_CAST([tAF].[Tax5_Value] AS FLOAT), 1)) AS [TotalTax] FROM [Autofurnish_OrderS_GMPL] AS [tAF] WHERE [tAF].[Created_at] IS NOT NULL GROUP BY FORMAT(TRY_CONVERT(DATE, [tAF].[Created_at], 105), 'MMM-yy'), DATEADD(MONTH, DATEDIFF(MONTH, 0, TRY_CONVERT(DATE, [tAF].[Created_at], 105)), 0) ) SELECT TOP (1000) [Channel], [Month], [TotalSales], [TotalTax] FROM ( SELECT 'Amazon' AS [Channel], [Month], [TotalSales], [TotalTax], [_Month_Start] FROM AmazonSales UNION ALL SELECT 'Autofurnish' AS [Channel], [Month], [TotalSales], [TotalTax], [_Month_Start] FROM AutofurnishSales ) AS [CombinedSales] ORDER BY  0) AS [_Month_Start], SUM(ROUND(TRY_CAST([tAF].[Total] AS FLOAT), 1)) AS [TotalSales], SUM(ROUND(TRY_CAST([tAF].[Tax1_Value] AS FLOAT) + TRY_CAST([tAF].[Tax2_Value] AS FLOAT) + TRY_CAST([tAF].[Tax3_Value] AS FLOAT) + TRY_CAST([tAF].[Tax4_Value] AS FLOAT) + TRY_CAST([tAF].[Tax5_Value] AS FLOAT), 1)) AS [TotalTax] FROM [Autofurnish_OrderS_GMPL] AS [tAF] WHERE [tAF].[Created_at] IS NOT NULL GROUP BY FORMAT(TRY_CONVERT(DATE, [tAF].[Created_at], 105), 'MMM-yy'), DATEADD(MONTH, DATEDIFF(MONTH, 0, TRY_CONVERT(DATE, [tAF].[Created_at], 105)), 0) ) SELECT TOP (1000) [Channel], [Month], [TotalSales], [TotalTax] FROM ( SELECT 'Amazon' AS [Channel], [Month], [TotalSales], [TotalTax], [_Month_Start] FROM AmazonSales UNION ALL SELECT 'Autofurnish' AS [Channel], [Month], [TotalSales], [TotalTax], [_Month_Start] FROM AutofurnishSales ) AS [CombinedSales] ORDER BY AS FLOAT) + TRY_CAST([tAF].[Tax5_Value] AS FLOAT), 1)) AS [TotalTax] FROM [Autofurnish_OrderS_GMPL] AS [tAF] WHERE [tAF].[Created_at] IS NOT NULL GROUP BY FORMAT(TRY_CONVERT(DATE, [tAF].[Created_at], 105), 'MMM-yy'), DATEADD(MONTH, DATEDIFF(MONTH, 0, TRY_CONVERT(DATE, [tAF].[Created_at], 105)), 0) ) SELECT TOP (1000) [Channel], [Month], [TotalSales], [TotalTax] FROM ( SELECT 'Amazon' AS [Channel], [Month], [TotalSales], [TotalTax], [_Month_Start] FROM AmazonSales UNION ALL SELECT 'Autofurnish' AS [Channel], [Month], [TotalSales], [TotalTax], [_Month_Start] FROM AutofurnishSales ) AS [CombinedSales] ORDER BY , 0, TRY_CONVERT(DATE, [tAF].[Created_at], 105)), 0) ) SELECT TOP (1000) [Channel], [Month], [TotalSales], [TotalTax] FROM ( SELECT 'Amazon' AS [Channel], [Month], [TotalSales], [TotalTax], [_Month_Start] FROM AmazonSales UNION ALL SELECT 'Autofurnish' AS [Channel], [Month], [TotalSales], [TotalTax], [_Month_Start] FROM AutofurnishSales ) AS [CombinedSales] ORDER BY ( SELECT 'Amazon' AS [Channel], [Month], [TotalSales], [TotalTax], [_Month_Start] FROM AmazonSales UNION ALL SELECT 'Autofurnish' AS [Channel], [Month], [TotalSales], [TotalTax], [_Month_Start] FROM AutofurnishSales ) AS [CombinedSales] ORDER BY [_Month_Start], [Channel]"
   },
   {
-    "input": "Get all Amazon listings with missing ASIN values.",
-    "query": "SELECT [MSKU], [OriginalSku], [Asin] FROM [AmazonListing_GMPL] WHERE [Asin] IS NULL OR [Asin] = '#N/A'"
+    "input": "Find products that are in inventory but have not been sold.",
+    "query": "SELECT p.[SKU], p.[ProductName] FROM [ProductMaster_GMPL] p JOIN [InventoryDetail_GMPL] i ON p.[MSKU] = i.[MSKU] LEFT JOIN [tbl_OTCSale_GMPL] o ON p.[ID] = o.[ProductID] LEFT JOIN [tbl_Amazon_GMPL] a ON p.[SKU] = a.[SKU] LEFT JOIN [AF_OrderItemS_GMPL] af ON p.[SKU] = af.[Lineitem_sku] WHERE o.[OTCID] IS NULL AND a.[BillID] IS NULL AND af.[Id] IS NULL GROUP BY p.[SKU], p.[ProductName]"
   },
   {
-    "input": "Find total OTC sale amount per product.",
-    "query": "SELECT [SKU], SUM(TRY_CAST([Amount] AS DECIMAL(10,2))) AS TotalAmount FROM [tbl_OTCSale_GMPL] GROUP BY [SKU]"
+    "input": "Show warehouse-wise inventory value (sum of MSP) for each product category.",
+    "query": "SELECT w.[Name] AS Warehouse, p.[Category1] AS Category, SUM(i.[MSP]) AS TotalValue FROM [InventoryDetail_GMPL] i JOIN [tbl_Warehouse_GMPL] w ON i.[WarehouseId] = w.[ID] JOIN [ProductMaster_GMPL] p ON i.[MSKU] = p.[MSKU] WHERE i.[IsOut] = 0 GROUP BY w.[Name], p.[Category1] ORDER BY Warehouse, TotalValue DESC"
   },
   {
-    "input": "Show product inventory across all warehouses.",
-    "query": "SELECT i.[MSKU], p.[ProductName], w.[Name] AS WarehouseName FROM [InventoryDetail_GMPL] i JOIN [ProductMaster_GMPL] p ON i.[MSKU] = p.[MSKU] JOIN [tbl_Warehouse_GMPL] w ON i.[WarehouseId] = w.[ID]"
-  },
-  {
-    "input": "Get all Autofurnish orders with more than 3 items.",
-    "query": "SELECT [OrderNo], [Total], [Created_at] FROM [Autofurnish_OrderS_GMPL] WHERE [TotalItems] > 3"
-  },
-  {
-    "input": "Show average selling price of Amazon orders by SKU.",
-    "query": "SELECT [SKU], AVG(TRY_CAST([Selling_Price] AS DECIMAL(10,2))) AS AvgPrice FROM [tbl_Amazon_GMPL] GROUP BY [SKU]"
-  },
-  {
-    "input": "List all order items with zero quantity.",
-    "query": "SELECT [Lineitem_sku], [Lineitem_quantity] FROM [AF_OrderItemS_GMPL] WHERE TRY_CAST([Lineitem_quantity] AS INT) = 0"
-  },
-  {
-    "input": "Find products that are active but not listed on Amazon.",
-    "query": "SELECT p.[SKU], p.[ProductName] FROM [ProductMaster_GMPL] p LEFT JOIN [AmazonListing_GMPL] a ON p.[SKU] = a.[OriginalSku] WHERE a.[OriginalSku] IS NULL AND p.[IsActive] = 1"
-  },
-  {
-    "input": "Count the number of racks per warehouse.",
-    "query": "SELECT w.[Name] AS WarehouseName, COUNT(r.[ID]) AS RackCount FROM [tbl_Warehouse_GMPL] w LEFT JOIN [tbl_Rack_GMPL] r ON w.[ID] = r.[WarehouseId] GROUP BY w.[Name]"
-  },
-  {
-    "input": "List all products with their last modified date, sorted by most recent.",
-    "query": "SELECT [SKU], [ProductName], [ModifiedDate] FROM [ProductMaster_GMPL] ORDER BY [ModifiedDate] DESC"
+    "input": "Find customers who made purchases through multiple channels (OTC, Amazon, Autofurnish)",
+    "query": "SELECT c.[CompanyName], c.[Email], 'OTC' AS Channel FROM [Company_mapping_GMPL] cm JOIN [Company_GMPL] c ON cm.[CompanyId] = c.[ID] JOIN [tbl_OTCSale_GMPL] o ON cm.[Id] = TRY_CAST(o.[CompanyBillID] AS INT) WHERE o.[CustomerName] IS NOT NULL UNION SELECT a.[BuyerName], a.[BuyerPhoneNo], 'Amazon' FROM [tbl_Amazon_GMPL] a WHERE a.[BuyerName] IS NOT NULL UNION SELECT af.[Billing_Name], af.[Email], 'Autofurnish' FROM [Autofurnish_OrderS_GMPL] af WHERE af.[Email] IS NOT NULL GROUP BY [CompanyName], [Email] HAVING COUNT(DISTINCT Channel) > 1"
   }
 ]

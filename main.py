@@ -78,7 +78,7 @@ Query_record_size = os.getenv("Query_Record_Size")
 
 if Query_Record_Size_Boolean == "1":
     final_query_instruction = (
-        f"- Always apply TOP {Query_record_size} in the SELECT clause to limit results "
+        f"- Always apply TOP {Query_record_size} in the SELECT clause to limit results and whenever DISTINCT is used then USE this way: SELECT DISTINCT TOP(1000)"
         f"unless a lower limit (like TOP 5, TOP 10, etc.) is explicitly specified by the user."
     )
 

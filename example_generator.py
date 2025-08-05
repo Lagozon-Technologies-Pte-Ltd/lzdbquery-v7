@@ -3,6 +3,7 @@ import datetime
 import os
 import pyodbc
 from dotenv import load_dotenv
+from decimal import Decimal
 
 # Load environment variables
 load_dotenv()
@@ -35,6 +36,15 @@ cursor = conn.cursor()
 with open("table_files\\expanded_columns.json", "r") as f:
     metadata = json.load(f)
 
+# Custom JSON encoder to handle Decimal and other non-serializable types
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        elif isinstance(obj, (datetime.date, datetime.datetime)):
+            return obj.isoformat()
+        return super().default(obj)
+
 # Helper to format numbers
 def format_number(x):
     if isinstance(x, int):
@@ -43,17 +53,6 @@ def format_number(x):
         return f"{int(x):d}"
     else:
         return f"{x:.1f}"
-
-# Recursively convert date/datetime to strings
-def convert_dates(obj):
-    if isinstance(obj, dict):
-        return {k: convert_dates(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
-        return [convert_dates(item) for item in obj]
-    elif isinstance(obj, (datetime.date, datetime.datetime)):
-        return obj.isoformat()
-    else:
-        return obj
 
 # Regenerate examples
 def regenerate_examples(column_info, limit=5):
@@ -77,7 +76,10 @@ def regenerate_examples(column_info, limit=5):
             if value is None:
                 continue
 
-            if data_type == "INTEGER":
+            # Convert Decimal to float for JSON serialization
+            if isinstance(value, Decimal):
+                value = float(value)
+            elif data_type == "INTEGER":
                 value = int(value)
             elif data_type == "FLOAT":
                 value = float(value)
@@ -98,11 +100,12 @@ def regenerate_examples(column_info, limit=5):
 for col in metadata:
     regenerate_examples(col)
 
-# Convert any date objects
-metadata = convert_dates(metadata)
-
-# Save updated metadata
+# Save updated metadata with custom encoder
 with open("metadata_updated.json", "w") as f:
-    json.dump(metadata, f, indent=2)
+    json.dump(metadata, f, indent=2, cls=CustomJSONEncoder)
 
 print("✅ metadata_updated.json generated with refreshed examples from Azure SQL.")
+
+# Close connection
+cursor.close()
+conn.close()
