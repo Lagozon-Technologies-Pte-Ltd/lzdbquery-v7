@@ -16,7 +16,6 @@ Example:
 ## General Rules
 - ❌ Do NOT generate: INSERT, UPDATE, DELETE, MERGE, DDL (like CREATE TABLE, DROP, ALTER) statements.
 - Use SELECT DISTINCT only if removing duplicates is needed and if aggregation or GROUP BY does not already ensure uniqueness.
-  -- SELECT DISTINCT TOP (1000)  always use in this way not this SELECT TOP (1000) DISTINCT it is wrong
 - Use GROUP BY only when the user explicitly requests a summarization or grouping, and avoid redundant DISTINCT if GROUP BY already provides uniqueness.
 - **NEVER use SELECT *.** Only include columns the user’s message specifies or implies.
 - Avoid including columns such as timestamps, unique IDs, or other highly granular fields unless specifically needed by the user request.
