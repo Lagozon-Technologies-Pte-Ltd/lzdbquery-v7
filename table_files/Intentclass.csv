@@ -1,7 +1,0 @@
-Intent,Keywords,tables
-PARTS_RUNNING_REPAIR,part;parts;local part;local parts;original equipment;most consumed parts;top replaced OEM parts,MH_RO_PARTS;MH_RO_HDR_DETAILS;srv_mst_dim_model_master;ddp_ad_ai_final_dimension
-LABOUR_RUNNING_REPAIR,labour;labor;Local labor;Local labour;labour type;labr_type;labr_grop;standard hours;labour amount;standrd_hrs;labr_basc_amnt;running repair;free service;paid service;en-route repair,MH_RO_LABOUR;MH_RO_HDR_DETAILS;srv_mst_dim_model_master;ddp_ad_ai_final_dimension
-PARTS_CODE_CONSUMPTION,Parts Consumption,MH_RO_PARTS;MH_RO_HDR_DETAILS;srv_mst_dim_model_master;ddp_ad_ai_final_dimension
-LABOUR_CODE_CONSUMPTION,Labour Consumption,MH_RO_LABOUR;MH_RO_HDR_DETAILS;srv_mst_dim_model_master;ddp_ad_ai_final_dimension
-WORD_CLOUD_VOC,Word Cloud;VOC; Customer verbatim ; verbatim ,verbatim_cmm_aruna;MH_RO_HDR_DETAILS;srv_mst_dim_model_master;ddp_ad_ai_final_dimension
-COUNT_OF_REPEAT_REPAIRS,repeat;VOC;revisit;repeats;revisits,verbatim_cmm_aruna;MH_RO_HDR_DETAILS;srv_mst_dim_model_master;ddp_ad_ai_final_dimension
