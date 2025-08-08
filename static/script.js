@@ -216,7 +216,7 @@ function connectToDatabase(selectedDatabase) {
     }
     else if (selectedDatabase == 'Azure SQL') {
         sections = [
-            'Azure-SQL-DB'
+            'Autofurnish-POC'
         ]; // Directly specify PostgreSQL sections
     }
     else {

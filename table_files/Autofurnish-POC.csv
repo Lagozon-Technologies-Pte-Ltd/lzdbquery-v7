@@ -1,0 +1,6 @@
+Question,
+Identify the products with inconsistent MSP pricing between the companies GMPL and AL,
+List the product name and category and inventory status for each product stored in the warehouse,
+Show transactions indicating GST compliance gaps where the tax collected does not match the product HSN rates,
+Identify products with inventory levels below 5 units across all warehouses,
+Compare the total sales quantity and sales amount between the companies GMPL and AL for the last quarter,
