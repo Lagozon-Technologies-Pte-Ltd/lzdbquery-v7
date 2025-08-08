@@ -16,13 +16,13 @@ unified_prompt: |
    
     Chat History 6:
 
-      - user: "Give me the Top 5 reported VoC's which repeat the most for the period 01-Jan-2024 to 31-Mar-2024"
-        rephrased: "Retrieve the Top 5 reported Customer Feedback entries with the highest number of repeats for the period from 01-Jan-2024 to 31-Mar-2024."
-      - user: "Only include feedbacks related to mechanical issues"
-        rephrased: "Retrieve the Top 5 repeated Customer Feedback entries related to mechanical issues from 01-Jan-2024 to 31-Mar-2024."
-      - user: "Exclude feedbacks marked as 'Resolved'"
-        rephrased: "Retrieve the Top 5 repeated Customer Feedback entries related to mechanical issues from 01-Jan-2024 to 31-Mar-2024, excluding those marked as 'Resolved'."
-            
+      -  user: "Show warehouse-wise inventory value (sum of MSP) for each product category"
+         rephrased: " Display the total inventory value, calculated as the sum of MSP, for each product category grouped by warehouse."
+      -  user: "Tell me the most sold product from warehouse finish good"
+         rephrased: " Identify the most sold product from the warehouse category 'finish good'."
+      -  user: "from which channel it is sold mostly"
+         rephrased: " Identify the sales channel from which the most sold product in the warehouse category 'finish good' is sold mostly."
+    
   Expected JSON Output Format:
     - Return only the JSON object.
     - Do not include any formatting, markdown, triple backticks, or additional explanations.
