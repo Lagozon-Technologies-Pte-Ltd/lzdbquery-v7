@@ -291,7 +291,6 @@ azure_openai_client = AzureOpenAI(
 # )
 
 databases = ["GCP"]
-question_dropdown = os.getenv('Question_dropdown')
 
 import datetime
 
@@ -1213,7 +1212,6 @@ async def read_root(request: Request):
                 "request": request,
                 "databases": databases,                                     
                 "tables": tables,        # Table dropdown based on database selection
-                "question_dropdown": question_dropdown.split(','),  # Static questions from env
             })
         except Exception as e:
             logger.error(f"Error in main read_root: {e}")
