@@ -869,7 +869,7 @@ async def submit_query(
     #     question_type=request.session.get("current_question_type", "generic")
     # )
     
-    # Check cache first
+    # # Check cache first
     # redis_client = request.app.state.redis_client
     # cached_response = await get_cached_response(redis_client, cache_key)
     # if cached_response:
@@ -878,23 +878,23 @@ async def submit_query(
     #     return JSONResponse(content=cached_response)
     # else:
     #     logger.info(f"Cache MISS for key: {cache_key}")
-    # cache_key = get_cache_key(
-    #     "submit_query",
-    #     user_query=user_query,
-    #     section=section,
-    #     database=database,
-    #     question_type=request.session.get("current_question_type", "generic")
-    # )
+    cache_key = get_cache_key(
+        "submit_query",
+        user_query=user_query,
+        section=section,
+        database=database,
+        question_type=request.session.get("current_question_type", "generic")
+    )
     
     # Check cache first
-    # redis_client = request.app.state.redis_client
-    # cached_response = await get_cached_response(redis_client, cache_key)
-    # if cached_response:
-    #     logger.info(f"Cache HIT for key: {cache_key}")
-    #     logger.info("Returning cached response")
-    #     return JSONResponse(content=cached_response)
-    # else:
-    #     logger.info(f"Cache MISS for key: {cache_key}")
+    redis_client = request.app.state.redis_client
+    cached_response = await get_cached_response(redis_client, cache_key)
+    if cached_response:
+        logger.info(f"Cache HIT for key: {cache_key}")
+        logger.info("Returning cached response")
+        return JSONResponse(content=cached_response)
+    else:
+        logger.info(f"Cache MISS for key: {cache_key}")
     logger.info(f"Received /submit request with query: {user_query}, section: {section}, database: {database}")
     
     # Initialize response structure
@@ -1120,11 +1120,11 @@ async def submit_query(
         response_data = convert_dates(response_data)  # Your existing conversion
         # await cache_response(redis_client, cache_key, response_data)
         
-        return JSONResponse(content=response_data)
-        # response_data = convert_dates(response_data)  # Your existing conversion
-        # await cache_response(redis_client, cache_key, response_data)
-        
         # return JSONResponse(content=response_data)
+        response_data = convert_dates(response_data)  # Your existing conversion
+        await cache_response(redis_client, cache_key, response_data)
+        
+        return JSONResponse(content=response_data)
 
     except HTTPException as he:
         # Capture error details
