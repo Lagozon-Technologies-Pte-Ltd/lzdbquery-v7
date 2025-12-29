@@ -169,11 +169,20 @@ def get_session_id_dep(request: Request) -> str:
 
 async def get_session_data_dep(
     redis_client = Depends(get_redis_client),
-    session_id: str = Depends(get_session_id_dep),
+    request: Request = None,
 ):
-    session_data = await get_cached_response(redis_client, f"session::{session_id}") or {}
-    return session_data
+    session_id = get_session_id(request)
+    temp_session = await get_cached_response(
+        redis_client, f"session::{session_id}"
+    ) or {}
 
+    user_oid = temp_session.get("user_oid")
+    if not user_oid:
+        return temp_session  # unauthenticated
+
+    return await get_cached_response(
+        redis_client, f"user::{user_oid}"
+    ) or {}
 # Initialize the BlobServiceClient
 try:
     blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
@@ -262,78 +271,114 @@ def download_as_excel(data: pd.DataFrame, filename: str = "data.xlsx"):
     output.seek(0)  # Reset the pointer to the beginning of the stream
     return output
 @app.get("/login")
-async def login(request: Request,    
-            session_data: dict = Depends(get_session_data_dep),
-            redis_client=Depends(get_redis_client),
-            session_id: str = Depends(get_session_id_dep)
-            ):
+async def login(
+    request: Request,
+    redis_client=Depends(get_redis_client),
+    session_id: str = Depends(get_session_id_dep)
+):
     msal_app = msal.ConfidentialClientApplication(
         CLIENT_ID,
         authority=AUTHORITY,
         client_credential=CLIENT_SECRET,
     )
 
-    flow = msal_app.initiate_auth_code_flow(scopes=SCOPES, redirect_uri=REDIRECT_PATH)
+    flow = msal_app.initiate_auth_code_flow(
+        scopes=SCOPES,
+        redirect_uri=REDIRECT_PATH
+    )
 
-    session_data["flow"] = flow
-    await set_session_data(redis_client, session_id, session_data) 
-    logger.info(f"[login] session data: {session_data}")
+    # 🔑 WRITE RAW SESSION (no dependency)
+    session_data = {
+        "flow": flow
+    }
 
-    # Set session ID cookie here
+    await set_session_data(redis_client, session_id, session_data)
+
+    logger.info(f"[login] stored flow for session {session_id}")
+
     response = RedirectResponse(url=flow["auth_uri"])
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=session_id,
-        max_age=86400,  # 1 day
+        max_age=86400,
         httponly=True,
-        secure=False,  # Set to True in production
-        samesite='lax'
+        secure=False,
+        samesite="lax"
     )
     return response
 @app.get("/getAToken")
-async def get_a_token(request: Request,     
-                session_data: dict = Depends(get_session_data_dep),
-                redis_client=Depends(get_redis_client),
-                session_id: str = Depends(get_session_id_dep)
-    ):
+async def get_a_token(
+    request: Request,
+    redis_client=Depends(get_redis_client),
+    session_id: str = Depends(get_session_id_dep),
+):
     params = dict(request.query_params)
     logger.info(f"Session ID in getAToken: {session_id}")
+    logger.info(f"Cookies in getAToken: {request.cookies}")
 
     # Handle error from Azure AD
-    if 'error' in params:
-        return HTMLResponse(content=f"Error: {params.get('error_description', 'Unknown error')}", status_code=400)
+    if "error" in params:
+        return HTMLResponse(
+            content=f"Error: {params.get('error_description', 'Unknown error')}",
+            status_code=400,
+        )
 
-    # Check if 'flow' exists in session
-    if 'flow' not in session_data:
-        return RedirectResponse(url="/")
+    # 🔑 ALWAYS read raw session (cookie-based)
+    session_data = await get_cached_response(
+        redis_client, f"session::{session_id}"
+    ) or {}
 
-    # Attempt to acquire token
+    # OAuth flow must exist
+    if "flow" not in session_data:
+        logger.warning("OAuth flow missing in session. Redirecting to /login")
+        return RedirectResponse("/login")
+
+    # Exchange auth code for token
     result = msal.ConfidentialClientApplication(
         CLIENT_ID,
         authority=AUTHORITY,
         client_credential=CLIENT_SECRET,
-    ).acquire_token_by_auth_code_flow(session_data['flow'], params)
+    ).acquire_token_by_auth_code_flow(session_data["flow"], params)
 
-    print(result)
+    if "id_token_claims" not in result:
+        logger.error("ID token claims missing in MSAL response")
+        return HTMLResponse(
+            content="Could not retrieve user information.",
+            status_code=400,
+        )
 
-    # Check if ID token was received
-    if 'id_token_claims' in result:
-        print("we got id_token claims")
-        session_data['user'] = result['id_token_claims']
-        await set_session_data(redis_client, session_id, session_data) 
+    # ✅ Authenticated user
+    user_claims = result["id_token_claims"]
+    user_oid = user_claims["oid"]
 
-    else:
-        return HTMLResponse(content="Could not retrieve user information.", status_code=400)
+    logger.info(f"User authenticated successfully. oid={user_oid}")
 
-    # Redirect to dashboard
-    response = RedirectResponse(url="/")
+    # 🔒 USER cache = SOURCE OF TRUTH
+    await cache_response(
+        redis_client,
+        key=f"user::{user_oid}",
+        data={
+            "user": user_claims,
+            "messages": [],
+            "current_question_type": "generic",
+        },
+        expire=86400,
+    )
+
+    # 🍪 SESSION cookie stores POINTER only
+    session_data.clear()
+    session_data["user_oid"] = user_oid
+    await set_session_data(redis_client, session_id, session_data)
+
+    # Redirect to app
+    response = RedirectResponse("/")
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=session_id,
-        max_age=86400,  # 1 day
+        max_age=86400,
         httponly=True,
-        secure=False,  # Set to True in production with HTTPS
-        samesite='lax'
+        secure=False,  # set True in prod
+        samesite="lax",
     )
     return response
 @app.get("/get_prompt")
@@ -878,14 +923,14 @@ async def submit_query(
     #     return JSONResponse(content=cached_response)
     # else:
     #     logger.info(f"Cache MISS for key: {cache_key}")
-    cache_key = get_cache_key(
-        "submit_query",
-        user_query=user_query,
-        section=section,
-        database=database,
-        question_type=request.session.get("current_question_type", "generic")
-    )
-    
+    user_oid = await resolve_user_oid(redis_client, session_id, session_data)
+
+    if not user_oid:
+        raise HTTPException(status_code=401, detail="User not authenticated")
+
+
+    cache_key = f"user::{user_oid}::submit_query::{hash(user_query + section + database)}"
+
     # Check cache first
     redis_client = request.app.state.redis_client
     cached_response = await get_cached_response(redis_client, cache_key)
@@ -1034,8 +1079,14 @@ async def submit_query(
             
             # Now add the reframed query to messages instead of original user_query
             # logger.info(f"Now, adding message to history: {llm_reframed_query}")
-            session_data['messages'] = [{"role": "user", "content": llm_reframed_query}]
-            await set_session_data(redis_client, session_id, session_data) 
+            await cache_response(
+            redis_client,
+            key=f"user::{user_oid}",
+            data=session_data,
+            expire=86400
+            )
+
+            # await set_session_data(redis_client, session_id, session_data) 
             # logger.info(f"messages in session: {request.session['messages']}")
             response_data["llm_response"] = llm_reframed_query
             response_data["interprompt"] = unified_prompt
@@ -1157,7 +1208,7 @@ async def submit_query(
             "role": "user",
             "content": "An unexpected error occurred"
         })
-        await set_session_data(redis_client, session_id, session_data) 
+        # await set_session_data(redis_client, session_id, session_data) 
         return JSONResponse(
             content=response_data,
             status_code=500
@@ -1166,23 +1217,37 @@ async def submit_query(
 # Replace APIRouter with direct app.post
 
 @app.post("/reset-session")
-async def reset_session(request: Request, 
-                redis_client=Depends(get_redis_client),
-                session_id: str = Depends(get_session_id_dep)):
-    """
-    Resets the session state by clearing Redis session data and setting defaults.
-    """
-    await clear_session_data(redis_client, session_id)
+async def reset_session(
+    redis_client=Depends(get_redis_client),
+    session_id: str = Depends(get_session_id_dep),
+):
+    # Read session pointer
+    session_pointer = await get_cached_response(
+        redis_client, f"session::{session_id}"
+    ) or {}
 
-    # Set default session values
-    default_session_data = {
-        "messages": [],
-        "current_question_type": "generic",
-        # "prompts": load_prompts("generic_prompt.yaml")
-    }
-    await cache_response(redis_client, f"session::{session_id}", default_session_data)
-    logger.info(f"Question type is: {default_session_data['current_question_type']}")
-    return {"message": "Session state cleared and reset successfully"}
+    user_oid = session_pointer.get("user_oid")
+
+    if not user_oid:
+        return {"message": "No authenticated user to reset"}
+
+    user_cache = await get_cached_response(
+        redis_client, f"user::{user_oid}"
+    ) or {}
+
+    # Reset ONLY user state
+    await cache_response(
+        redis_client,
+        key=f"user::{user_oid}",
+        data={
+            "user": user_cache.get("user"),
+            "messages": [],
+            "current_question_type": "generic",
+        },
+        expire=86400,
+    )
+
+    return {"message": "User session reset successfully"}
 
 def prepare_table_html(tables_data, page_number, records_per_page):
     """
@@ -1220,14 +1285,18 @@ async def read_root(
     session_id: str = Depends(get_session_id_dep)
 ):
     # Get fresh session data
-    session_data = await get_session_data(redis_client, session_id) or {}
-    logger.info(f"Session ID in read_root: {session_id}")
-    logger.info(f"session data in read root {session_data}")
-    # Strict validation
-    if not session_data.get('user'):
-        return RedirectResponse('/login')
-    # Valid session - proceed
-    user_data = session_data['user']
+    cookie_session = await get_session_data(redis_client, session_id) or {}
+    user_oid = cookie_session.get("user_oid")
+
+    if not user_oid:
+        return RedirectResponse("/login")
+
+    user_session = await get_cached_response(redis_client, f"user::{user_oid}")
+
+    if not user_session or not user_session.get("user"):
+        return RedirectResponse("/login")
+
+    user_data = user_session["user"]
     roles = user_data.get('roles', ['guest'])
     
     response = templates.TemplateResponse("index.html", {
@@ -1338,8 +1407,45 @@ async def set_question_type(payload: QuestionTypeRequest, request: Request,
     prompts = load_prompts(filename)
     session_data["current_question_type"] = current_question_type
     # request.session["prompts"] = prompts  # If you want to store prompts per session
-    await cache_response(redis_client, f"session::{session_id}", session_data)
+    user_oid = await resolve_user_oid(redis_client, session_id, session_data)
+
+    if not user_oid:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    await cache_response(
+        redis_client,
+        key=f"user::{user_oid}",
+        data=session_data,
+        expire=86400
+    )
 
     print("Received question type:", current_question_type)
     return JSONResponse(content={"message": "Question type set", "prompts": prompts})
 
+#azure-redis integration
+def get_user_oid(session_data: dict) -> str | None:
+    user = session_data.get("user")
+    if not user:
+        return None
+    return user.get("oid")  # Azure AD Object ID
+def get_user_cache_key(user_oid: str, suffix: str = ""):
+    base = f"user::{user_oid}"
+    return f"{base}::{suffix}" if suffix else base
+async def resolve_user_oid(
+    redis_client,
+    session_id: str,
+    session_data: dict | None = None
+) -> str | None:
+    # 1️⃣ Check session pointer
+    cookie_session = await get_cached_response(
+        redis_client, f"session::{session_id}"
+    ) or {}
+
+    if "user_oid" in cookie_session:
+        return cookie_session["user_oid"]
+
+    # 2️⃣ Fallback from user cache
+    if session_data and "user" in session_data:
+        return session_data["user"].get("oid")
+
+    return None
