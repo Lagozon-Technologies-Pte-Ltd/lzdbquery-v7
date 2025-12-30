@@ -151,6 +151,8 @@ def get_session_id(request: Request) -> str:
 
 async def get_session_data(redis_client, session_id: str):
     return await get_cached_response(redis_client, key=f"session::{session_id}")
+def user_sessions_key(user_oid: str) -> str:
+    return f"user::{user_oid}::sessions"
 
 async def set_session_data(redis_client, session_id: str, data: dict, expire: int = 3600):
     await cache_response(redis_client, key=f"session::{session_id}", data=data, expire=expire)
@@ -359,10 +361,14 @@ async def get_a_token(
         key=f"user::{user_oid}",
         data={
             "user": user_claims,
-            "messages": [],
             "current_question_type": "generic",
         },
         expire=86400,
+    )
+    # 🔗 register this session under user
+    redis_client.sadd(
+        user_sessions_key(user_oid),
+        session_id
     )
 
     # 🍪 SESSION cookie stores POINTER only
@@ -929,7 +935,7 @@ async def submit_query(
         raise HTTPException(status_code=401, detail="User not authenticated")
 
 
-    cache_key = f"user::{user_oid}::submit_query::{hash(user_query + section + database)}"
+    # cache_key = f"user::{user_oid}::submit_query::{hash(user_query + section + database)}"
     session_data = await get_cached_response(
             redis_client, f"session::{session_id}"
         ) or {}
@@ -938,16 +944,16 @@ async def submit_query(
 
     # Check cache first
     redis_client = request.app.state.redis_client
-    cached_response = await get_cached_response(redis_client, cache_key)
-    if cached_response:
-        logger.info(f"Cache HIT for key: {cache_key}")
+    # cached_response = await get_cached_response(redis_client, cache_key)
+    # if cached_response:
+    #     logger.info(f"Cache HIT for key: {cache_key}")
 
-        cached_response["history"] = messages
-        logger.info("Returning cached response")
-        return JSONResponse(content=cached_response)
-    else:
-        logger.info(f"Cache MISS for key: {cache_key}")
-    logger.info(f"Received /submit request with query: {user_query}, section: {section}, database: {database}")
+    #     cached_response["history"] = messages
+    #     logger.info("Returning cached response")
+    #     return JSONResponse(content=cached_response)
+    # else:
+    #     logger.info(f"Cache MISS for key: {cache_key}")
+    # logger.info(f"Received /submit request with query: {user_query}, section: {section}, database: {database}")
     
     # Initialize response structure
     response_data = {
@@ -972,7 +978,7 @@ async def submit_query(
         current_question_type = session_data.get("current_question_type", "generic")
         # prompts = request.session.get("prompts", load_prompts("generic_prompt.yaml")
         prompts = load_prompts("generic_prompt.yaml")
-        session_data['user_query'] = user_query  # Still store original query separately if needed
+        # session_data['user_query'] = user_query  # Still store original query separately if needed
 
         # Handle session messages
         if "messages" not in session_data:
@@ -1134,13 +1140,13 @@ async def submit_query(
             response_data["langprompt"] = str(final_prompt)
             
             if isinstance(response, str):
-                session_data['generated_query'] = response
+                # session_data['generated_query'] = response
                 response_data["query"] = response
-                session_data['generated_query'] = response
+                # session_data['generated_query'] = response
             else:
                 response_data["query"] = response.get("query", "")
-                session_data['generated_query'] = response.get("query", "")
-                session_data['chosen_tables'] = chosen_tables
+                # session_data['generated_query'] = response.get("query", "")
+                # session_data['chosen_tables'] = chosen_tables
                 # request.session['tables_data'] = tables_data
 
         except Exception as e:
@@ -1182,17 +1188,9 @@ async def submit_query(
         # await cache_response(redis_client, cache_key, response_data)
         messages.append({
             "role": "user",
-            "content": user_query
+            "content": llm_reframed_query
         })
 
-        messages.append({
-            "role": "assistant",
-            "content": (
-                response_data.get("chat_response")
-                or response_data.get("llm_response")
-                or response_data.get("query")
-            )
-        })
 
         session_data["messages"] = messages
 
@@ -1206,7 +1204,10 @@ async def submit_query(
         response_data["history"] = messages
         # return JSONResponse(content=response_data)
         response_data = convert_dates(response_data)  # Your existing conversion
-        await cache_response(redis_client, cache_key, response_data)
+        ENABLE_QUERY_CACHE = False
+
+        if ENABLE_QUERY_CACHE:
+            await cache_response(redis_client, cache_key, response_data)
         
         return JSONResponse(content=response_data)
 
@@ -1248,39 +1249,77 @@ async def submit_query(
         )
 
 # Replace APIRouter with direct app.post
-
-@app.post("/reset-session")
-async def reset_session(
+@app.get("/user/sessions")
+async def list_user_sessions(
     redis_client=Depends(get_redis_client),
     session_id: str = Depends(get_session_id_dep),
 ):
-    # Read session pointer
-    session_pointer = await get_cached_response(
+    session_data = await get_cached_response(
         redis_client, f"session::{session_id}"
     ) or {}
 
-    user_oid = session_pointer.get("user_oid")
-
+    user_oid = session_data.get("user_oid")
     if not user_oid:
-        return {"message": "No authenticated user to reset"}
+        raise HTTPException(status_code=401, detail="Not authenticated")
 
-    user_cache = await get_cached_response(
-        redis_client, f"user::{user_oid}"
-    ) or {}
-
-    # Reset ONLY user state
-    await cache_response(
-        redis_client,
-        key=f"user::{user_oid}",
-        data={
-            "user": user_cache.get("user"),
-            "messages": [],
-            "current_question_type": "generic",
-        },
-        expire=86400,
+    sessions = list(
+        redis_client.smembers(user_sessions_key(user_oid))
     )
 
-    return {"message": "User session reset successfully"}
+    return {
+        "user_oid": user_oid,
+        "sessions": sessions
+    }
+
+@app.post("/reset-session")
+async def reset_session(
+    request: Request,
+    redis_client=Depends(get_redis_client),
+    session_id: str = Depends(get_session_id_dep),
+):
+    # 1️⃣ Read old session
+    old_session = await get_cached_response(
+        redis_client, f"session::{session_id}"
+    ) or {}
+
+    user_oid = old_session.get("user_oid")
+
+    
+
+    # 3️⃣ Create NEW session
+    new_session_id = str(uuid.uuid4())
+
+    if user_oid:
+        await cache_response(
+            redis_client,
+            key=f"session::{new_session_id}",
+            data={
+                "user_oid": user_oid,
+                "messages": []
+            },
+            expire=86400
+        )
+
+        # 🔗 ADD THIS LINE
+        redis_client.sadd(
+            user_sessions_key(user_oid),
+            new_session_id
+        )
+    # 4️⃣ Send new cookie
+    response = JSONResponse(
+        content={"message": "New session created successfully"}
+    )
+
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=new_session_id,
+        max_age=86400,
+        httponly=True,
+        secure=False,  # True in prod
+        samesite="lax"
+    )
+
+    return response
 
 def prepare_table_html(tables_data, page_number, records_per_page):
     """
@@ -1364,25 +1403,23 @@ async def debug_cache(
     user_oid = session_data.get("user_oid") if session_data else None
 
     user_data = None
-    query_caches = {}
+    # query_caches = {}
 
     if user_oid:
         user_key = f"user::{user_oid}"
         user_data = await get_cached_response(redis_client, user_key)
 
         # ⚠️ Redis KEYS is OK for debugging only
-        query_keys = redis_client.keys(f"user::{user_oid}::submit_query::*")
+        # query_keys = redis_client.keys(f"user::{user_oid}::submit_query::*")
 
-        for k in query_keys:
-            query_caches[k] = await get_cached_response(redis_client, k)
+        # for k in query_keys:
+        #     query_caches[k] = await get_cached_response(redis_client, k)
 
     return {
         "session_key": session_key,
         "session_data": session_data,
         "user_key": f"user::{user_oid}" if user_oid else None,
         "user_data": user_data,
-        "query_cache_keys": list(query_caches.keys()),
-        "query_cache_data": query_caches
     }
 
 def display_table_with_styles(data, table_name):
