@@ -930,12 +930,19 @@ async def submit_query(
 
 
     cache_key = f"user::{user_oid}::submit_query::{hash(user_query + section + database)}"
+    session_data = await get_cached_response(
+            redis_client, f"session::{session_id}"
+        ) or {}
+
+    messages = session_data.get("messages", [])
 
     # Check cache first
     redis_client = request.app.state.redis_client
     cached_response = await get_cached_response(redis_client, cache_key)
     if cached_response:
         logger.info(f"Cache HIT for key: {cache_key}")
+
+        cached_response["history"] = messages
         logger.info("Returning cached response")
         return JSONResponse(content=cached_response)
     else:
@@ -1079,18 +1086,21 @@ async def submit_query(
             
             # Now add the reframed query to messages instead of original user_query
             # logger.info(f"Now, adding message to history: {llm_reframed_query}")
-            await cache_response(
-            redis_client,
-            key=f"user::{user_oid}",
-            data=session_data,
-            expire=86400
-            )
-
+            # session_data['messages'].append({
+            #     "role": "user",
+            #     "content": llm_reframed_query
+            # })
+           
             # await set_session_data(redis_client, session_id, session_data) 
             # logger.info(f"messages in session: {request.session['messages']}")
             response_data["llm_response"] = llm_reframed_query
             response_data["interprompt"] = unified_prompt
-            
+            await cache_response(
+                redis_client,
+                key=f"session::{session_id}",
+                data=session_data,
+                expire=86400
+            )
         except Exception as e:
             logger.error(f"Prompt generation error: {str(e)}")
             raise HTTPException(
@@ -1170,7 +1180,30 @@ async def submit_query(
 
         response_data = convert_dates(response_data)  # Your existing conversion
         # await cache_response(redis_client, cache_key, response_data)
-        
+        messages.append({
+            "role": "user",
+            "content": user_query
+        })
+
+        messages.append({
+            "role": "assistant",
+            "content": (
+                response_data.get("chat_response")
+                or response_data.get("llm_response")
+                or response_data.get("query")
+            )
+        })
+
+        session_data["messages"] = messages
+
+        await cache_response(
+            redis_client,
+            key=f"session::{session_id}",
+            data=session_data,
+            expire=86400
+        )
+
+        response_data["history"] = messages
         # return JSONResponse(content=response_data)
         response_data = convert_dates(response_data)  # Your existing conversion
         await cache_response(redis_client, cache_key, response_data)
@@ -1204,10 +1237,10 @@ async def submit_query(
             "interprompt": unified_prompt if 'unified_prompt' in locals() else "Not generated due to error"
         })
         
-        session_data['messages'].append({
-            "role": "user",
-            "content": "An unexpected error occurred"
-        })
+        # session_data['messages'].append({
+        #     "role": "user",
+        #     "content": "An unexpected error occurred"
+        # })
         # await set_session_data(redis_client, session_id, session_data) 
         return JSONResponse(
             content=response_data,
@@ -1319,6 +1352,38 @@ async def session_debug(request: Request,
             session_id: str = Depends(get_session_id_dep)
             ):
     return {"session_id": session_id, "data": session_data}
+@app.get("/debug/cache")
+async def debug_cache(
+    redis_client=Depends(get_redis_client),
+    session_id: str = Depends(get_session_id_dep)
+):
+    # Session pointer
+    session_key = f"session::{session_id}"
+    session_data = await get_cached_response(redis_client, session_key)
+
+    user_oid = session_data.get("user_oid") if session_data else None
+
+    user_data = None
+    query_caches = {}
+
+    if user_oid:
+        user_key = f"user::{user_oid}"
+        user_data = await get_cached_response(redis_client, user_key)
+
+        # ⚠️ Redis KEYS is OK for debugging only
+        query_keys = redis_client.keys(f"user::{user_oid}::submit_query::*")
+
+        for k in query_keys:
+            query_caches[k] = await get_cached_response(redis_client, k)
+
+    return {
+        "session_key": session_key,
+        "session_data": session_data,
+        "user_key": f"user::{user_oid}" if user_oid else None,
+        "user_data": user_data,
+        "query_cache_keys": list(query_caches.keys()),
+        "query_cache_data": query_caches
+    }
 
 def display_table_with_styles(data, table_name):
     """
