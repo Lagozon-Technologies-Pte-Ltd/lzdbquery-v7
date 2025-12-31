@@ -2,6 +2,9 @@
 
 /* Global Styles */
 body {
+    max-width: 100%;
+    max-width: 100%;
+
     font-family: "Geist-SemiBold", Helvetica;
     ;
     margin: 0;
@@ -882,18 +885,36 @@ label input[type="radio"] {
 
 main {
     display: flex;
-    gap: 10px;
-    justify-content: center;
-    /* Center horizontally */
-    align-items: flex-start;
-    /* Align to the top */
+    gap: 12px;
     width: 100%;
-    max-width: 1500px;
-    /* Limit max width */
-    margin: 0 auto;
-    /* Center main in the viewport */
+    max-width: 100%;
     padding: 10px;
+    margin: 0;
+    align-items: stretch;
+    box-sizing: border-box;
 }
+/* 
+#session-sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: #f3f1ff;
+    border-radius: 12px;
+    padding: 10px;
+    height: calc(100vh - 120px);
+    overflow-y: auto;
+} */
+#chat-container {
+    flex: 1;
+    min-width: 420px;
+    padding: 15px;
+}
+
+#results-container {
+    flex: 1.2;
+    min-width: 520px;
+    padding: 15px;
+}
+
 
 #main-content {
     justify-content: center;
@@ -1139,4 +1160,26 @@ table tr:hover {
     font-size: 20px;
     margin-left: auto;
     padding-left: 10px;
+}
+#session-sidebar {
+    width: 15%;
+    background: #f3f1ff;
+    border-radius: 12px;
+    padding: 10px;
+    height: 720px;
+    overflow-y: auto;
+}
+
+.session-item {
+    padding: 10px;
+    margin: 8px 0 8px 0;
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.session-item.active {
+    background: #dcd6ff;
+    font-weight: bold;
 }

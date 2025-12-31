@@ -23,18 +23,22 @@
 
     <header>
         <img src="static/logo.png" alt="DBQuery Logo" class="logo">
-        
+
         <p>Logged in as: {{ user_email }} (Role: {{ user_role }})</p>
         <h1>Generative AI Assistant to your Database</h1>
         <img src="static\DBQueryLogo.png" alt="dbquery logo" class="db-logo">
     </header>
     <main style="display: flex;">
+        <div id="session-sidebar">
+            <h3>Chat History</h3>
+            <div id="session-list"></div>
+        </div>
 
         <!-- Chat Container (Left Side) -->
-        <div id="chat-container" style="width: 45%; padding: 15px;">
+        <div id="chat-container">
             <h2 style="display: flex; align-items: center;">
                 Chat Assistant
-                <img src="static/reset.png" alt="Reset Session" class="reset-icon" onclick="resetSession()"
+                <img src="static/new_sess.png" alt="Reset Session" class="reset-icon" onclick="resetSession()"
                     style="cursor: pointer; margin-left: 10px; width: 24px; height: 24px;">
             </h2>
 
@@ -104,7 +108,7 @@
         </div>
 
         <!-- Query Results (Right Side) -->
-        <div style="width:55%; padding: 15px;">
+        <div id="results-container">
             <div class="query-details-header">
                 <h2 class="query-title">Query Details</h2>
                 <div class="dev-mode-toggle-container">

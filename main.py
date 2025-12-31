@@ -104,7 +104,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET", "your-secret-key-here"))
+# app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET", "your-secret-key-here"))
 
 app.add_middleware(LoggingMiddleware)
 # Set up static files and templates
@@ -143,11 +143,8 @@ async def get_cached_response(redis_client, key: str):
         return None
 SESSION_COOKIE_NAME = "session_id"
 
-def get_session_id(request: Request) -> str:
-    session_id = request.cookies.get(SESSION_COOKIE_NAME)
-    if not session_id:
-        session_id = str(uuid.uuid4())
-    return session_id
+def get_session_id(request: Request) -> str | None:
+    return request.cookies.get(SESSION_COOKIE_NAME)
 
 async def get_session_data(redis_client, session_id: str):
     return await get_cached_response(redis_client, key=f"session::{session_id}")
@@ -174,17 +171,10 @@ async def get_session_data_dep(
     request: Request = None,
 ):
     session_id = get_session_id(request)
-    temp_session = await get_cached_response(
+    return await get_cached_response(
         redis_client, f"session::{session_id}"
     ) or {}
 
-    user_oid = temp_session.get("user_oid")
-    if not user_oid:
-        return temp_session  # unauthenticated
-
-    return await get_cached_response(
-        redis_client, f"user::{user_oid}"
-    ) or {}
 # Initialize the BlobServiceClient
 try:
     blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
@@ -241,14 +231,14 @@ azure_openai_client = AzureOpenAI(
 databases = ["Azure SQL"]
 question_dropdown = os.getenv('Question_dropdown')
 
-import datetime
+from datetime import datetime,date
 
 def convert_dates(obj):
     if isinstance(obj, dict):
         return {k: convert_dates(v) for k, v in obj.items()}
     elif isinstance(obj, list):
         return [convert_dates(item) for item in obj]
-    elif isinstance(obj, (datetime.date, datetime.datetime)):
+    elif isinstance(obj, (date, datetime)):
         return obj.isoformat()
     else:
         return obj
@@ -276,8 +266,12 @@ def download_as_excel(data: pd.DataFrame, filename: str = "data.xlsx"):
 async def login(
     request: Request,
     redis_client=Depends(get_redis_client),
-    session_id: str = Depends(get_session_id_dep)
 ):
+    # 🔥 ALWAYS control session_id explicitly
+    session_id = request.cookies.get(SESSION_COOKIE_NAME)
+    if not session_id:
+        session_id = str(uuid.uuid4())
+
     msal_app = msal.ConfidentialClientApplication(
         CLIENT_ID,
         authority=AUTHORITY,
@@ -289,12 +283,13 @@ async def login(
         redirect_uri=REDIRECT_PATH
     )
 
-    # 🔑 WRITE RAW SESSION (no dependency)
-    session_data = {
-        "flow": flow
-    }
-
-    await set_session_data(redis_client, session_id, session_data)
+    # ✅ store flow safely
+    await cache_response(
+        redis_client,
+        key=f"session::{session_id}",
+        data={"flow": flow},
+        expire=600  # short-lived
+    )
 
     logger.info(f"[login] stored flow for session {session_id}")
 
@@ -308,6 +303,7 @@ async def login(
         samesite="lax"
     )
     return response
+
 @app.get("/getAToken")
 async def get_a_token(
     request: Request,
@@ -318,18 +314,18 @@ async def get_a_token(
     logger.info(f"Session ID in getAToken: {session_id}")
     logger.info(f"Cookies in getAToken: {request.cookies}")
 
-    # Handle error from Azure AD
+    # Handle Azure AD error
     if "error" in params:
         return HTMLResponse(
             content=f"Error: {params.get('error_description', 'Unknown error')}",
             status_code=400,
         )
 
-    # 🔑 ALWAYS read raw session (cookie-based)
+    # 🔑 Read existing session
     session_data = await get_cached_response(
         redis_client, f"session::{session_id}"
     ) or {}
-
+    session_data['current_question_type'] = 'generic'
     # OAuth flow must exist
     if "flow" not in session_data:
         logger.warning("OAuth flow missing in session. Redirecting to /login")
@@ -355,35 +351,39 @@ async def get_a_token(
 
     logger.info(f"User authenticated successfully. oid={user_oid}")
 
-    # 🔒 USER cache = SOURCE OF TRUTH
+    # 🔒 USER cache (source of truth)
     await cache_response(
         redis_client,
         key=f"user::{user_oid}",
         data={
             "user": user_claims,
             "current_question_type": "generic",
+            "created_at": int(time.time())
         },
         expire=86400,
     )
-    # 🔗 register this session under user
+
+    # 🔗 Register session under user
     redis_client.sadd(
         user_sessions_key(user_oid),
         session_id
     )
 
-    # 🍪 SESSION cookie stores POINTER only
-    session_data.clear()
+    # 🧠 Update session (DO NOT recreate)
     session_data["user_oid"] = user_oid
+    session_data.setdefault("messages", [])
+    session_data.setdefault("created_at", int(time.time()))
+
     await set_session_data(redis_client, session_id, session_data)
 
-    # Redirect to app
+    # 🍪 Redirect to app
     response = RedirectResponse("/")
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=session_id,
         max_age=86400,
         httponly=True,
-        secure=False,  # set True in prod
+        secure=False,  # True in prod
         samesite="lax",
     )
     return response
@@ -704,7 +704,7 @@ async def get_questions(subject: str, request: Request,
         JSONResponse: A JSON response containing the list of questions or an error message.
     """
 
-    question_type = session_data['current_question_type']
+    question_type = session_data.get("current_question_type", "generic")
     logger.info(f"que type: {question_type}")
     if question_type == 'generic':
         csv_file_name = f"table_files/{subject}_questions_generic.csv"
@@ -936,10 +936,7 @@ async def submit_query(
 
 
     # cache_key = f"user::{user_oid}::submit_query::{hash(user_query + section + database)}"
-    session_data = await get_cached_response(
-            redis_client, f"session::{session_id}"
-        ) or {}
-
+ 
     messages = session_data.get("messages", [])
 
     # Check cache first
@@ -1101,12 +1098,7 @@ async def submit_query(
             # logger.info(f"messages in session: {request.session['messages']}")
             response_data["llm_response"] = llm_reframed_query
             response_data["interprompt"] = unified_prompt
-            await cache_response(
-                redis_client,
-                key=f"session::{session_id}",
-                data=session_data,
-                expire=86400
-            )
+            
         except Exception as e:
             logger.error(f"Prompt generation error: {str(e)}")
             raise HTTPException(
@@ -1207,6 +1199,7 @@ async def submit_query(
         ENABLE_QUERY_CACHE = False
 
         if ENABLE_QUERY_CACHE:
+            cache_key ={}
             await cache_response(redis_client, cache_key, response_data)
         
         return JSONResponse(content=response_data)
@@ -1249,74 +1242,113 @@ async def submit_query(
         )
 
 # Replace APIRouter with direct app.post
-@app.get("/user/sessions")
-async def list_user_sessions(
+@app.get("/sessions")
+async def list_sessions(
     redis_client=Depends(get_redis_client),
     session_id: str = Depends(get_session_id_dep),
 ):
-    session_data = await get_cached_response(
+    cookie_session = await get_cached_response(
         redis_client, f"session::{session_id}"
     ) or {}
 
-    user_oid = session_data.get("user_oid")
+    user_oid = cookie_session.get("user_oid")
     if not user_oid:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+        raise HTTPException(status_code=401)
 
-    sessions = list(
-        redis_client.smembers(user_sessions_key(user_oid))
+    session_ids = redis_client.smembers(f"user::{user_oid}::sessions")
+
+    sessions = []
+    for sid in session_ids:
+        data = await get_cached_response(redis_client, f"session::{sid}")
+        if not data:
+            continue
+
+        created_at = data.get("created_at", 0)
+
+        sessions.append({
+            "session_id": sid,
+            "created_at": created_at,
+            "count": len(data.get("messages", []))
+        })
+
+    # 🔽 Oldest → Newest (so numbering is stable)
+    sessions.sort(key=lambda x: x["created_at"] or 0)
+
+    # 🏷️ Assign session numbers + labels
+    for idx, s in enumerate(sessions, start=1):
+        date_str = datetime.fromtimestamp(
+            s["created_at"]
+        ).strftime("%d %b %Y")
+
+        s["session_number"] = idx
+        s["label"] = f"{date_str} : Session {idx}"
+
+    return sessions
+@app.get("/sessions/{session_id}")
+async def load_session(
+    session_id: str,
+    redis_client=Depends(get_redis_client),
+):
+    session = await get_cached_response(
+        redis_client, f"session::{session_id}"
     )
 
+    if not session:
+        raise HTTPException(status_code=404)
+
     return {
-        "user_oid": user_oid,
-        "sessions": sessions
+        "session_id": session_id,
+        "messages": session.get("messages", [])
     }
 
-@app.post("/reset-session")
+@app.post("/new-session")
 async def reset_session(
     request: Request,
     redis_client=Depends(get_redis_client),
-    session_id: str = Depends(get_session_id_dep),
 ):
-    # 1️⃣ Read old session
-    old_session = await get_cached_response(
-        redis_client, f"session::{session_id}"
-    ) or {}
+    old_session_id = request.cookies.get(SESSION_COOKIE_NAME)
+
+    # Read old session (optional)
+    old_session = (
+        await get_cached_response(redis_client, f"session::{old_session_id}")
+        if old_session_id else {}
+    )
 
     user_oid = old_session.get("user_oid")
 
-    
+    if not user_oid:
+        return JSONResponse({"message": "No authenticated user"})
 
-    # 3️⃣ Create NEW session
+    # 1️⃣ Create NEW session
     new_session_id = str(uuid.uuid4())
 
-    if user_oid:
-        await cache_response(
-            redis_client,
-            key=f"session::{new_session_id}",
-            data={
-                "user_oid": user_oid,
-                "messages": []
-            },
-            expire=86400
-        )
-
-        # 🔗 ADD THIS LINE
-        redis_client.sadd(
-            user_sessions_key(user_oid),
-            new_session_id
-        )
-    # 4️⃣ Send new cookie
-    response = JSONResponse(
-        content={"message": "New session created successfully"}
+    await cache_response(
+        redis_client,
+        key=f"session::{new_session_id}",
+        data={
+            "user_oid": user_oid,
+            "messages": [],
+            "created_at": int(time.time()),
+            "current_question_type": "generic"
+        },
+        expire=86400
     )
+
+    # 2️⃣ Register session under user
+    redis_client.sadd(
+        f"user::{user_oid}::sessions",
+        new_session_id
+    )
+
+    # 3️⃣ Switch cookie to new session
+    response = JSONResponse({"message": "New session started"})
 
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=new_session_id,
-        max_age=86400,
         httponly=True,
-        secure=False,  # True in prod
-        samesite="lax"
+        samesite="lax",
+        max_age=86400
     )
 
     return response

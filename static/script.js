@@ -14,6 +14,7 @@ window.onload = function () {
     let mediaRecorder = undefined;
     let audioChunks = [];
     let originalButtonHTML = "";
+    loadSessions();
     console.log("Variables reset on page reload");
 };
 function loadTableColumns(columnNames) {
@@ -126,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector(`input[name="questionType"][value="${initialQuestionType}"]`).checked = true;
 
     // Reset session on page load
-    fetch('/reset-session', { method: 'POST' })
+    fetch('/new-session', { method: 'POST' })
         .then(response => {
             if (!response.ok) throw new Error('Session reset failed');
             console.log('Session has been reset on page load.');
@@ -655,38 +656,8 @@ document.getElementById("table-dropdown")?.addEventListener("change", (event) =>
  * Resets the session state by making a POST request to the backend.
  */
 function resetSession() {
-    // Show a confirmation dialog first
-    const confirmed = confirm("Are you sure you want to reset your session? This will clear all your current data.");
-
-    if (!confirmed) return;
-
-    // Show loading state (assuming you have a way to display this)
-    showLoadingIndicator("Resetting session...");
-
-    fetch('/reset-session', { method: 'POST' })
-        .then(response => {
-            if (response.ok) {
-                // More friendly success message
-                showToastMessage("Session reset successfully! Refreshing your page...", 'success');
-
-                // Brief delay before reload to let user see the message
-                setTimeout(() => {
-                    location.reload();
-                }, 1500);
-            } else {
-                // More detailed error message
-                showToastMessage("We couldn't reset your session. Please try again later.", 'error');
-            }
-        })
-        .catch(error => {
-            console.error("Error resetting session:", error);
-            showToastMessage("A network error occurred. Please check your connection and try again.", 'error');
-        })
-        .finally(() => {
-            hideLoadingIndicator();
-        });
+  window.location.reload();
 }
-
 // Helper functions for UI feedback (you'll need to implement these or use a library)
 function showToastMessage(message, type = 'info') {
     // Implement or replace with your preferred notification system
@@ -1103,7 +1074,7 @@ async function handleQuestionTypeChange(event) {
 
     try {
         // First reset the session
-        const resetResponse = await fetch('/reset-session', { method: 'POST' });
+        const resetResponse = await fetch('/new-session', { method: 'POST' });
         if (!resetResponse.ok) throw new Error('Session reset failed');
 
         // Then set the new question type
@@ -1145,3 +1116,33 @@ async function handleQuestionTypeChange(event) {
 document.querySelectorAll('input[name="questionType"]').forEach(radio => {
     radio.addEventListener('change', handleQuestionTypeChange);
 });
+async function loadSessions() {
+    const res = await fetch("/sessions");
+    if (!res.ok) return;
+
+    const sessions = await res.json();
+    const list = document.getElementById("session-list");
+    list.innerHTML = "";
+
+    sessions.forEach(s => {
+        const div = document.createElement("div");
+        div.className = "session-item";
+        div.innerText = s.label;
+        div.onclick = () => loadSessionMessages(s.session_id);
+        list.appendChild(div);
+    });
+}
+async function loadSessionMessages(sessionId) {
+    const res = await fetch(`/sessions/${sessionId}`);
+    const data = await res.json();
+
+    const chat = document.getElementById("chat-messages");
+    chat.innerHTML = "";
+
+    data.messages.forEach(m => {
+        const div = document.createElement("div");
+        div.className = `message user-message`;
+        div.innerHTML = `<div class="message-content">${m.content}</div>`;
+        chat.appendChild(div);
+    });
+}
