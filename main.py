@@ -962,7 +962,10 @@ async def submit_query(
         "history":  session_data.get('messages', []),
         "interprompt": "",
         "langprompt": "",
+        "suggested_questions": [],
         "error": None
+        
+        
     }
 
     try:
@@ -1038,7 +1041,9 @@ async def submit_query(
                         "chat_response": error_msg,
                         "history": session_data['messages'],
                         "interprompt": unified_prompt,
-                        "langprompt": ""
+                        "langprompt": "",
+                        "suggested_questions": [],
+                        
                     }
                     return JSONResponse(content=response_data)
                 chosen_tables = intent_result["tables"]
@@ -1071,6 +1076,7 @@ async def submit_query(
 
                 # Parse the guaranteed JSON string into a Python dictionary
                 json_output = json.loads(response_content)
+                print("The output of the json is ", json_output)
 
                 # Now you can safely access the keys
                 # llm_reframed_query = json_output.get("rephrased_query")
@@ -1109,7 +1115,7 @@ async def submit_query(
         # Rest of your code remains the same...
         # Step 2: Invoke LangChain
         try:
-            relationships = find_relationships_for_tables(chosen_tables , 'table_relation.json')
+            relationships = find_relationships_for_tables(["Ponpure_LeadDetails","Ponpure_Schedules","Ponpure_Quotationhdrs","Ponpure_SaleOrderdtls","Ponpure_SaleorderHdrs","Ponpure_DispatchDetails"] , 'table_relation.json')
             table_details = get_table_details(table_name=chosen_tables)
             examples = get_examples(llm_reframed_query, current_question_type)
             logger.info(f"relationships: {relationships}")
@@ -1130,6 +1136,10 @@ async def submit_query(
             )
 
             response_data["langprompt"] = str(final_prompt)
+            
+            response_data["suggested_questions"]=response.get("Suggested_question")
+            
+            print("Suggested_questions",response_data["suggested_questions"])
             
             if isinstance(response, str):
                 # session_data['generated_query'] = response
@@ -1264,11 +1274,22 @@ async def list_sessions(
             continue
 
         created_at = data.get("created_at", 0)
+        messages = data.get("messages", [])
+
+        title = "New chat"
+        if messages:
+            first_user_msg = next(
+                (m["content"] for m in messages if m["role"] == "user"),
+                None
+            )
+            if first_user_msg:
+                title = " ".join(first_user_msg.split()[:4])
 
         sessions.append({
             "session_id": sid,
-            "created_at": created_at,
-            "count": len(data.get("messages", []))
+            "created_at": data.get("created_at"),
+            "count": len(messages),
+            "title": title
         })
 
     # 🔽 Oldest → Newest (so numbering is stable)

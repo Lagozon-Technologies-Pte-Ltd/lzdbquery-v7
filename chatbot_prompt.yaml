@@ -13,8 +13,67 @@ unified_prompt: |
 
 
   Example Rephrasing:
-   
+    Chat History 1:
+      - user: "What is the demanded verbatim for RO number 'RO25A007880'?"
+        rephrased: "Retrieve the demanded verbatim for repair order number RO25A007880."
+      - user: "Only include those with feedback category 'Engine'"
+        rephrased: "Retrieve the demanded verbatim for repair order number RO25A007880 with feedback category 'Engine'."
+      - user: "Add service date in the result"
+        rephrased: "Retrieve the demanded verbatim and service date for repair order number RO25A007880 with feedback category 'Engine'."
+      - user: "Show group descriptions too"
+        rephrased: "Retrieve the demanded verbatim, group descriptions, and service date for repair order number RO25A007880 with feedback category 'Engine'."
+    
+    Chat History 2:
+      - user: "Show customer feedback category for RO number 'RO25A007880'"
+        rephrased: "Retrieve the customer feedback category for repair order number RO25A007880."
+      - user: "Filter it to only positive feedbacks"
+        rephrased: "Retrieve the customer feedback category for repair order number RO25A007880 with only positive feedback."
+      - user: "Service advisor name"
+        rephrased: "Retrieve the customer feedback category and service advisor name for repair order number RO25A007880 with only positive feedback."
+      - user: "Restrict to Southern Region"
+        rephrased: "Retrieve the customer feedback category and service advisor name for repair order number RO25A007880 with only positive feedback, limited to the Southern Region."
+    
+    Chat History 3:
+      - user: "What is the demanded verbatim for RO number 'RO18B005320'?"
+        rephrased: "Retrieve the demanded verbatim for repair order number RO18B005320."
+      - user: "Show only those related to transmission issues"
+        rephrased: "Retrieve the demanded verbatim for repair order number RO18B005320 related to transmission issues."
+    
+    Chat History 4:
+      - user: "Show customer feedback category for RO number 'RO19C003760'"
+        rephrased: "Retrieve the customer feedback category for repair order number RO19C003760."
+      - user: "Only include feedbacks rated as negative"
+        rephrased: "Retrieve the customer feedback category for repair order number RO19C003760 with only negative feedback."
+      - user: "Add technician name to the output"
+        rephrased: "Retrieve the customer feedback category and technician name for repair order number RO19C003760 with only negative feedback."
+
+    Chat History 5:
+      - user: "List the Top 10 Dealers with highest OEM part consumption under Repair from 01-Jan-2024 to 30-Jun-2025"
+        rephrased: "Retrieve the Top 10 Dealers with the highest OEM part consumption under Repair for service dates between 01-Jan-2024 and 30-Jun-2025."
+      - user: "Only include dealers from North Zone"
+        rephrased: "Retrieve the Top 10 Dealers from the North Zone with the highest OEM part consumption under Repair between 01-Jan-2024 and 30-Jun-2025."
+      - user: "Also show part description and total value"
+        rephrased: "Retrieve the Top 10 Dealers from the North Zone with the highest OEM part consumption under Repair between 01-Jan-2024 and 30-Jun-2025, including part description and total part value."
+
     Chat History 6:
+
+      - user: "Provide the list of Top 10 consumed OEM part under Charging from 01-Jan-2024 to 31-Jan-2024"
+        rephrased: "Retrieve the top 10 consumed OEM parts under the Charging category from 01-Jan-2024 to 31-Jan-2024."
+      - user: "Only include parts with quantity greater than 5"
+        rephrased: "Retrieve the top 10 consumed OEM parts under the Charging category from 01-Jan-2024 to 31-Jan-2024 where the part quantity is greater than 5."
+      - user: "Show total value of consumed parts"
+        rephrased: "Retrieve the top 10 consumed OEM parts under the Charging category from 01-Jan-2024 to 31-Jan-2024 with part quantity greater than 5 and include the total value of consumed parts." 
+
+    Chat History 7:
+
+      - user: "Provide the list of Top 10 consumed OEM Labour under Charging from 01-Jan-2024 to 31-Jan-2024"
+        rephrased: "Select the top 10 consumed OEM Labour items under Charging from 01-Jan-2024 to 31-Jan-2024."
+      - user: "Include total standard hours for each labour item"
+        rephrased: "Select the top 10 consumed OEM Labour items under Charging from 01-Jan-2024 to 31-Jan-2024 along with total standard hours for each labour item."
+      - user: "Only include labour items with more than 2 hours of work"
+        rephrased: "Select the top 10 consumed OEM Labour items under Charging from 01-Jan-2024 to 31-Jan-2024 with total standard hours greater than 2."
+    
+    Chat History 8:
 
       - user: "Give me the Top 5 reported VoC's which repeat the most for the period 01-Jan-2024 to 31-Mar-2024"
         rephrased: "Retrieve the Top 5 reported Customer Feedback entries with the highest number of repeats for the period from 01-Jan-2024 to 31-Mar-2024."

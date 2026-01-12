@@ -118,6 +118,18 @@ function openTab(evt, tabName) {
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
 }
+async function createNewSession() {
+    const res = await fetch('/new-session', { method: 'POST' });
+    if (!res.ok) return;
+
+    // Reload sessions list
+    await loadSessions();
+
+    // Clear UI
+    document.getElementById("chat-messages").innerHTML = "";
+    document.getElementById("tables_container").innerHTML = "";
+    document.getElementById("xlsx-btn").innerHTML = "";
+}
 
 // Optionally, you can set the default active tab using JavaScript:
 // Modify the DOMContentLoaded event listener
@@ -127,14 +139,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector(`input[name="questionType"][value="${initialQuestionType}"]`).checked = true;
 
     // Reset session on page load
-    fetch('/new-session', { method: 'POST' })
-        .then(response => {
-            if (!response.ok) throw new Error('Session reset failed');
-            console.log('Session has been reset on page load.');
-        })
-        .catch(error => {
-            console.error('Error resetting session on page load:', error);
-        });
+    // fetch('/new-session', { method: 'POST' })
+    //     .then(response => {
+    //         if (!response.ok) throw new Error('Session reset failed');
+    //         console.log('Session has been reset on page load.');
+    //     })
+        // .catch(error => {
+        //     console.error('Error resetting session on page load:', error);
+        // });
 
     // Set default tab
     document.getElementsByClassName("tablinks")[0]?.click();
@@ -367,6 +379,12 @@ async function sendMessage() {
             } else {
                 botResponse = data.chat_response || "";
             }
+            
+               // Check for suggested questions in the response
+            const hasSuggestedQuestions = data.suggested_questions && 
+                                 Array.isArray(data.suggested_questions) && 
+                                 data.suggested_questions.length > 0;
+
 
             chatMessages.innerHTML += `
                 <div class="message ai-message">
@@ -376,6 +394,21 @@ async function sendMessage() {
                     </div>
                 </div>
             `;
+
+
+            // Display suggested questions if available
+            if (hasSuggestedQuestions) {
+            // Hide any existing suggestions first
+                document.getElementById("suggested-questions-container").style.display = "none";
+                
+            // Use setTimeout to ensure DOM is updated before showing new suggestions
+                setTimeout(() => {
+                    displaySuggestedQuestions(data.suggested_questions);
+                }, 100);
+            } else {
+            // Hide suggestions container if no suggestions
+                document.getElementById("suggested-questions-container").style.display = "none";
+            }
 
             if (data.tables) {
                 console.log()
@@ -788,6 +821,7 @@ document.querySelectorAll('.copy-btn-popup').forEach(button => {
     });
 });
 function updatePageContent(data) {
+    document.getElementById("suggested-questions-container").style.display = "none";
     const userQueryDisplay = document.getElementById("user_query_display");
     const sqlQueryContent = document.getElementById("sql-query-content");
     const tablesContainer = document.getElementById("tables_container");
@@ -1127,7 +1161,7 @@ async function loadSessions() {
     sessions.forEach(s => {
         const div = document.createElement("div");
         div.className = "session-item";
-        div.innerText = s.label;
+        div.innerText = s.title;
         div.onclick = () => loadSessionMessages(s.session_id);
         list.appendChild(div);
     });
@@ -1145,4 +1179,107 @@ async function loadSessionMessages(sessionId) {
         div.innerHTML = `<div class="message-content">${m.content}</div>`;
         chat.appendChild(div);
     });
+}
+
+
+// Function to display suggested questions
+function displaySuggestedQuestions(questions) {
+    const container = document.getElementById("suggested-questions-container");
+    const grid = document.getElementById("suggested-questions");
+    
+    if (!questions || !Array.isArray(questions) || questions.length === 0) {
+        container.style.display = "none";
+        return;
+    }
+    
+    // Clear previous suggestions
+    grid.innerHTML = "";
+    
+    // Create question boxes
+    questions.forEach((question, index) => {
+        const questionBox = document.createElement("button");
+        questionBox.className = "suggested-question-box";
+        questionBox.innerHTML = `
+            ${question}
+            <div class="click-hint">Click to use this question</div>
+        `;
+        
+        // Add click event
+        questionBox.onclick = () => {
+            useSuggestedQuestion(question);
+        };
+        
+        // Add animation delay for staggered appearance
+        questionBox.style.animationDelay = `${index * 0.1}s`;
+        
+        grid.appendChild(questionBox);
+    });
+    
+    // Show the container
+    container.style.display = "block";
+    
+    // Scroll to show suggestions
+    setTimeout(() => {
+        container.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 100);
+}
+
+// Function to handle clicking on a suggested question
+function useSuggestedQuestion(question) {
+    const inputField = document.getElementById("chat_user_query");
+    inputField.value = question;
+    inputField.focus();
+    
+    // Highlight the input field briefly
+    inputField.style.backgroundColor = "#f1f8ff";
+    inputField.style.borderColor = "#4285f4";
+    
+    setTimeout(() => {
+        inputField.style.backgroundColor = "";
+        inputField.style.borderColor = "";
+    }, 1000);
+    
+    // Show a subtle toast
+    showToast("Question added to input!", "success");
+}
+
+// Simple toast function
+function showToast(message, type = "info") {
+    // Create toast element if it doesn't exist
+    let toast = document.getElementById("custom-toast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "custom-toast";
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: ${type === "success" ? "#4CAF50" : "#2196F3"};
+            color: white;
+            border-radius: 5px;
+            z-index: 1000;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        `;
+        document.body.appendChild(toast);
+    }
+    
+    toast.textContent = message;
+    toast.style.backgroundColor = type === "success" ? "#4CAF50" : "#2196F3";
+    
+    // Show toast
+    setTimeout(() => {
+        toast.style.transform = "translateY(0)";
+        toast.style.opacity = "1";
+    }, 10);
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+        toast.style.transform = "translateY(100px)";
+        toast.style.opacity = "0";
+    }, 3000);
 }

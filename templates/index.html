@@ -38,7 +38,7 @@
         <div id="chat-container">
             <h2 style="display: flex; align-items: center;">
                 Chat Assistant
-                <img src="static/new_sess.png" alt="Reset Session" class="reset-icon" onclick="resetSession()"
+                <img src="static/new_sess.png" alt="Reset Session" class="reset-icon" onclick="createNewSession()"
                     style="cursor: pointer; margin-left: 10px; width: 24px; height: 24px;">
             </h2>
 
@@ -77,6 +77,18 @@
             <div id="chat-messages" class="chat-history">
                 <!-- Messages will be dynamically inserted here -->
             </div>
+            
+            <!-- ADD THIS NEW SECTION FOR SUGGESTED QUESTIONS -->
+            <div id="suggested-questions-container" style="display: none;">
+                <h3 style="margin: 15px 0 10px 0; color: #333; font-size: 14px; font-weight: 600;">
+                    <i class="fas fa-lightbulb" style="margin-right: 8px; color: #FFD700;"></i>
+                    Suggested Questions
+                </h3>
+                <div id="suggested-questions" class="suggested-questions-grid">
+                    <!-- Suggested questions will appear here -->
+                </div>
+            </div>
+
 
             <!-- Typing Indicator -->
             <div id="typing-indicator" style="display: none;">

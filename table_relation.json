@@ -2,43 +2,43 @@
   "relations": [
     {
       "type": "one_to_many",
-      "source": "MH_MODEL_MASTER",
-      "target": "MH_RO_HDR_DETAILS",
-      "source_key": "MODL_CD",
-      "target_key": "MODL_CD",
-      "description": "Model Master to Repair Order or RO Header Details"
+      "source": "PONPURE_SALEORDERHDRS",
+      "target": "PONPURE_SALEORDERDTLS",
+      "source_key": "header_id",
+      "target_key": "header_id",
+      "description": "Sales Order Header to Sales Order Details. One sales order can contain multiple line items representing individual products or services."
     },
     {
       "type": "one_to_many",
-      "source": "MH_AD_AI_DIMENSION",
-      "target": "MH_RO_HDR_DETAILS",
-      "source_key":  ["parnt_grop", "loctn_cd", "prodct_divsn"],
-      "target_key":  ["parnt_grop", "loctn_cd", "prodct_divsn"],
-      "description": "Dealer Master to Repair Order or RO Header Details (composite key)"
+      "source": "PONPURE_QUOTATIONHDRS",
+      "target": "PONPURE_SALEORDERHDRS",
+      "source_key": "quotation_number",
+      "target_key": "quotation_number",
+      "description": "Quotation Header to Sales Order Header. A quotation may result in zero, one, or multiple sales orders, enabling quotation-to-order conversion analysis."
     },
     {
       "type": "one_to_many",
-      "source": "MH_RO_HDR_DETAILS",
-      "target": "MH_RO_PARTS",
-      "source_key": "sv_ro_bill_hdr_sk",
-      "target_key": "sv_ro_bill_hdr_sk",
-      "description": "Repair Order or RO Header to Parts"
+      "source": "PONPURE_LEADDETAILS",
+      "target": "PONPURE_SALEORDERHDRS",
+      "source_key": "customer_id",
+      "target_key": "customer_id",
+      "description": "Lead or Customer Master to Sales Order Header. A customer or lead can place multiple sales orders over time."
     },
     {
       "type": "one_to_many",
-      "source": "MH_RO_HDR_DETAILS",
-      "target": "MH_RO_LABOUR",
-      "source_key": "sv_ro_bill_hdr_sk",
-      "target_key": "sv_ro_bill_hdr_sk",
-      "description": "Repair Order or RO Header to Labour"
+      "source": "PONPURE_SALEORDERDTLS",
+      "target": "PONPURE_SCHEDULES",
+      "source_key": "line_id",
+      "target_key": "sale_order_detail_line_id",
+      "description": "Sales Order Details to Schedules. A single sales order line can have multiple delivery schedules for phased or partial deliveries."
     },
     {
       "type": "one_to_many",
-      "source": "MH_RO_HDR_DETAILS",
-      "target": "MH_CUST_VERBATIM",
-      "source_key": "sv_ro_hdr_sk",
-      "target_key": "sv_ro_hdr_sk",
-      "description": "Repair Order or RO Header to Customer Verbatim"
+      "source": "PONPURE_SALEORDERHDRS",
+      "target": "PONPURE_SCHEDULES",
+      "source_key": "header_id",
+      "target_key": "sale_order_header_id",
+      "description": "Sales Order Header to Schedules (derived relationship). A sales order can have multiple schedules across its line items, useful for fulfillment and logistics analysis."
     }
   ]
 }

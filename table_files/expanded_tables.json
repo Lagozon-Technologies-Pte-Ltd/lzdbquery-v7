@@ -1,130 +1,106 @@
 [
   {
-    "id": " mh_ro_hdr_details",
-    "document": "Repair Order Header: Central table for repair lifecycle. Use as the primary (left) table in joins. Related tables (labor, parts, customer feedback) may not always have matching records for every repair order; use LEFT OUTER JOIN when querying them.",
+    "id": "PONPURE_SALEORDERHDRS",
+    "document": "Sales Order Header: Represents the finalized sales order created after a quotation is approved. It captures customer details, organizational context, pricing currency, order validity, sales ownership, and commercial terms. This table acts as the parent record for all sales order line items and is a critical transactional entity used for invoicing, dispatch, and revenue reporting.",
     "metadata": {
       "type": "table",
-      "primary_key": "SV_RO_BILL_HDR_SK",
+      "primary_key": "header_id",
       "join_guidance": [
         {
-          "table": "MH_RO_LABOUR",
-          "on": "SV_RO_BILL_HDR_SK",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Not all repair orders have labor records."
-        },
-        {
-          "table": "MH_RO_PARTS",
-          "on": "SV_RO_BILL_HDR_SK",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Not all repair orders have parts records."
-        },
-        {
-          "table": "MH_CUST_VERBATIM",
-          "on": "sv_ro_hdr_sk",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Not all repair orders have customer feedback."
-        },
-        {
-          "table": "MH_MODEL_MASTER",
-          "on": "MODL_CD",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Some repair orders may not have a matching model master."
-        },
-        {
-          "table": "MH_AD_AI_DIMENSION",
-          "on": "parnt_grop LOCTN_CD prodct_divsn",
-          "join_type": "LEFT OUTER JOIN",
-          "optional": true,
-          "description": "Some repair orders may not have a matching dealer/location."
-        }
-      ]
-    }
-  },
-  {
-    "id": " mh_ro_labour",
-    "document": "Repair Order Labour: Details of labor for repair orders. Use LEFT OUTER JOIN from repair order header, as not every order has labor.",
-    "metadata": {
-      "type": "table",
-      "primary_key": "SV_RO_BILL_HDR_SK",
-      "join_guidance": [
-        {
-          "table": "MH_RO_HDR_DETAILS",
-          "on": "SV_RO_BILL_HDR_SK",
+          "table": "PONPURE_SALEORDERDTLS",
+          "on": "header_id",
           "join_type": "INNER JOIN",
           "optional": false,
-          "description": "Labor always references a repair order."
-        }
-      ]
-    }
-  },
-  {
-    "id": " mh_ro_parts",
-    "document": "Repair Order Parts: Details of parts for repair orders. Use LEFT OUTER JOIN from repair order header, as not every order has parts.",
-    "metadata": {
-      "type": "table",
-      "primary_key": "SV_RO_BILL_HDR_SK",
-      "join_guidance": [
+          "description": "Use this join when you need item-level or line-level information for a sales order, such as quantities, pricing, discounts, taxes, or delivery commitments. This join is required for analyses related to order value, item-wise sales, fulfillment status, or revenue breakdown, because a sales order header alone does not contain detailed product information."
+        },
         {
-          "table": "MH_RO_HDR_DETAILS",
-          "on": "SV_RO_BILL_HDR_SK",
-          "join_type": "INNER JOIN",
-          "optional": false,
-          "description": "Parts always reference a repair order."
-        }
-      ]
-    }
-  },
-  {
-    "id": " mh_cust_verbatim",
-    "document": "Customer Verbatim: Customer feedback for repair orders. Use LEFT OUTER JOIN from repair order header, as not every order has feedback.",
-    "metadata": {
-      "type": "table",
-      "primary_key": "sv_ro_hdr_sk",
-      "join_guidance": [
-        {
-          "table": "MH_RO_HDR_DETAILS",
-          "on": "sv_ro_hdr_sk",
-          "join_type": "INNER JOIN",
-          "optional": false,
-          "description": "Verbatim feedback always references a repair order."
-        }
-      ]
-    }
-  },
-  {
-    "id": " mh_model_master",
-    "document": "Vehicle Model Master: Details about vehicle models. Use LEFT OUTER JOIN from repair order header, as not every order has a model code.",
-    "metadata": {
-      "type": "table",
-      "primary_key": "MODL_CD",
-      "join_guidance": [
-        {
-          "table": "MH_RO_HDR_DETAILS",
-          "on": "MODL_CD",
+          "table": "PONPURE_QUOTATIONHDRS",
+          "on": "quotation_number",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
-          "description": "Some repair orders may not have a model code."
+          "description": "Use this join when you need to trace a sales order back to its originating quotation to analyze pre-sales to sales conversion, approval history, negotiated terms, or quotation validity. This join should be left outer because not all sales orders are created from quotations; some may be manually created or system-generated."
+        },
+        {
+          "table": "PONPURE_LEADDETAILS",
+          "on": "customer_id",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Use this join when you need to access lead or customer master information for sales orders, such as customer demographics, contact details, account history, or lead source information. This join should be left outer because while most sales orders will have customer information, there may be edge cases or legacy data where customer details are missing."
         }
       ]
     }
   },
   {
-    "id": " mh_ad_ai_dimension",
-    "document": "Dealer & Sales Hierarchy: Dealer and sales hierarchy data. Use LEFT OUTER JOIN from repair order header, as not every order has a location code.",
+    "id": "PONPURE_SALEORDERDTLS",
+    "document": "Sales Order Details: Stores line-level information for each item sold within a sales order. This includes item identity, quantities, unit pricing, discounts, tax details, delivery commitments, freight and payment terms. These records are used for fulfillment tracking, dispatch planning, pricing analysis, and margin calculations.",
     "metadata": {
       "type": "table",
-      "primary_key": "parnt_grop loctn_cd prodct_divsn",
+      "primary_key": "line_id",
       "join_guidance": [
         {
-          "table": "MH_RO_HDR_DETAILS",
-          "on": "parnt_grop loctn_cd prodct_divsn",
+          "table": "PONPURE_SALEORDERHDRS",
+          "on": "header_id",
+          "join_type": "INNER JOIN",
+          "optional": false,
+          "description": "Use this join when contextual or header-level information is required for sales order lines, such as customer identity, order date, organization, currency, or order status. This join is mandatory because sales order line records do not have business meaning without their corresponding sales order header."
+        },
+        {
+          "table": "PONPURE_SCHEDULES",
+          "on": "line_id",
           "join_type": "LEFT OUTER JOIN",
           "optional": true,
-          "description": "Some repair orders may not have a location code."
+          "description": "Use this join when you need to access scheduling or delivery schedule information for sales order lines, such as planned delivery dates, quantities per schedule, shipping details, or schedule status. This join should be left outer because not all sales order lines may have associated schedules; some may be single-delivery items or may not require scheduling."
+        }
+      ]
+    }
+  },
+  {
+    "id": "PONPURE_QUOTATIONHDRS",
+    "document": "Quotation Header: Captures customer quotations generated during the pre-sales phase. It contains pricing proposals, commercial terms, export and logistics details, approval statuses, and validity periods. Quotations act as the foundation for sales negotiation and may or may not convert into finalized sales orders.",
+    "metadata": {
+      "type": "table",
+      "primary_key": "header_id",
+      "join_guidance": [
+        {
+          "table": "PONPURE_SALEORDERHDRS",
+          "on": "quotation_number",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Use this join when analyzing quotation conversion outcomes, such as identifying which quotations resulted in sales orders, conversion timelines, or revenue generated from quoted values. This join must be optional because many quotations expire, are rejected, or remain open without ever becoming a sales order."
+        }
+      ]
+    }
+  },
+  {
+    "id": "PONPURE_SCHEDULES",
+    "document": "Schedules: Stores delivery schedule information for sales order lines. This table captures planned delivery dates, quantities to be delivered per schedule, shipping instructions, carrier details, and schedule status. Schedules are used for fulfillment planning, logistics coordination, and tracking delivery commitments against sales order lines.",
+    "metadata": {
+      "type": "table",
+      "primary_key": "schedule_id",
+      "join_guidance": [
+        {
+          "table": "PONPURE_SALEORDERDTLS",
+          "on": "sale_order_detail_line_id",
+          "join_type": "INNER JOIN",
+          "optional": false,
+          "description": "Use this join when you need to access sales order line information for a schedule, such as item details, pricing, or customer information. This join is mandatory because schedule records must be associated with a valid sales order line to have business context and meaning."
+        }
+      ]
+    }
+  },
+  {
+    "id": "PONPURE_LEADDETAILS",
+    "document": "Lead Details: Stores master information about leads or customers, including contact details, demographic information, account history, lead source, status, and classification. This table serves as the central repository for customer/lead information and is used for customer relationship management, sales tracking, and customer analytics.",
+    "metadata": {
+      "type": "table",
+      "primary_key": "customer_id",
+      "join_guidance": [
+        {
+          "table": "PONPURE_SALEORDERHDRS",
+          "on": "customer_id",
+          "join_type": "LEFT OUTER JOIN",
+          "optional": true,
+          "description": "Use this join when analyzing sales orders in the context of customer information, such as identifying sales patterns by customer type, region, or lead source. This join is typically left outer because you may want to see all customers/leads regardless of whether they have sales orders, or you may want to see which customers have placed orders."
         }
       ]
     }

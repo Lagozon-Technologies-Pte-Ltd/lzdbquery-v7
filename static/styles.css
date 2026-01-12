@@ -1183,3 +1183,75 @@ table tr:hover {
     background: #dcd6ff;
     font-weight: bold;
 }
+
+
+/* Suggested Questions Styles */
+#suggested-questions-container {
+    margin: 10px 20px 15px 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #4285f4;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.suggested-questions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.suggested-question-box {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    font-size: 14px;
+    color: #333;
+    position: relative;
+    overflow: hidden;
+}
+
+.suggested-question-box:hover {
+    background: #f1f8ff;
+    border-color: #4285f4;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(66, 133, 244, 0.1);
+}
+
+.suggested-question-box:active {
+    transform: translateY(0);
+}
+
+.suggested-question-box::before {
+    content: "💡";
+    margin-right: 8px;
+    font-size: 12px;
+}
+
+.suggested-question-box .click-hint {
+    font-size: 11px;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Animation for new suggestions */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.suggested-question-box {
+    animation: fadeInUp 0.3s ease forwards;
+}

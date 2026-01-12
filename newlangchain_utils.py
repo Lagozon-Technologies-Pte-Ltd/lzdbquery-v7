@@ -468,6 +468,8 @@ def invoke_chain(db,question, messages, selected_model, selected_subject, select
             selected_database, table_info, selected_business_rule, question_type, relationships, examples
         )  ##we get query output from get chain
         SQL_Statement = json_output["query"]
+        Suggested_question = json_output["Suggested_question"]
+        print("Suggested_questions are ", Suggested_question)
 
         # SQL_Statement = SQL_Statement.replace("SQL Query:", "").strip()
 

@@ -1,79 +1,1004 @@
 [
-    
-    {
-    "input": "What’s the average turnaround time (in days) between RO open and RO close for express services in 2024?",
-    "query": "SELECT ROUND(AVG(DATEDIFF(DAY, [rohdr].[RO_DATE], [rohdr].[RO_CLOSED_DATE])), 1) AS [Average_Turnaround_Time_Days] FROM [MH_RO_HDR_DETAILS] AS [rohdr] WHERE [rohdr].[EXPRS_SERVC_IND] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' AND [rohdr].[RO_DATE] BETWEEN '2024-01-01' AND '2024-12-31' AND [rohdr].[RO_CLOSED_DATE] IS NOT NULL"
-    },
-    {
-    "input": "List all repair orders by chassis number or OEM model code.",
-    "query": "SELECT DISTINCT [rohdr].[ro_id], [rohdr].[chas_numbr], [rohdr].[oem_modl_cd] FROM MH_RO_HDR_DETAILS AS [rohdr]"
-    },
-    {
-    "input": "List all repair orders from January 2025 where the vehicle had a no government tag and was not serviced under the ‘Repair’ category.",
-    "query": "SELECT DISTINCT [rohdr].[RO_ID] FROM [MH_RO_HDR_DETAILS] AS [rohdr] WHERE [rohdr].[RO_DATE] >= '2025-01-01' AND [rohdr].[RO_DATE] < '2025-02-01' AND [rohdr].[govt_vehcl] COLLATE SQL_Latin1_General_CP1_CI_AS <> 'Y' AND [rohdr].[serv_catgry_desc] COLLATE SQL_Latin1_General_CP1_CI_AS <> 'Repair'"
-    },
-    {
-    "input": "Which dealers recorded the highest labour amount billed for repairs in the Mechanical service group during January 2025?",
-    "query": "SELECT TOP 1 WITH TIES ad.[delr_name], ROUND(SUM(TRY_CAST(rl.[labr_totl_amnt] AS FLOAT)), 1) AS [Total_Labour_Amount_Billed] FROM [MH_RO_HDR_DETAILS] rohdr LEFT JOIN [MH_RO_LABOUR] rl ON rohdr.[sv_ro_bill_hdr_sk] = rl.[sv_ro_bill_hdr_sk] LEFT JOIN [MH_AD_AI_DIMENSION] ad ON rohdr.[loctn_cd] = ad.[loctn_cd] WHERE rohdr.[service_group] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Mechanical' AND rohdr.[ro_date] >= '2025-01-01' AND rohdr.[ro_date] < '2025-02-01' GROUP BY ad.[delr_name] ORDER BY [Total_Labour_Amount_Billed] DESC"
-    },
-    {
-    "input": "How many repeat repairs and revisits were done in 2024, and what models are they most associated with?",
-    "query": "SELECT DISTINCT rohdr.[MODL_CD], mm.[MODL_DESC], COUNT() AS [Repeat_Revisit_Count] FROM MH_RO_HDR_DETAILS rohdr INNER JOIN MH_MODEL_MASTER mm ON rohdr.[MODL_CD] = mm.[MODL_CD] WHERE rohdr.[RO_DATE] BETWEEN '2024-01-01' AND '2024-12-31' AND rohdr.[REPEAT_REPAIR_FLAG] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' AND rohdr.[REVIST_FLAG] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' GROUP BY rohdr.[MODL_CD], mm.[MODL_DESC] HAVING COUNT() > 1 ORDER BY [Repeat_Revisit_Count] DESC"
-    },
-    {
-    "input": "What is the total revenue generated from service ROs in the South Zone during Q1 2025, broken down by model group?",
-    "query": "SELECT DISTINCT mm.[modl_grop_desc], ROUND(SUM(TRY_CAST(roh.[parts_totl_amnt] AS FLOAT) + TRY_CAST(roh.[labr_totl_amnt] AS FLOAT)), 1) AS [Total_Revenue], DATEADD(QUARTER, DATEDIFF(QUARTER, 0, roh.[ro_date]), 0) AS [_Quarter_Start], FORMAT(DATEADD(QUARTER, DATEDIFF(QUARTER, 0, roh.[ro_date]), 0), 'MMM-yy') AS [Quarter] FROM MH_RO_HDR_DETAILS AS roh INNER JOIN MH_MODEL_MASTER AS mm ON roh.[modl_cd] = mm.[modl_cd] INNER JOIN MH_AD_AI_DIMENSION AS dim ON roh.[loctn_cd] = dim.[loctn_cd] WHERE roh.[ro_date] BETWEEN '2025-01-01' AND '2025-03-31' AND dim.[zone_name] COLLATE SQL_Latin1_General_CP1_CI_AS = 'South Zone' GROUP BY mm.[modl_grop_desc], DATEADD(QUARTER, DATEDIFF(QUARTER, 0, roh.[ro_date]), 0) ORDER BY [_Quarter_Start]"
-    },
-    {
-    "input": "What are the top 10 labour types billed in 2025 across all dealers, along with total billed amount and discount given?",
-    "query": "SELECT TOP 10 rl.[labour_type_name], ROUND(SUM(TRY_CAST(rl.[labr_totl_amnt] AS FLOAT)), 1) AS [Total_Billed_Amount], ROUND(SUM(TRY_CAST(rl.[labr_discnt_amnt] AS FLOAT)), 1) AS [Total_Discount_Given] FROM MH_RO_HDR_DETAILS rohdr LEFT JOIN MH_RO_LABOUR rl ON rohdr.[sv_ro_bill_hdr_sk] = rl.[sv_ro_bill_hdr_sk] WHERE rohdr.[ro_date] BETWEEN '2025-01-01' AND '2025-12-31' GROUP BY rl.[labour_type_name] ORDER BY [Total_Billed_Amount] DESC"
-    },
-    {
-    "input": "Which locations offered the highest average labour discount amount during warranty repairs in the last financial year?",
-    "query": "SELECT TOP 1 WITH TIES [ad].[loctn_name], ROUND(AVG(TRY_CAST([rl].[labr_discnt_amnt] AS FLOAT)), 1) AS [Avg_Labour_Discount_Amount] FROM [MH_RO_HDR_DETAILS] AS [rohdr] LEFT JOIN [MH_RO_LABOUR] AS [rl] ON [rohdr].[sv_ro_bill_hdr_sk] = [rl].[sv_ro_bill_hdr_sk] LEFT JOIN [MH_AD_AI_DIMENSION] AS [ad] ON [rohdr].[loctn_cd] = [ad].[loctn_cd] WHERE [rohdr].[warranty_flag] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' AND [rohdr].[ro_date] BETWEEN '2023-04-01' AND '2024-03-31' GROUP BY [ad].[loctn_name] ORDER BY [Avg_Labour_Discount_Amount] DESC"
-    },
-    {
-    "input": "Which OEM parts had the highest discount (>15%) in 2025?",
-    "query": "SELECT DISTINCT rp.[part_code], rp.[part_desc], rp.[part_discnt_amnt], rp.[oem_part_ind], rohdr.[ro_id] FROM MH_RO_HDR_DETAILS AS rohdr INNER JOIN MH_RO_PARTS AS rp ON rohdr.[sv_ro_bill_hdr_sk] = rp.[sv_ro_bill_hdr_sk] WHERE rp.[oem_part_ind] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' AND TRY_CAST(rp.[discnt_rate] AS FLOAT) > 15 AND rohdr.[ro_date] BETWEEN '2025-01-01' AND '2025-12-31'"
-    },
-    {
-    "input": "What is the total consumption (quantity and value) of top 5 common parts for the Diesel segment vehicles in the last quarter?",
-    "query": "WITH LastQuarterData AS ( SELECT DATEADD(QUARTER, DATEDIFF(QUARTER, 0, [rohdr].[ro_date]), 0) AS [_Quarter_Start] FROM MH_RO_HDR_DETAILS AS [rohdr] WHERE [rohdr].[ro_date] BETWEEN DATEADD(QUARTER, DATEDIFF(QUARTER, 0, GETDATE()) - 1, 0) AND DATEADD(DAY, -1, DATEADD(QUARTER, DATEDIFF(QUARTER, 0, GETDATE()), 0)) ), FilteredRO AS ( SELECT [rohdr].[sv_ro_bill_hdr_sk], [rohdr].[segmnt_cd] FROM MH_RO_HDR_DETAILS AS [rohdr] WHERE [rohdr].[ro_date] BETWEEN DATEADD(QUARTER, DATEDIFF(QUARTER, 0, GETDATE()) - 1, 0) AND DATEADD(DAY, -1, DATEADD(QUARTER, DATEDIFF(QUARTER, 0, GETDATE()), 0)) AND [rohdr].[segmnt_cd] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Diesel' ) SELECT TOP 5 rp.[part_desc], ROUND(SUM(TRY_CAST(rp.[part_quantity] AS FLOAT)), 1) AS [Total_Quantity], ROUND(SUM(TRY_CAST(rp.[partamount] AS FLOAT)), 1) AS [Total_Value] FROM MH_RO_PARTS AS rp INNER JOIN FilteredRO AS fro ON rp.[sv_ro_bill_hdr_sk] = fro.[sv_ro_bill_hdr_sk] GROUP BY rp.[part_desc] ORDER BY SUM(TRY_CAST(rp.[part_quantity] AS FLOAT)) DESC"
-    },
-    {
-    "input": "Compare the usage and billing amount of OEM vs Local parts for repair orders in the East Zone during 2025.",
-    "query": "SELECT DISTINCT rp.[oem_part_ind], ROUND(SUM(TRY_CAST(rp.[part_quantity] AS FLOAT)), 1) AS [Total_Part_Quantity], ROUND(SUM(TRY_CAST(rp.[part_totl_amnt] AS FLOAT)), 1) AS [Total_Billing_Amount] FROM MH_RO_PARTS rp LEFT JOIN MH_RO_HDR_DETAILS rohdr ON rp.[sv_ro_bill_hdr_sk] = rohdr.[sv_ro_bill_hdr_sk] LEFT JOIN MH_AD_AI_DIMENSION ad ON rohdr.[loctn_cd] = ad.[loctn_cd] WHERE ad.[zone_name] COLLATE SQL_Latin1_General_CP1_CI_AS = 'East' AND rohdr.[ro_date] BETWEEN '2025-01-01' AND '2025-12-31' GROUP BY rp.[oem_part_ind] ORDER BY rp.[oem_part_ind]"
-    },
-    {
-    "input": "What are the most frequently occurring customer complaint groups in repeat repair cases from 2024?",
-    "query": "SELECT TOP 10 cv.[verbatim_group], COUNT() AS [complaint_count] FROM [MH_RO_HDR_DETAILS] AS rohdr INNER JOIN [MH_CUST_VERBATIM] AS cv ON rohdr.[sv_ro_hdr_sk] = cv.[sv_ro_hdr_sk] WHERE rohdr.[repeat_repair_flag] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' AND rohdr.[ro_date] BETWEEN '2024-01-01' AND '2024-12-31' GROUP BY cv.[verbatim_group] ORDER BY COUNT() DESC"
-    },
-    {
-    "input": "Give me a summary of all customer verbatims related to 'delay in service' or 'vehicle not ready' across top 10 dealers.",
-    "query": "SELECT TOP 10 ad.[delr_name], COUNT() AS [Repeat_Repair_Count], STRING_AGG(cv.[cust_verbtm_desc], '; ') AS [Customer_Verbatims] FROM MH_RO_HDR_DETAILS rohdr INNER JOIN MH_CUST_VERBATIM cv ON rohdr.[sv_ro_hdr_sk] = cv.[sv_ro_hdr_sk] INNER JOIN MH_AD_AI_DIMENSION ad ON rohdr.[loctn_cd] = ad.[loctn_cd] WHERE rohdr.[repeat_repair_flag] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y' AND (cv.[cust_verbtm_desc] COLLATE SQL_Latin1_General_CP1_CI_AS LIKE '%delay in service%' OR cv.[cust_verbtm_desc] COLLATE SQL_Latin1_General_CP1_CI_AS LIKE '%vehicle not ready%') AND rohdr.[ro_date] BETWEEN '2024-01-01' AND '2024-12-31' GROUP BY ad.[delr_name] ORDER BY COUNT() DESC"
-    },
-    {
-    "input": "What are the top 5 models by billing revenue (parts + labour) for Petrol vehicles in 2024?",
-    "query": "SELECT TOP 5 mm.[MODL_DESC], ROUND(SUM(TRY_CAST(roh.[parts_totl_amnt] AS FLOAT) + TRY_CAST(roh.[labr_totl_amnt] AS FLOAT)), 1) AS [Total_Billing_Revenue] FROM MH_RO_HDR_DETAILS AS roh INNER JOIN MH_MODEL_MASTER AS mm ON roh.[MODL_CD] = mm.[MODL_CD] WHERE roh.[RO_DATE] BETWEEN '2024-01-01' AND '2024-12-31' AND mm.[FUEL_TYPE] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Petrol' COLLATE SQL_Latin1_General_CP1_CI_AS GROUP BY mm.[MODL_DESC] ORDER BY [Total_Billing_Revenue] DESC;"
-    },
-    {
-    "input": "How many different fuel-type models are being serviced under the Accessories category in RO data from Jan to Mar 2025?",
-    "query": "SELECT COUNT(DISTINCT mm.[FUEL_TYPE]) AS [Distinct_Fuel_Type_Model_Count] FROM MH_RO_HDR_DETAILS AS rohdr INNER JOIN MH_MODEL_MASTER AS mm ON rohdr.[MODL_CD] = mm.[MODL_CD] WHERE rohdr.[RO_DATE] BETWEEN '2025-01-01' AND '2025-03-31' AND rohdr.[accesories_flag] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Y'"
-    },
-    {
-    "input": "Give the model-wise breakdown of service revenue grouped by family and model group for all Diesel vehicles.",
-    "query": "SELECT DISTINCT mm.[FAMLY_CD], mm.[MODL_GROP_CD], ROUND(SUM(TRY_CAST(rohdr.[parts_totl_amnt] AS FLOAT) + TRY_CAST(rohdr.[labr_totl_amnt] AS FLOAT)), 1) AS [Service_Revenue] FROM MH_RO_HDR_DETAILS AS rohdr INNER JOIN MH_MODEL_MASTER AS mm ON rohdr.[MODL_CD] = mm.[MODL_CD] WHERE mm.[FUEL_TYPE] COLLATE SQL_Latin1_General_CP1_CI_AS = 'Diesel' GROUP BY mm.[FAMLY_CD], mm.[MODL_GROP_CD] ORDER BY mm.[FAMLY_CD], mm.[MODL_GROP_CD]"
-    } ,
-    {
-    "input": "Repair order details including model family, dealer information, and labor items for RO25D000189",
-    "query":"SELECT [rohdr].[RO_ID], [mm].[famly_desc] AS [model_family], [ad].[delr_name] AS [dealer_name], [ad].[loctn_name] AS [dealer_location], [rohdr].[RO_BILL_DATE] AS [ro_bill_date], [lab].[labr_desc] AS [labour_description], [lab].[labr_totl_amnt] AS [labour_total_amount] FROM [MH_RO_HDR_DETAILS] AS [rohdr] LEFT JOIN [MH_MODEL_MASTER] AS [mm] ON [rohdr].[modl_cd] = [mm].[modl_cd] LEFT JOIN [MH_AD_AI_DIMENSION] AS [ad] ON [rohdr].[loctn_cd] = [ad].[loctn_cd] AND [rohdr].[parnt_grop] = [ad].[parnt_grop] AND [rohdr].[prodct_divsn] = [ad].[prodct_divsn] LEFT JOIN [MH_RO_LABOUR] AS [lab] ON [rohdr].[sv_ro_hdr_sk] = [lab].[sv_ro_hdr_sk] WHERE [rohdr].[RO_ID] COLLATE SQL_Latin1_General_CP1_CI_AS = 'RO25D000730'"
-    },
-    {
-    "input": "Repair order summary including VIN, model family, dealer zone/area, and financial totals for RO25D000670",
-    "query":"SELECT [rohdr].[RO_ID], [rohdr].[VIN] AS [vehicle_vin], [mm].[famly_desc] AS [model_family], [ad].[zone_name] AS [dealer_zone], [ad].[area_name] AS [dealer_area], [rohdr].[PARTS_TOTL_AMNT] AS [total_parts_amount], [rohdr].[LABR_TOTL_AMNT] AS [total_labour_amount], [rohdr].[RO_BILL_DATE] AS [bill_date] FROM [MH_RO_HDR_DETAILS] AS [rohdr] LEFT JOIN [MH_MODEL_MASTER] AS [mm] ON [rohdr].[modl_cd] = [mm].[modl_cd] LEFT JOIN [MH_AD_AI_DIMENSION] AS [ad] ON [rohdr].[loctn_cd] = [ad].[loctn_cd] AND [rohdr].[parnt_grop] = [ad].[parnt_grop] AND [rohdr].[prodct_divsn] = [ad].[prodct_divsn] WHERE [rohdr].[RO_ID] COLLATE SQL_Latin1_General_CP1_CI_AS = 'RO25D000730'"
-    } ,
-    {
-    "input": "Show the number of repair orders processed by each active dealer in march 2025, along with their zone and location information, sorted by repair volume in descending order.",
-    "query":"SELECT [ad].[delr_name] AS [DealerName], [ad].[loctn_name] AS [LocationName], [ad].[zone_name] AS [Zone], COUNT([ro].[RO_ID]) AS [January2025_ROs] FROM [MH_AD_AI_DIMENSION] AS [ad] LEFT JOIN [MH_RO_HDR_DETAILS] AS [ro] ON [ad].[loctn_cd] = [ro].[loctn_cd] AND [ad].[parnt_grop] = [ro].[parnt_grop] AND [ad].[prodct_divsn] = [ro].[prodct_divsn] WHERE [ad].[delr_actv_ind] = 'Y' AND [ro].[RO_DATE] BETWEEN '2025-01-01' AND '2025-01-31' GROUP BY [ad].[delr_name], [ad].[loctn_name], [ad].[zone_name] ORDER BY [January2025_ROs] DESC"
-    }
+  
+  {
+    "input": "Show all sales order header IDs",
+    "query": "SELECT header_id FROM PONPURE_SALEORDERHDRS ORDER BY header_id;"
+  },
+  {
+    "input": "Show sales orders linked to quotation lines",
+    "query": "SELECT header_id, quotation_line_id, quotation_number FROM PONPURE_SALEORDERHDRS WHERE quotation_line_id IS NOT NULL;"
+  },
+  {
+    "input": "Find sales orders by quotation number",
+    "query": "SELECT header_id, quotation_number, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE quotation_number = 'QT-12345';"
+  },
+  {
+    "input": "Show sales orders created from quotations within date range",
+    "query": "SELECT header_id, quotation_number, quotation_date, creation_date FROM PONPURE_SALEORDERHDRS WHERE quotation_date BETWEEN '2024-01-01' AND '2024-12-31';"
+  },
+  {
+    "input": "Find sales orders by enquiry ID",
+    "query": "SELECT header_id, enquiry_id, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE enquiry_id = 'ENQ-78901';"
+  },
+  {
+    "input": "Show sales orders by transaction type",
+    "query": "SELECT header_id, trans_type_id, trans_type_name, customer_id FROM PONPURE_SALEORDERHDRS WHERE trans_type_id = 1;"
+  },
+  {
+    "input": "Show sales orders by transaction sub-type",
+    "query": "SELECT header_id, trans_sub_type_id, trans_type_id, customer_id FROM PONPURE_SALEORDERHDRS WHERE trans_sub_type_id = 2;"
+  },
+  {
+    "input": "Find sales orders by organization",
+    "query": "SELECT header_id, organization_id, company_location_id, customer_id FROM PONPURE_SALEORDERHDRS WHERE organization_id = 100;"
+  },
+  {
+    "input": "Show sales orders by company location",
+    "query": "SELECT header_id, company_location_id, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE company_location_id = 5;"
+  },
+  {
+    "input": "Find sales orders assigned to specific collector",
+    "query": "SELECT header_id, collector_id, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE collector_id = 25;"
+  },
+  {
+    "input": "Show sales orders for specific customer",
+    "query": "SELECT header_id, customer_id, bill_to_site_id, ship_to_site_id FROM PONPURE_SALEORDERHDRS WHERE customer_id = 500;"
+  },
+  {
+    "input": "Find sales orders by billing site",
+    "query": "SELECT header_id, bill_to_site_id, customer_id, currency FROM PONPURE_SALEORDERHDRS WHERE bill_to_site_id = 1001;"
+  },
+  {
+    "input": "Show sales orders by shipping site",
+    "query": "SELECT header_id, ship_to_site_id, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE ship_to_site_id = 2001;"
+  },
+  {
+    "input": "Show sales orders by quote status",
+    "query": "SELECT header_id, quote_status_id, quotation_number, customer_id FROM PONPURE_SALEORDERHDRS WHERE quote_status_id = 3;"
+  },
+  {
+    "input": "Find sales orders with valid quotations",
+    "query": "SELECT header_id, quotation_number, quotation_valid_upto, customer_id FROM PONPURE_SALEORDERHDRS WHERE quotation_valid_upto >= GETDATE();"
+  },
+  {
+    "input": "Show back-to-back sales orders",
+    "query": "SELECT header_id, is_back_to_back_order, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE is_back_to_back_order = 1;"
+  },
+  {
+    "input": "Find sales orders with additional email IDs",
+    "query": "SELECT header_id, additional_mail_id, customer_id FROM PONPURE_SALEORDERHDRS WHERE additional_mail_id IS NOT NULL;"
+  },
+  {
+    "input": "Show sales orders by customer account site",
+    "query": "SELECT header_id, CUST_ACCT_SITE_ID, customer_id, bill_to_site_id FROM PONPURE_SALEORDERHDRS WHERE CUST_ACCT_SITE_ID = 3001;"
+  },
+  {
+    "input": "Show sales orders by quote creation type",
+    "query": "SELECT header_id, quote_creation_type, quotation_number, customer_id FROM PONPURE_SALEORDERHDRS WHERE quote_creation_type = 'MANUAL';"
+  },
+  {
+    "input": "Show sales orders by transaction type name",
+    "query": "SELECT header_id, trans_type_name, trans_type_id, customer_id FROM PONPURE_SALEORDERHDRS WHERE trans_type_name = 'EXPORT';"
+  },
+  {
+    "input": "Find sales orders in specific currency",
+    "query": "SELECT header_id, currency, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE currency = 'USD';"
+  },
+  {
+    "input": "Show sales orders by customer PO reference",
+    "query": "SELECT header_id, customer_po_ref, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE customer_po_ref LIKE 'PO-%';"
+  },
+  {
+    "input": "Find sales orders by customer PO date",
+    "query": "SELECT header_id, customer_po_date, customer_po_ref, customer_id FROM PONPURE_SALEORDERHDRS WHERE customer_po_date BETWEEN '2024-01-01' AND '2024-06-30';"
+  },
+  {
+    "input": "Show sales orders by PO received date",
+    "query": "SELECT header_id, po_received_date, customer_po_ref, customer_id FROM PONPURE_SALEORDERHDRS WHERE po_received_date IS NOT NULL;"
+  },
+  {
+    "input": "Find sales orders by conversion rate date",
+    "query": "SELECT header_id, Conversion_rate_date, conversion_rate, currency FROM PONPURE_SALEORDERHDRS WHERE Conversion_rate_date = '2024-03-15';"
+  },
+  {
+    "input": "Show sales orders by conversion type",
+    "query": "SELECT header_id, conversion_type, conversion_rate, currency FROM PONPURE_SALEORDERHDRS WHERE conversion_type = 'CORPORATE';"
+  },
+  {
+    "input": "Find sales orders with specific conversion rate",
+    "query": "SELECT header_id, conversion_rate, currency, Conversion_rate_date FROM PONPURE_SALEORDERHDRS WHERE conversion_rate > 75.0;"
+  },
+  {
+    "input": "Show sales orders with credit limit alerts",
+    "query": "SELECT header_id, credit_limit_alert, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE credit_limit_alert = 1;"
+  },
+  {
+    "input": "Find sales orders by Oracle sales person",
+    "query": "SELECT header_id, oracle_sales_person_id, oracle_sales_person_code, customer_id FROM PONPURE_SALEORDERHDRS WHERE oracle_sales_person_id = 45;"
+  },
+  {
+    "input": "Show sales orders by Oracle sales person code",
+    "query": "SELECT header_id, oracle_sales_person_code, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE oracle_sales_person_code = 'SP-101';"
+  },
+  {
+    "input": "Find sales orders by invoice type",
+    "query": "SELECT header_id, invoice_type, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE invoice_type = 'TAX';"
+  },
+  {
+    "input": "Show sales orders by trading/manufacture flag",
+    "query": "SELECT header_id, trading_manufacture, customer_id, trans_type_name FROM PONPURE_SALEORDERHDRS WHERE trading_manufacture = 'T';"
+  },
+  {
+    "input": "Find sales orders with remarks",
+    "query": "SELECT header_id, remarks, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE remarks IS NOT NULL AND remarks != '';"
+  },
+  {
+    "input": "Show sales orders by currency price list",
+    "query": "SELECT header_id, currency_price_list, currency, customer_id FROM PONPURE_SALEORDERHDRS WHERE currency_price_list = 'USD_PRICE_LIST';"
+  },
+  {
+    "input": "Find sales orders by currency price list ID",
+    "query": "SELECT header_id, currency_price_list_id, currency_price_list, customer_id FROM PONPURE_SALEORDERHDRS WHERE currency_price_list_id = 10;"
+  },
+  {
+    "input": "Show sales orders with branchwise alerts",
+    "query": "SELECT header_id, branchwise_alert, company_location_id, customer_id FROM PONPURE_SALEORDERHDRS WHERE branchwise_alert = 1;"
+  },
+  {
+    "input": "Find sales orders created by specific user",
+    "query": "SELECT header_id, created_by, creation_date, customer_id FROM PONPURE_SALEORDERHDRS WHERE created_by = 'john.doe';"
+  },
+  {
+    "input": "Show sales orders created within date range",
+    "query": "SELECT header_id, creation_date, created_by, customer_id FROM PONPURE_SALEORDERHDRS WHERE creation_date BETWEEN '2024-01-01' AND '2024-03-31';"
+  },
+  {
+    "input": "Find sales orders last updated by specific user",
+    "query": "SELECT header_id, last_updated_by, creation_date, customer_id FROM PONPURE_SALEORDERHDRS WHERE last_updated_by = 'jane.smith';"
+  },
+  {
+    "input": "Show sales orders with export contract",
+    "query": "SELECT header_id, export_contractid, export_contractno, customer_id FROM PONPURE_SALEORDERHDRS WHERE export_contractid IS NOT NULL;"
+  },
+  {
+    "input": "Find sales orders by export contract number",
+    "query": "SELECT header_id, export_contractno, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE export_contractno = 'EC-2024-001';"
+  },
+  {
+    "input": "Show sales orders by broker",
+    "query": "SELECT header_id, broker_id, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE broker_id = 15;"
+  },
+  {
+    "input": "Find sales orders by internal parent schedule",
+    "query": "SELECT header_id, internal_parent_schedule_id, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE internal_parent_schedule_id IS NOT NULL;"
+  },
+  {
+    "input": "Show sales orders with branchwise alert sent date",
+    "query": "SELECT header_id, Branchwise_alert_Sentdate, branchwise_alert, company_location_id FROM PONPURE_SALEORDERHDRS WHERE Branchwise_alert_Sentdate IS NOT NULL;"
+  },
+  {
+    "input": "Find sales orders by DMS header ID",
+    "query": "SELECT header_id, DmsHdrId, customer_id, creation_date FROM PONPURE_SALEORDERHDRS WHERE DmsHdrId = 5001;"
+  }
+  ,
+  {
+    "input": "Show all sales order line IDs",
+    "query": "SELECT line_id, header_id, item_id FROM PONPURE_SALEORDERDTLS ORDER BY line_id;"
+  },
+  {
+    "input": "Find line items for specific sales order header",
+    "query": "SELECT line_id, header_id, item_id, quantity, unit_price FROM PONPURE_SALEORDERDTLS WHERE header_id = 1001;"
+  },
+  {
+    "input": "Show line items by product/item ID",
+    "query": "SELECT line_id, item_id, quantity, unit_price, header_id FROM PONPURE_SALEORDERDTLS WHERE item_id = 500;"
+  },
+  {
+    "input": "Find line items by unit of measure",
+    "query": "SELECT line_id, uom_code, item_id, quantity FROM PONPURE_SALEORDERDTLS WHERE uom_code = 'KG';"
+  },
+  {
+    "input": "Show line items with quantity greater than specified amount",
+    "query": "SELECT line_id, quantity, item_id, unit_price FROM PONPURE_SALEORDERDTLS WHERE quantity > 100;"
+  },
+  {
+    "input": "Find line items by unit price range",
+    "query": "SELECT line_id, unit_price, item_id, quantity FROM PONPURE_SALEORDERDTLS WHERE unit_price BETWEEN 50 AND 200;"
+  },
+  {
+    "input": "Show line items by price list name",
+    "query": "SELECT line_id, price_list_name, item_id, unit_price FROM PONPURE_SALEORDERDTLS WHERE price_list_name = 'STANDARD_PRICE_LIST';"
+  },
+  {
+    "input": "Find line items by price list ID",
+    "query": "SELECT line_id, price_list_id, price_list_name, item_id FROM PONPURE_SALEORDERDTLS WHERE price_list_id = 5;"
+  },
+  {
+    "input": "Show line items by discount type",
+    "query": "SELECT line_id, discount_type, discount_percentage, item_id FROM PONPURE_SALEORDERDTLS WHERE discount_type = 'PERCENTAGE';"
+  },
+  {
+    "input": "Find line items with discount percentage",
+    "query": "SELECT line_id, discount_percentage, item_id, unit_price FROM PONPURE_SALEORDERDTLS WHERE discount_percentage > 0;"
+  },
+  {
+    "input": "Show line items by total sales price",
+    "query": "SELECT line_id, total_sales_price, quantity, unit_price FROM PONPURE_SALEORDERDTLS WHERE total_sales_price > 1000;"
+  },
+  {
+    "input": "Find line items by packing size",
+    "query": "SELECT line_id, packing_size, item_id, quantity FROM PONPURE_SALEORDERDTLS WHERE packing_size = '25KG';"
+  },
+  {
+    "input": "Show line items by delivery from location",
+    "query": "SELECT line_id, delivery_from_id, item_id, delivery_date FROM PONPURE_SALEORDERDTLS WHERE delivery_from_id = 10;"
+  },
+  {
+    "input": "Find line items by freight terms",
+    "query": "SELECT line_id, freight_terms_id, item_id, delivery_date FROM PONPURE_SALEORDERDTLS WHERE freight_terms_id = 2;"
+  },
+  {
+    "input": "Show line items by sales category",
+    "query": "SELECT line_id, sale_category, item_id, quantity FROM PONPURE_SALEORDERDTLS WHERE sale_category = 'EXPORT';"
+  },
+  {
+    "input": "Find line items by payment terms",
+    "query": "SELECT line_id, payment_term_id, item_id, total_sales_price FROM PONPURE_SALEORDERDTLS WHERE payment_term_id = 30;"
+  },
+  {
+    "input": "Show line items by drum type",
+    "query": "SELECT line_id, drum_type, item_id, quantity FROM PONPURE_SALEORDERDTLS WHERE drum_type = 'STEEL';"
+  },
+  {
+    "input": "Find line items by make/brand",
+    "query": "SELECT line_id, make, item_id, quantity FROM PONPURE_SALEORDERDTLS WHERE make = 'ACME_CORP';"
+  },
+  {
+    "input": "Show line items with specific delivery date",
+    "query": "SELECT line_id, delivery_date, item_id, quantity FROM PONPURE_SALEORDERDTLS WHERE delivery_date = '2024-03-15';"
+  },
+  {
+    "input": "Find line items by inventory organization",
+    "query": "SELECT line_id, inventory_org_id, item_id, quantity FROM PONPURE_SALEORDERDTLS WHERE inventory_org_id = 100;"
+  },
+  {
+    "input": "Show line items by HSN code",
+    "query": "SELECT line_id, item_hsn_code, item_id, quantity FROM PONPURE_SALEORDERDTLS WHERE item_hsn_code = '33049990';"
+  },
+  {
+    "input": "Find line items by tax percentage",
+    "query": "SELECT line_id, tax_percentage, item_id, total_sales_price FROM PONPURE_SALEORDERDTLS WHERE tax_percentage = 18;"
+  },
+  {
+    "input": "Show line items by quotation close reason",
+    "query": "SELECT line_id, quotation_close_reason, item_id, status FROM PONPURE_SALEORDERDTLS WHERE quotation_close_reason = 'PRICE_TOO_HIGH';"
+  },
+  {
+    "input": "Find line items by reason ID",
+    "query": "SELECT line_id, reason_id, item_id, status FROM PONPURE_SALEORDERDTLS WHERE reason_id = 5;"
+  },
+  {
+    "input": "Show line items by item group",
+    "query": "SELECT line_id, item_group, item_id, quantity FROM PONPURE_SALEORDERDTLS WHERE item_group = 'CHEMICALS';"
+  },
+  {
+    "input": "Find line items with price list flag set",
+    "query": "SELECT line_id, price_list_flag, price_list_name, item_id FROM PONPURE_SALEORDERDTLS WHERE price_list_flag = 1;"
+  },
+  {
+    "input": "Show line items by discount value",
+    "query": "SELECT line_id, discount_value, discount_percentage, item_id FROM PONPURE_SALEORDERDTLS WHERE discount_value > 0;"
+  },
+  {
+    "input": "Find line items by specific price list",
+    "query": "SELECT line_id, price_list, price_list_name, item_id FROM PONPURE_SALEORDERDTLS WHERE price_list = 'STANDARD';"
+  },
+  {
+    "input": "Show line items with packing details",
+    "query": "SELECT line_id, packing_details, packing_size, item_id FROM PONPURE_SALEORDERDTLS WHERE packing_details IS NOT NULL;"
+  },
+  {
+    "input": "Find line items created by specific user",
+    "query": "SELECT line_id, created_by, creation_date, item_id FROM PONPURE_SALEORDERDTLS WHERE created_by = 'john.doe';"
+  },
+  {
+    "input": "Show line items created within date range",
+    "query": "SELECT line_id, creation_date, item_id, quantity FROM PONPURE_SALEORDERDTLS WHERE creation_date BETWEEN '2024-01-01' AND '2024-03-31';"
+  },
+  {
+    "input": "Find line items last updated by specific user",
+    "query": "SELECT line_id, last_updated_by, last_update_date, item_id FROM PONPURE_SALEORDERDTLS WHERE last_updated_by = 'jane.smith';"
+  },
+  {
+    "input": "Show line items last updated within date range",
+    "query": "SELECT line_id, last_update_date, item_id, status FROM PONPURE_SALEORDERDTLS WHERE last_update_date >= '2024-01-01';"
+  },
+  {
+    "input": "Find line items by status",
+    "query": "SELECT line_id, status, item_id, quantity FROM PONPURE_SALEORDERDTLS WHERE status = 'ACTIVE';"
+  },
+  {
+    "input": "Show line items linked to quotation detail line",
+    "query": "SELECT line_id, quotationdtl_line_id, item_id, header_id FROM PONPURE_SALEORDERDTLS WHERE quotationdtl_line_id IS NOT NULL;"
+  },
+  {
+    "input": "Find line items by export contract item ID",
+    "query": "SELECT line_id, export_contract_itemid, item_id, header_id FROM PONPURE_SALEORDERDTLS WHERE export_contract_itemid IS NOT NULL;"
+  },
+  {
+    "input": "Show line items by export contract item code",
+    "query": "SELECT line_id, export_contract_itemcode, item_id, header_id FROM PONPURE_SALEORDERDTLS WHERE export_contract_itemcode = 'ECI-001';"
+  },
+  {
+    "input": "Find line items by agreed days for delivery",
+    "query": "SELECT line_id, agreeddays, item_id, delivery_date FROM PONPURE_SALEORDERDTLS WHERE agreeddays <= 30;"
+  },
+  {
+    "input": "Show line items with internal source flag",
+    "query": "SELECT line_id, internal_source_flag, item_id, header_id FROM PONPURE_SALEORDERDTLS WHERE internal_source_flag = 1;"
+  },
+  {
+    "input": "Find line items by internal source inventory organization",
+    "query": "SELECT line_id, internal_source_invorg_id, item_id, header_id FROM PONPURE_SALEORDERDTLS WHERE internal_source_invorg_id = 200;"
+  },
+  {
+    "input": "Show line items by internal parent schedule",
+    "query": "SELECT line_id, internal_parent_schedule_id, item_id, header_id FROM PONPURE_SALEORDERDTLS WHERE internal_parent_schedule_id IS NOT NULL;"
+  },
+  {
+    "input": "Find line items by auto-close reason",
+    "query": "SELECT line_id, AUTO_CLOSE_REASON, item_id, status FROM PONPURE_SALEORDERDTLS WHERE AUTO_CLOSE_REASON IS NOT NULL;"
+  },
+  {
+    "input": "Show line items auto-closed within date range",
+    "query": "SELECT line_id, AUTO_CLOSE_DATE, AUTO_CLOSE_REASON, item_id FROM PONPURE_SALEORDERDTLS WHERE AUTO_CLOSE_DATE BETWEEN '2024-01-01' AND '2024-03-31';"
+  },
+  {
+    "input": "Find line items by DMS line ID",
+    "query": "SELECT line_id, DmsLineId, item_id, header_id FROM PONPURE_SALEORDERDTLS WHERE DmsLineId = 10001;"
+  }
+,
+  {
+    "input": "Show all quotation header IDs",
+    "query": "SELECT header_id, quotation_number, quotation_date FROM PONPURE_QUOTATIONHDRS ORDER BY header_id;"
+  },
+  {
+    "input": "Find quotations by quotation number",
+    "query": "SELECT header_id, quotation_number, quotation_date, customer_id FROM PONPURE_QUOTATIONHDRS WHERE quotation_number = 'QT-2024-001';"
+  },
+  {
+    "input": "Show quotations within date range",
+    "query": "SELECT header_id, quotation_date, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE quotation_date BETWEEN '2024-01-01' AND '2024-03-31';"
+  },
+  {
+    "input": "Find quotations by enquiry ID",
+    "query": "SELECT header_id, enquiry_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE enquiry_id = 'ENQ-5001';"
+  },
+  {
+    "input": "Show quotations by transaction type",
+    "query": "SELECT header_id, trans_type_id, trans_type_name, customer_id FROM PONPURE_QUOTATIONHDRS WHERE trans_type_id = 2;"
+  },
+  {
+    "input": "Find quotations by transaction sub-type",
+    "query": "SELECT header_id, trans_sub_type_id, trans_type_id, customer_id FROM PONPURE_QUOTATIONHDRS WHERE trans_sub_type_id = 3;"
+  },
+  {
+    "input": "Show quotations by company ID",
+    "query": "SELECT header_id, company_id, company_location_id, customer_id FROM PONPURE_QUOTATIONHDRS WHERE company_id = 100;"
+  },
+  {
+    "input": "Find quotations by company GSTIN",
+    "query": "SELECT header_id, company_gstin_id, company_id, customer_id FROM PONPURE_QUOTATIONHDRS WHERE company_gstin_id = 'GSTIN123456';"
+  },
+  {
+    "input": "Show quotations by company location",
+    "query": "SELECT header_id, company_location_id, company_id, customer_id FROM PONPURE_QUOTATIONHDRS WHERE company_location_id = 5;"
+  },
+  {
+    "input": "Find quotations by collector/salesperson",
+    "query": "SELECT header_id, collector_id, customer_id, quotation_date FROM PONPURE_QUOTATIONHDRS WHERE collector_id = 25;"
+  },
+  {
+    "input": "Show quotations for specific customer",
+    "query": "SELECT header_id, customer_id, quotation_number, quotation_date FROM PONPURE_QUOTATIONHDRS WHERE customer_id = 500;"
+  },
+  {
+    "input": "Find quotations by billing site",
+    "query": "SELECT header_id, bill_to_site_id, customer_id, quotation_date FROM PONPURE_QUOTATIONHDRS WHERE bill_to_site_id = 1001;"
+  },
+  {
+    "input": "Show quotations by shipping site",
+    "query": "SELECT header_id, ship_to_site_id, customer_id, quotation_date FROM PONPURE_QUOTATIONHDRS WHERE ship_to_site_id = 2001;"
+  },
+  {
+    "input": "Find quotations by status",
+    "query": "SELECT header_id, status_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE status_id = 1;"
+  },
+  {
+    "input": "Show quotations by reason ID",
+    "query": "SELECT header_id, reason_id, quotation_number, status_id FROM PONPURE_QUOTATIONHDRS WHERE reason_id = 10;"
+  },
+  {
+    "input": "Find quotations by approval status",
+    "query": "SELECT header_id, approval_status_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE approval_status_id = 2;"
+  },
+  {
+    "input": "Show quotations with remarks",
+    "query": "SELECT header_id, remarks, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE remarks IS NOT NULL AND remarks != '';"
+  },
+  {
+    "input": "Find valid quotations (not expired)",
+    "query": "SELECT header_id, quotation_valid_upto, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE quotation_valid_upto >= GETDATE();"
+  },
+  {
+    "input": "Show back-to-back quotations",
+    "query": "SELECT header_id, is_back_to_back_order, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE is_back_to_back_order = 1;"
+  },
+  {
+    "input": "Find quotations with approval received date",
+    "query": "SELECT header_id, approval_received_date, approval_status_id, customer_id FROM PONPURE_QUOTATIONHDRS WHERE approval_received_date IS NOT NULL;"
+  },
+  {
+    "input": "Show quotations with additional email IDs",
+    "query": "SELECT header_id, additional_mail_id, customer_id, quotation_number FROM PONPURE_QUOTATIONHDRS WHERE additional_mail_id IS NOT NULL;"
+  },
+  {
+    "input": "Find quotations by customer account site",
+    "query": "SELECT header_id, CUST_ACCT_SITE_ID, customer_id, bill_to_site_id FROM PONPURE_QUOTATIONHDRS WHERE CUST_ACCT_SITE_ID = 3001;"
+  },
+  {
+    "input": "Show quotations by creation type",
+    "query": "SELECT header_id, quote_creation_type, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE quote_creation_type = 'SYSTEM';"
+  },
+  {
+    "input": "Find quotations by transaction type name",
+    "query": "SELECT header_id, trans_type_name, trans_type_id, customer_id FROM PONPURE_QUOTATIONHDRS WHERE trans_type_name = 'DOMESTIC';"
+  },
+  {
+    "input": "Show quotations by sequence number",
+    "query": "SELECT header_id, sequence_no, quotation_number, creation_date FROM PONPURE_QUOTATIONHDRS WHERE sequence_no = 1;"
+  },
+  {
+    "input": "Find quotations created by specific user",
+    "query": "SELECT header_id, created_by, creation_date, quotation_number FROM PONPURE_QUOTATIONHDRS WHERE created_by = 'john.doe';"
+  },
+  {
+    "input": "Show quotations created within date range",
+    "query": "SELECT header_id, creation_date, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE creation_date BETWEEN '2024-01-01' AND '2024-03-31';"
+  },
+  {
+    "input": "Find quotations last updated by specific user",
+    "query": "SELECT header_id, last_updated_by, last_update_date, quotation_number FROM PONPURE_QUOTATIONHDRS WHERE last_updated_by = 'jane.smith';"
+  },
+  {
+    "input": "Show quotations last updated within date range",
+    "query": "SELECT header_id, last_update_date, quotation_number, status_id FROM PONPURE_QUOTATIONHDRS WHERE last_update_date >= '2024-01-01';"
+  },
+  {
+    "input": "Find quotations with sync error messages",
+    "query": "SELECT header_id, sync_error_msg, quotation_number, creation_date FROM PONPURE_QUOTATIONHDRS WHERE sync_error_msg IS NOT NULL;"
+  },
+  {
+    "input": "Show quotations by export contract ID",
+    "query": "SELECT header_id, export_contractid, export_contractno, customer_id FROM PONPURE_QUOTATIONHDRS WHERE export_contractid IS NOT NULL;"
+  },
+  {
+    "input": "Find quotations by export contract number",
+    "query": "SELECT header_id, export_contractno, customer_id, quotation_date FROM PONPURE_QUOTATIONHDRS WHERE export_contractno = 'EC-2024-001';"
+  },
+  {
+    "input": "Show quotations by SFA quote ID",
+    "query": "SELECT header_id, sfa_quoteid, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE sfa_quoteid IS NOT NULL;"
+  },
+  {
+    "input": "Find quotations with PO comments",
+    "query": "SELECT header_id, po_comments, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE po_comments IS NOT NULL;"
+  },
+  {
+    "input": "Show quotations with sync remarks",
+    "query": "SELECT header_id, synremarks, quotation_number, creation_date FROM PONPURE_QUOTATIONHDRS WHERE synremarks IS NOT NULL;"
+  },
+  {
+    "input": "Find quotations by buyer order number",
+    "query": "SELECT header_id, buyer_order_no, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE buyer_order_no LIKE 'BO-%';"
+  },
+  {
+    "input": "Show quotations by buyer order date",
+    "query": "SELECT header_id, buyer_order_date, buyer_order_no, customer_id FROM PONPURE_QUOTATIONHDRS WHERE buyer_order_date BETWEEN '2024-01-01' AND '2024-03-31';"
+  },
+  {
+    "input": "Find quotations by other reference",
+    "query": "SELECT header_id, other_ref, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE other_ref IS NOT NULL;"
+  },
+  {
+    "input": "Show quotations by currency type",
+    "query": "SELECT header_id, currency_type, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE currency_type = 'USD';"
+  },
+  {
+    "input": "Find quotations by conversion rate",
+    "query": "SELECT header_id, conversion_rate, currency_type, quotation_number FROM PONPURE_QUOTATIONHDRS WHERE conversion_rate > 75.0;"
+  },
+  {
+    "input": "Show quotations by IE code",
+    "query": "SELECT header_id, ie_code, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE ie_code = 'IE123456';"
+  },
+  {
+    "input": "Find quotations by delivery terms",
+    "query": "SELECT header_id, delivery_terms, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE delivery_terms = 'FOB';"
+  },
+  {
+    "input": "Show quotations by pre-carriage method",
+    "query": "SELECT header_id, pre_carriage_by, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE pre_carriage_by = 'TRUCK';"
+  },
+  {
+    "input": "Find quotations by port of loading",
+    "query": "SELECT header_id, port_loading_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE port_loading_id = 101;"
+  },
+  {
+    "input": "Show quotations by port of discharge",
+    "query": "SELECT header_id, port_discharge_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE port_discharge_id = 201;"
+  },
+  {
+    "input": "Find quotations by final destination country",
+    "query": "SELECT header_id, country_final_dest_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE country_final_dest_id = 1;"
+  },
+  {
+    "input": "Show quotations by final destination",
+    "query": "SELECT header_id, final_destination_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE final_destination_id = 1001;"
+  },
+  {
+    "input": "Find quotations with partial shipment allowed",
+    "query": "SELECT header_id, partial_shipment, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE partial_shipment = 'YES';"
+  },
+  {
+    "input": "Show quotations by type of supply",
+    "query": "SELECT header_id, type_of_supply, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE type_of_supply = 'EXPORT';"
+  },
+  {
+    "input": "Find quotations by kind of package",
+    "query": "SELECT header_id, kind_of_package, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE kind_of_package = 'DRUMS';"
+  },
+  {
+    "input": "Show quotations by type of container",
+    "query": "SELECT header_id, type_of_container, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE type_of_container = '20FT';"
+  },
+  {
+    "input": "Find quotations with total value greater than amount",
+    "query": "SELECT header_id, total_value, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE total_value > 10000;"
+  },
+  {
+    "input": "Show quotations by total freight value",
+    "query": "SELECT header_id, total_freight_value, quotation_number, total_value FROM PONPURE_QUOTATIONHDRS WHERE total_freight_value > 0;"
+  },
+  {
+    "input": "Find quotations by total insurance value",
+    "query": "SELECT header_id, total_insurance_value, quotation_number, total_value FROM PONPURE_QUOTATIONHDRS WHERE total_insurance_value > 0;"
+  },
+  {
+    "input": "Show quotations by total FOB value",
+    "query": "SELECT header_id, total_fob_value, quotation_number, total_value FROM PONPURE_QUOTATIONHDRS WHERE total_fob_value > 0;"
+  },
+  {
+    "input": "Find quotations by time of dispatch",
+    "query": "SELECT header_id, time_of_dispatch, quotation_number, delivery_terms FROM PONPURE_QUOTATIONHDRS WHERE time_of_dispatch IS NOT NULL;"
+  },
+  {
+    "input": "Show quotations by offer validity",
+    "query": "SELECT header_id, offer_validity, quotation_number, quotation_valid_upto FROM PONPURE_QUOTATIONHDRS WHERE offer_validity <= 30;"
+  },
+  {
+    "input": "Find quotations with trans-shipment allowed",
+    "query": "SELECT header_id, trans_shipment, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE trans_shipment = 'YES';"
+  },
+  {
+    "input": "Show quotations with amount in words",
+    "query": "SELECT header_id, number_in_words, quotation_number, total_value FROM PONPURE_QUOTATIONHDRS WHERE number_in_words IS NOT NULL;"
+  },
+  {
+    "input": "Find quotations by bank ID",
+    "query": "SELECT header_id, bank_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE bank_id = 5;"
+  },
+  {
+    "input": "Show quotations by agent ID",
+    "query": "SELECT header_id, agent_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE agent_id = 10;"
+  },
+  {
+    "input": "Find quotations with commission value",
+    "query": "SELECT header_id, commission_value, quotation_number, total_value FROM PONPURE_QUOTATIONHDRS WHERE commission_value > 0;"
+  },
+  {
+    "input": "Show quotations with export remarks",
+    "query": "SELECT header_id, export_remarks, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE export_remarks IS NOT NULL;"
+  },
+  {
+    "input": "Find quotations by billing division",
+    "query": "SELECT header_id, billing_devision_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE billing_devision_id = 3;"
+  },
+  {
+    "input": "Show quotations by conversion rate date",
+    "query": "SELECT header_id, conversion_rate_date, conversion_rate, currency_type FROM PONPURE_QUOTATIONHDRS WHERE conversion_rate_date = '2024-03-15';"
+  },
+  {
+    "input": "Find quotations by conversion type",
+    "query": "SELECT header_id, conversion_type, conversion_rate, currency_type FROM PONPURE_QUOTATIONHDRS WHERE conversion_type = 'MANUAL';"
+  },
+  {
+    "input": "Show quotations by price list ID",
+    "query": "SELECT header_id, price_list_id, price_list, quotation_number FROM PONPURE_QUOTATIONHDRS WHERE price_list_id = 10;"
+  },
+  {
+    "input": "Find quotations by price list",
+    "query": "SELECT header_id, price_list, price_list_id, quotation_number FROM PONPURE_QUOTATIONHDRS WHERE price_list = 'STANDARD_EXPORT';"
+  },
+  {
+    "input": "Show quotations with delivery description",
+    "query": "SELECT header_id, delivery_description, quotation_number, delivery_terms FROM PONPURE_QUOTATIONHDRS WHERE delivery_description IS NOT NULL;"
+  },
+  {
+    "input": "Find quotations where PDF was sent",
+    "query": "SELECT header_id, is_pdf_sent, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE is_pdf_sent = 1;"
+  },
+  {
+    "input": "Show quotations by close status",
+    "query": "SELECT header_id, close_status_id, quotation_number, status_id FROM PONPURE_QUOTATIONHDRS WHERE close_status_id = 3;"
+  },
+  {
+    "input": "Find quotations by customer header ID",
+    "query": "SELECT header_id, customer_hdr_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE customer_hdr_id = 1000;"
+  },
+  {
+    "input": "Show pre-quotations",
+    "query": "SELECT header_id, is_prequote, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE is_prequote = 1;"
+  },
+  {
+    "input": "Find quotations by customer name",
+    "query": "SELECT header_id, customer_name, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE customer_name LIKE '%ABC Corp%';"
+  },
+  {
+    "input": "Show quotations by MC code",
+    "query": "SELECT header_id, mc_code, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE mc_code = 'MC-001';"
+  },
+  {
+    "input": "Find quotations by pre-quote ID",
+    "query": "SELECT header_id, pre_quote_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE pre_quote_id IS NOT NULL;"
+  },
+  {
+    "input": "Show quotations with customer approval",
+    "query": "SELECT header_id, is_customer_approval, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE is_customer_approval = 1;"
+  },
+  {
+    "input": "Find quotations with customer refer-back",
+    "query": "SELECT header_id, is_customer_referback, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE is_customer_referback = 1;"
+  },
+  {
+    "input": "Show quotations with customer rejection",
+    "query": "SELECT header_id, is_customer_reject, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE is_customer_reject = 1;"
+  },
+  {
+    "input": "Find quotations with other collector BM mail sent",
+    "query": "SELECT header_id, othercollectorBM_mailsentflag, quotation_number, collector_id FROM PONPURE_QUOTATIONHDRS WHERE othercollectorBM_mailsentflag = 1;"
+  },
+  {
+    "input": "Show quotations by revision count",
+    "query": "SELECT header_id, revised_count, quotation_number, creation_date FROM PONPURE_QUOTATIONHDRS WHERE revised_count > 0;"
+  },
+  {
+    "input": "Find quotations by RMA header ID",
+    "query": "SELECT header_id, rma_hdr_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE rma_hdr_id IS NOT NULL;"
+  },
+  {
+    "input": "Show copied quotations",
+    "query": "SELECT header_id, copy_quote_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE copy_quote_id IS NOT NULL;"
+  },
+  {
+    "input": "Find quotations by customer contact request header",
+    "query": "SELECT header_id, customer_contact_request_hdr_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE customer_contact_request_hdr_id IS NOT NULL;"
+  },
+  {
+    "input": "Show quotations by customer email ID",
+    "query": "SELECT header_id, cus_mail_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE cus_mail_id IS NOT NULL;"
+  },
+  {
+    "input": "Find quotations by user MC code",
+    "query": "SELECT header_id, user_mc_code, quotation_number, created_by FROM PONPURE_QUOTATIONHDRS WHERE user_mc_code = 'UMC-001';"
+  },
+  {
+    "input": "Show cross-market circle segment quotations",
+    "query": "SELECT header_id, crossmarketcircle_segmentflag, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE crossmarketcircle_segmentflag = 1;"
+  },
+  {
+    "input": "Find quotations by internal parent quotation",
+    "query": "SELECT header_id, internal_parent_quotation_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE internal_parent_quotation_id IS NOT NULL;"
+  },
+  {
+    "input": "Show quotations by refer-back user",
+    "query": "SELECT header_id, referback_user_id, quotation_number, status_id FROM PONPURE_QUOTATIONHDRS WHERE referback_user_id IS NOT NULL;"
+  },
+  {
+    "input": "Find quotations by refer-back previous status",
+    "query": "SELECT header_id, referback_prev_status, quotation_number, status_id FROM PONPURE_QUOTATIONHDRS WHERE referback_prev_status IS NOT NULL;"
+  },
+  {
+    "input": "Show quotations with edit access",
+    "query": "SELECT header_id, is_edit_access, quotation_number, created_by FROM PONPURE_QUOTATIONHDRS WHERE is_edit_access = 1;"
+  },
+  {
+    "input": "Find quotations by sample lead ID",
+    "query": "SELECT header_id, sample_lead_id, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE sample_lead_id IS NOT NULL;"
+  },
+  {
+    "input": "Show quotations by verification status",
+    "query": "SELECT header_id, Verify_StatusId, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE Verify_StatusId = 2;"
+  },
+  {
+    "input": "Find quotations with verification comments",
+    "query": "SELECT header_id, Verify_Comments, quotation_number, Verify_StatusId FROM PONPURE_QUOTATIONHDRS WHERE Verify_Comments IS NOT NULL;"
+  },
+  {
+    "input": "Show quotations by verification reasons",
+    "query": "SELECT header_id, Verify_Reasons, quotation_number, Verify_StatusId FROM PONPURE_QUOTATIONHDRS WHERE Verify_Reasons IS NOT NULL;"
+  },
+  {
+    "input": "Find quotations with item-level edits",
+    "query": "SELECT header_id, is_Itemlevel_edited, quotation_number, revised_count FROM PONPURE_QUOTATIONHDRS WHERE is_Itemlevel_edited = 1;"
+  },
+  {
+    "input": "Show quotations with PO-level edits",
+    "query": "SELECT header_id, is_POlevel_edited, quotation_number, revised_count FROM PONPURE_QUOTATIONHDRS WHERE is_POlevel_edited = 1;"
+  },
+  {
+    "input": "Find quotations by DMS header ID",
+    "query": "SELECT header_id, DmsHdrId, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE DmsHdrId = 5001;"
+  },
+  {
+    "input": "Show walk-in quotations",
+    "query": "SELECT header_id, is_Walkin_quote, quotation_number, customer_id FROM PONPURE_QUOTATIONHDRS WHERE is_Walkin_quote = 1;"
+  },
+  {
+    "input": "Show all sales orders with their line items and total values",
+    "query": "SELECT h.header_id, h.quotation_number, h.customer_id, h.creation_date as order_date, d.line_id, d.item_id, d.quantity, d.unit_price, d.total_sales_price FROM PONPURE_SALEORDERHDRS h INNER JOIN PONPURE_SALEORDERDTLS d ON h.header_id = d.header_id ORDER BY h.creation_date DESC, h.header_id, d.line_id;"
+  },
+  {
+    "input": "Find quotations that converted to sales orders and their conversion timeline",
+    "query": "SELECT q.header_id as quote_id, q.quotation_number, q.quotation_date, h.header_id as order_id, h.creation_date as order_date, DATEDIFF(day, q.quotation_date, h.creation_date) as days_to_convert FROM PONPURE_QUOTATIONHDRS q LEFT OUTER JOIN PONPURE_SALEORDERHDRS h ON q.quotation_number = h.quotation_number WHERE h.header_id IS NOT NULL ORDER BY q.quotation_date DESC;"
+  },
+  {
+    "input": "Calculate total sales value by customer from all sales orders",
+    "query": "SELECT h.customer_id, COUNT(DISTINCT h.header_id) as order_count, SUM(d.total_sales_price) as total_sales_value, AVG(d.total_sales_price) as avg_order_value FROM PONPURE_SALEORDERHDRS h INNER JOIN PONPURE_SALEORDERDTLS d ON h.header_id = d.header_id GROUP BY h.customer_id ORDER BY total_sales_value DESC;"
+  },
+  {
+    "input": "Show pending quotations that haven't converted to sales orders",
+    "query": "SELECT q.header_id, q.quotation_number, q.customer_id, q.quotation_date, q.quotation_valid_upto, q.status_id, q.total_value FROM PONPURE_QUOTATIONHDRS q LEFT OUTER JOIN PONPURE_SALEORDERHDRS h ON q.quotation_number = h.quotation_number WHERE h.header_id IS NULL AND q.status_id IN (1, 2) AND q.quotation_valid_upto >= GETDATE() ORDER BY q.quotation_valid_upto ASC;"
+  },
+  {
+    "input": "Find sales order details with their originating quotation information",
+    "query": "SELECT h.header_id as order_id, h.quotation_number, q.header_id as quote_id, q.quotation_date, q.quotation_valid_upto, d.line_id, d.item_id, d.quantity, d.unit_price, d.total_sales_price FROM PONPURE_SALEORDERHDRS h INNER JOIN PONPURE_SALEORDERDTLS d ON h.header_id = d.header_id LEFT OUTER JOIN PONPURE_QUOTATIONHDRS q ON h.quotation_number = q.quotation_number WHERE h.quotation_number IS NOT NULL ORDER BY h.creation_date DESC;"
+  },
+  {
+    "input": "Show monthly sales performance with item details",
+    "query": "SELECT FORMAT(h.creation_date, 'yyyy-MM') as month, h.trans_type_name, d.item_id, SUM(d.quantity) as total_quantity, SUM(d.total_sales_price) as total_revenue, AVG(d.unit_price) as avg_unit_price FROM PONPURE_SALEORDERHDRS h INNER JOIN PONPURE_SALEORDERDTLS d ON h.header_id = d.header_id WHERE h.creation_date >= DATEADD(month, -6, GETDATE()) GROUP BY FORMAT(h.creation_date, 'yyyy-MM'), h.trans_type_name, d.item_id ORDER BY month DESC, total_revenue DESC;"
+  },
+  {
+    "input": "Find top selling products with customer and quotation details",
+    "query": "SELECT d.item_id, SUM(d.quantity) as total_quantity_sold, SUM(d.total_sales_price) as total_revenue, COUNT(DISTINCT h.header_id) as order_count, COUNT(DISTINCT h.customer_id) as customer_count, COUNT(DISTINCT q.header_id) as quotation_count FROM PONPURE_SALEORDERDTLS d INNER JOIN PONPURE_SALEORDERHDRS h ON d.header_id = h.header_id LEFT OUTER JOIN PONPURE_QUOTATIONHDRS q ON h.quotation_number = q.quotation_number GROUP BY d.item_id ORDER BY total_revenue DESC;"
+  },
+  {
+    "input": "Show quotation conversion rates by salesperson/collector",
+    "query": "SELECT q.collector_id, COUNT(q.header_id) as total_quotations, COUNT(h.header_id) as converted_orders, CASE WHEN COUNT(q.header_id) > 0 THEN CAST(COUNT(h.header_id) * 100.0 / COUNT(q.header_id) AS DECIMAL(5,2)) ELSE 0 END as conversion_rate_percent, SUM(q.total_value) as quoted_value, SUM(h.total_order_value) as converted_value FROM PONPURE_QUOTATIONHDRS q LEFT OUTER JOIN (SELECT quotation_number, COUNT(*) as order_count, SUM(order_total) as total_order_value FROM PONPURE_SALEORDERHDRS GROUP BY quotation_number) h ON q.quotation_number = h.quotation_number WHERE q.collector_id IS NOT NULL GROUP BY q.collector_id ORDER BY conversion_rate_percent DESC;"
+  },
+  {
+    "input": "Find sales orders with delivery commitments and item details",
+    "query": "SELECT h.header_id, h.customer_id, h.customer_po_ref, d.line_id, d.item_id, d.quantity, d.delivery_date, d.packing_details, d.drum_type, d.freight_terms_id FROM PONPURE_SALEORDERHDRS h INNER JOIN PONPURE_SALEORDERDTLS d ON h.header_id = d.header_id WHERE d.delivery_date BETWEEN GETDATE() AND DATEADD(day, 30, GETDATE()) ORDER BY d.delivery_date ASC, h.header_id;"
+  },
+  {
+    "input": "Show export transactions with complete logistics details",
+    "query": "SELECT q.header_id as quote_id, q.quotation_number, q.export_contractno, q.port_loading_id, q.port_discharge_id, h.header_id as order_id, h.creation_date as order_date, d.item_id, d.quantity, d.total_sales_price, d.tax_percentage FROM PONPURE_QUOTATIONHDRS q LEFT OUTER JOIN PONPURE_SALEORDERHDRS h ON q.quotation_number = h.quotation_number LEFT OUTER JOIN PONPURE_SALEORDERDTLS d ON h.header_id = d.header_id WHERE q.trans_type_name = 'EXPORT' AND q.export_contractno IS NOT NULL ORDER BY q.quotation_date DESC;"
+  },
+  {
+    "input": "Calculate average discount by customer category",
+    "query": "SELECT h.customer_id, COUNT(d.line_id) as line_item_count, AVG(d.discount_percentage) as avg_discount_percent, SUM(d.discount_value) as total_discount_value, SUM(d.total_sales_price) as total_sales_value FROM PONPURE_SALEORDERHDRS h INNER JOIN PONPURE_SALEORDERDTLS d ON h.header_id = d.header_id WHERE d.discount_percentage > 0 GROUP BY h.customer_id HAVING COUNT(d.line_id) >= 5 ORDER BY avg_discount_percent DESC;"
+  },
+  {
+    "input": "Find back-to-back orders with their quotation and item details",
+    "query": "SELECT h.header_id, h.quotation_number, h.is_back_to_back_order, q.header_id as quote_id, q.total_value as quoted_value, d.item_id, d.quantity, d.unit_price, d.total_sales_price, d.internal_source_flag, d.internal_source_invorg_id FROM PONPURE_SALEORDERHDRS h INNER JOIN PONPURE_SALEORDERDTLS d ON h.header_id = d.header_id LEFT OUTER JOIN PONPURE_QUOTATIONHDRS q ON h.quotation_number = q.quotation_number WHERE h.is_back_to_back_order = 1 ORDER BY h.creation_date DESC;"
+  },
+  {
+    "input": "Show quotation to order pipeline with aging analysis",
+    "query": "SELECT CASE WHEN h.header_id IS NOT NULL THEN 'Converted to Order' WHEN q.quotation_valid_upto < GETDATE() THEN 'Expired' WHEN q.status_id = 3 THEN 'Rejected' ELSE 'Pending' END as pipeline_status, COUNT(q.header_id) as count, AVG(DATEDIFF(day, q.quotation_date, GETDATE())) as avg_days_in_status, SUM(q.total_value) as total_quoted_value FROM PONPURE_QUOTATIONHDRS q LEFT OUTER JOIN PONPURE_SALEORDERHDRS h ON q.quotation_number = h.quotation_number GROUP BY CASE WHEN h.header_id IS NOT NULL THEN 'Converted to Order' WHEN q.quotation_valid_upto < GETDATE() THEN 'Expired' WHEN q.status_id = 3 THEN 'Rejected' ELSE 'Pending' END ORDER BY count DESC;"
+  },
+  {
+    "input": "Find sales orders with tax calculations and HSN codes",
+    "query": "SELECT h.header_id, h.customer_id, h.creation_date, d.line_id, d.item_id, d.item_hsn_code, d.quantity, d.unit_price, d.total_sales_price, d.tax_percentage, d.total_sales_price * d.tax_percentage / 100 as tax_amount, d.total_sales_price + (d.total_sales_price * d.tax_percentage / 100) as total_with_tax FROM PONPURE_SALEORDERHDRS h INNER JOIN PONPURE_SALEORDERDTLS d ON h.header_id = d.header_id WHERE d.tax_percentage > 0 AND d.item_hsn_code IS NOT NULL ORDER BY h.creation_date DESC;"
+  },
+  {
+    "input": "Show quotation approval analysis with order conversion",
+    "query": "SELECT q.approval_status_id, COUNT(q.header_id) as total_quotations, COUNT(h.header_id) as converted_orders, AVG(DATEDIFF(day, q.quotation_date, q.approval_received_date)) as avg_approval_days, AVG(q.total_value) as avg_quoted_value, SUM(q.total_value) as total_quoted_value FROM PONPURE_QUOTATIONHDRS q LEFT OUTER JOIN PONPURE_SALEORDERHDRS h ON q.quotation_number = h.quotation_number WHERE q.approval_status_id IS NOT NULL GROUP BY q.approval_status_id ORDER BY q.approval_status_id;"
+  },
+  {
+    "input": "Find recurring customers with their order history",
+    "query": "SELECT h.customer_id, COUNT(DISTINCT h.header_id) as total_orders, MIN(h.creation_date) as first_order_date, MAX(h.creation_date) as last_order_date, SUM(d.total_sales_price) as lifetime_value, COUNT(DISTINCT q.header_id) as total_quotations FROM PONPURE_SALEORDERHDRS h INNER JOIN PONPURE_SALEORDERDTLS d ON h.header_id = d.header_id LEFT OUTER JOIN PONPURE_QUOTATIONHDRS q ON h.quotation_number = q.quotation_number GROUP BY h.customer_id HAVING COUNT(DISTINCT h.header_id) >= 3 ORDER BY lifetime_value DESC;"
+  },
+  {
+    "input": "Show all schedule IDs with their sales order header and line details",
+    "query": "SELECT s.line_id AS schedule_id, s.sale_order_header_id, s.sale_order_detail_line_id, h.order_date, h.customer_name, d.item_description, s.schedule_quantity, s.schedule_date FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id INNER JOIN Ponpure_SaleOrderdtls d ON s.sale_order_detail_line_id = d.line_id ORDER BY s.line_id;"
+  },
+  {
+    "input": "Find schedules with pending status and their order details",
+    "query": "SELECT s.line_id, s.schedule_status_id, s.schedule_date, s.schedule_quantity, h.order_number, h.order_date, c.customer_name FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id INNER JOIN Customers c ON h.customer_id = c.customer_id WHERE s.schedule_status_id = 1 ORDER BY s.schedule_date;"
+  },
+  {
+    "input": "Show scheduled deliveries by item group with quantities",
+    "query": "SELECT s.item_group, COUNT(*) as total_schedules, SUM(s.schedule_quantity) as total_quantity, SUM(s.order_quantity) as total_ordered FROM Ponpure_Schedules s GROUP BY s.item_group ORDER BY total_quantity DESC;"
+  },
+  {
+    "input": "Find rescheduled deliveries with reasons",
+    "query": "SELECT s.line_id, s.schedule_date, s.reschedule_date, s.reschedule_reason, s.customer_requested_date, h.order_number, c.customer_name FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id INNER JOIN Customers c ON h.customer_id = c.customer_id WHERE s.reschedule_date IS NOT NULL AND s.reschedule_date != s.schedule_date ORDER BY s.reschedule_date;"
+  },
+  {
+    "input": "Show dispatched deliveries with actual vs scheduled dates",
+    "query": "SELECT s.line_id, s.schedule_date, s.dispatched_date, s.dispatched_quantity, s.schedule_quantity, h.order_number, s.inventory_org_name FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id WHERE s.dispatched_date IS NOT NULL AND s.dispatched_quantity > 0 ORDER BY s.dispatched_date DESC;"
+  },
+  {
+    "input": "Find schedules by inventory organization",
+    "query": "SELECT s.inventory_org_id, s.inventory_org_name, COUNT(*) as schedule_count, SUM(s.schedule_quantity) as total_quantity, AVG(s.unit_price) as avg_unit_price FROM Ponpure_Schedules s GROUP BY s.inventory_org_id, s.inventory_org_name ORDER BY schedule_count DESC;"
+  },
+  {
+    "input": "Show schedules with packing details and costs",
+    "query": "SELECT s.line_id, s.item_id, s.packing_size, s.packing_details, s.packing_cost, s.drum_type, s.schedule_quantity, s.item_group FROM Ponpure_Schedules s WHERE s.packing_size IS NOT NULL OR s.packing_details IS NOT NULL ORDER BY s.packing_cost DESC;"
+  },
+  {
+    "input": "Find schedules linked to quotations",
+    "query": "SELECT s.line_id, s.quotation_no, s.sale_order_header_id, h.order_number, h.order_date, q.quotation_date, q.status as quotation_status FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id LEFT JOIN Ponpure_QuotationHdrs q ON s.quotation_no = q.quotation_number WHERE s.quotation_no IS NOT NULL ORDER BY q.quotation_date;"
+  },
+  {
+    "input": "Show delivery schedules by customer with shipping details",
+    "query": "SELECT s.customer_id, c.customer_name, s.bill_to_customer_site_id, s.ship_to_customer_site_id, s.frieght_term_id, s.schedule_date, s.schedule_quantity, s.item_group FROM Ponpure_Schedules s INNER JOIN Customers c ON s.customer_id = c.customer_id ORDER BY s.customer_id, s.schedule_date;"
+  },
+  {
+    "input": "Find schedules with special handling requirements",
+    "query": "SELECT s.line_id, s.sale_category, s.reason_id, s.comments, s.backtoback_enable, s.is_recall, h.order_number, s.schedule_status_id FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id WHERE s.reason_id != 0 OR s.comments IS NOT NULL OR s.backtoback_enable = 1 OR s.is_recall = 1 ORDER BY s.line_id;"
+  },
+  {
+    "input": "Show schedules by payment terms",
+    "query": "SELECT s.payment_term_id, pt.term_name, COUNT(*) as schedule_count, SUM(s.schedule_quantity * s.unit_price) as total_value FROM Ponpure_Schedules s LEFT JOIN Payment_Terms pt ON s.payment_term_id = pt.term_id GROUP BY s.payment_term_id, pt.term_name ORDER BY total_value DESC;"
+  },
+  {
+    "input": "Find schedules with internal source flags",
+    "query": "SELECT s.line_id, s.internal_source_flag, s.internal_source_invorg_id, s.internal_child_schedule_id, s.internal_parent_schedule_id, s.request_type, h.order_number FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id WHERE s.internal_source_flag = 1 ORDER BY s.internal_parent_schedule_id;"
+  },
+  {
+    "input": "Show schedules created or updated by specific users",
+    "query": "SELECT s.line_id, s.created_by, u1.username as created_by_name, s.creation_date, s.last_updated_by, u2.username as updated_by_name, s.last_update_date, h.order_number FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id LEFT JOIN Users u1 ON s.created_by = u1.user_id LEFT JOIN Users u2 ON s.last_updated_by = u2.user_id ORDER BY s.last_update_date DESC;"
+  },
+  {
+    "input": "Find schedules with Unicommerce integration data",
+    "query": "SELECT s.line_id, s.unicommerce_sale_order_item_ids, s.unicommerce_validation_error_message, s.is_mobile_request, h.order_number, s.schedule_status_id FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id WHERE s.unicommerce_sale_order_item_ids IS NOT NULL OR s.is_mobile_request = 1 ORDER BY s.line_id;"
+  },
+  {
+    "input": "Show schedules with delivery time windows",
+    "query": "SELECT s.line_id, s.schedule_time, s.dispatched_time, s.schedule_date, s.dispatched_date, h.order_number, c.customer_name, s.ship_to_customer_site_id FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id INNER JOIN Customers c ON h.customer_id = c.customer_id WHERE s.schedule_time IS NOT NULL ORDER BY s.schedule_date, s.schedule_time;"
+  },
+  {
+    "input": "Find schedules by sale category with financial details",
+    "query": "SELECT s.sale_category, COUNT(*) as total_schedules, SUM(s.schedule_quantity) as total_quantity, SUM(s.schedule_quantity * s.unit_price) as total_value, AVG(s.unit_price) as avg_price, AVG(s.tax) as avg_tax FROM Ponpure_Schedules s GROUP BY s.sale_category ORDER BY total_value DESC;"
+  },
+  {
+    "input": "Show schedules with alternate items",
+    "query": "SELECT s.line_id, s.item_id, s.alternate_item_id, i1.item_name as original_item, i2.item_name as alternate_item, s.schedule_quantity, h.order_number FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id LEFT JOIN Items i1 ON s.item_id = i1.item_id LEFT JOIN Items i2 ON s.alternate_item_id = i2.item_id WHERE s.alternate_item_id IS NOT NULL AND s.alternate_item_id != s.item_id ORDER BY s.line_id;"
+  },
+  {
+    "input": "Find schedules with previous schedule quantities",
+    "query": "SELECT s.line_id, s.previous_schedule_quantity, s.schedule_quantity, s.order_quantity, h.order_number, s.schedule_date, s.reschedule_date FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id WHERE s.previous_schedule_quantity IS NOT NULL ORDER BY s.line_id;"
+  },
+  {
+    "input": "Show schedules by agreed delivery days",
+    "query": "SELECT s.agreeddays, COUNT(*) as schedule_count, AVG(DATEDIFF(day, h.order_date, s.schedule_date)) as actual_days, h.order_date, s.schedule_date FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id GROUP BY s.agreeddays, h.order_date, s.schedule_date ORDER BY s.agreeddays;"
+  },
+  {
+    "input": "Find schedules with approval status details",
+    "query": "SELECT s.line_id, s.schedule_approval_status_id, a.status_name as approval_status, s.confirm_status_id, c.status_name as confirm_status, s.soc_status_id, h.order_number FROM Ponpure_Schedules s INNER JOIN Ponpure_SaleOrderHdrs h ON s.sale_order_header_id = h.header_id LEFT JOIN Approval_Statuses a ON s.schedule_approval_status_id = a.status_id LEFT JOIN Confirm_Statuses c ON s.confirm_status_id = c.status_id ORDER BY s.schedule_approval_status_id;"
+  },
+  {
+    "input": "Show all lead IDs",
+    "query": "SELECT lead_id FROM Ponpure_Leaddetails ORDER BY lead_id;"
+  },
+  {
+    "input": "Show lead details with customer names",
+    "query": "SELECT lead_id, customername, industry, user_branch FROM Ponpure_Leaddetails ORDER BY lead_id;"
+  },
+  {
+    "input": "Show leads by industry",
+    "query": "SELECT lead_id, customername, industry, user_branch FROM Ponpure_Leaddetails WHERE industry = 'PHARMA' ORDER BY customername;"
+  },
+  {
+    "input": "Show leads by branch",
+    "query": "SELECT lead_id, customername, industry, user_branch FROM Ponpure_Leaddetails WHERE user_branch = 'COIMBATORE' ORDER BY lead_id;"
+  },
+  {
+    "input": "Show converted leads",
+    "query": "SELECT lead_id, customername, industry, converted FROM Ponpure_Leaddetails WHERE converted = TRUE ORDER BY lead_id;"
+  },
+  {
+    "input": "Show non-converted leads",
+    "query": "SELECT lead_id, customername, industry, converted FROM Ponpure_Leaddetails WHERE converted = FALSE ORDER BY lead_id;"
+  },
+  {
+    "input": "Show leads with email addresses",
+    "query": "SELECT lead_id, customername, email_id, industry FROM Ponpure_Leaddetails WHERE email_id IS NOT NULL ORDER BY customername;"
+  },
+  {
+    "input": "Show leads by status",
+    "query": "SELECT lead_id, customername, leadstatus, leadsource FROM Ponpure_Leaddetails WHERE leadstatus = 7 ORDER BY lead_id;"
+  },
+  {
+    "input": "Show rejected leads",
+    "query": "SELECT lead_id, customername, lead_close_status, lead_close_option FROM Ponpure_Leaddetails WHERE lead_close_status = 'Rejected' ORDER BY lead_id;"
+  },
+  {
+    "input": "Show leads with comments",
+    "query": "SELECT lead_id, customername, comments FROM Ponpure_Leaddetails WHERE comments IS NOT NULL ORDER BY lead_id;"
+  },
+  {
+    "input": "Show leads by business type",
+    "query": "SELECT lead_id, customername, business_type, industry FROM Ponpure_Leaddetails WHERE business_type = 'PRIVATE LIMITED' ORDER BY customername;"
+  },
+  {
+    "input": "Show leads with competitor information",
+    "query": "SELECT lead_id, customername, comp_name, comp_prod_category, comp_price FROM Ponpure_Leaddetails WHERE comp_name IS NOT NULL ORDER BY comp_name;"
+  },
+  {
+    "input": "Show leads created by specific user",
+    "query": "SELECT lead_id, customername, created_by, creation_date FROM Ponpure_Leaddetails WHERE created_by = 158 ORDER BY creation_date;"
+  },
+  {
+    "input": "Show leads with sales type flag",
+    "query": "SELECT lead_id, customername, sales_type_flag FROM Ponpure_Leaddetails WHERE sales_type_flag = 'R' ORDER BY lead_id;"
+  },
+  {
+    "input": "Show leads by segment",
+    "query": "SELECT lead_id, customername, segment1, industry FROM Ponpure_Leaddetails WHERE segment1 = 'Performance Chemicals' ORDER BY customername;"
+  },
+  {
+    "input": "Show leads with referral information",
+    "query": "SELECT lead_id, customername, referral_customer_number, referral_customer_name FROM Ponpure_Leaddetails WHERE referral_customer_number IS NOT NULL ORDER BY referral_customer_number;"
+  },
+  {
+    "input": "Show leads by market circle",
+    "query": "SELECT lead_id, customername, user_mc_code, user_branch FROM Ponpure_Leaddetails WHERE user_mc_code = 'COI02' ORDER BY lead_id;"
+  },
+  {
+    "input": "Show leads with cross market access",
+    "query": "SELECT lead_id, customername, cross_marketcircle_segmentaccess_flag FROM Ponpure_Leaddetails WHERE cross_marketcircle_segmentaccess_flag = TRUE ORDER BY lead_id;"
+  },
+  {
+    "input": "Show leads with credit evaluation",
+    "query": "SELECT lead_id, customername, is_credit_evaluated FROM Ponpure_Leaddetails WHERE is_credit_evaluated = TRUE ORDER BY lead_id;"
+  },
+  {
+    "input": "Show leads with approval status",
+    "query": "SELECT lead_id, customername, approve_status, approval_date FROM Ponpure_Leaddetails WHERE approve_status = 1 ORDER BY approval_date;"
+  },
+  {
+    "input": "Show leads joined with sales orders",
+    "query": "SELECT l.lead_id, l.customername, l.industry, s.header_id, s.order_date FROM Ponpure_Leaddetails l LEFT JOIN Ponpure_SaleOrderHdrs s ON l.customer_id = s.customer_id WHERE s.header_id IS NOT NULL ORDER BY l.lead_id;"
+  },
+  {
+    "input": "Show leads without sales orders",
+    "query": "SELECT l.lead_id, l.customername, l.industry, l.converted FROM Ponpure_Leaddetails l LEFT JOIN Ponpure_SaleOrderHdrs s ON l.customer_id = s.customer_id WHERE s.header_id IS NULL ORDER BY l.lead_id;"
+  },
+  {
+    "input": "Show leads with sales order details",
+    "query": "SELECT l.lead_id, l.customername, l.industry, s.header_id, so.line_id, so.item_code FROM Ponpure_Leaddetails l LEFT JOIN Ponpure_SaleOrderHdrs s ON l.customer_id = s.customer_id LEFT JOIN Ponpure_SaleOrderDtls so ON s.header_id = so.header_id WHERE s.header_id IS NOT NULL ORDER BY l.lead_id, so.line_id;"
+  },
+  {
+    "input": "Show leads with their latest updates",
+    "query": "SELECT lead_id, customername, last_updated_by, last_update_date FROM Ponpure_Leaddetails ORDER BY last_update_date DESC;"
+  },
+  {
+    "input": "Show leads created in date range",
+    "query": "SELECT lead_id, customername, creation_date FROM Ponpure_Leaddetails WHERE creation_date >= '2025-10-01' AND creation_date <= '2025-10-31' ORDER BY creation_date;"
+  }
+
+
+
 ]
