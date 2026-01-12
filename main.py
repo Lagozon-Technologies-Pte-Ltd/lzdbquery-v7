@@ -1265,11 +1265,24 @@ async def list_sessions(
 
         created_at = data.get("created_at", 0)
 
+        messages = data.get("messages", [])
+
+        title = "New chat"
+        if messages:
+            first_user_msg = next(
+                (m["content"] for m in messages if m["role"] == "user"),
+                None
+            )
+            if first_user_msg:
+                title = " ".join(first_user_msg.split()[:4])
+
         sessions.append({
             "session_id": sid,
-            "created_at": created_at,
-            "count": len(data.get("messages", []))
+            "created_at": data.get("created_at"),
+            "count": len(messages),
+            "title": title
         })
+
 
     # 🔽 Oldest → Newest (so numbering is stable)
     sessions.sort(key=lambda x: x["created_at"] or 0)

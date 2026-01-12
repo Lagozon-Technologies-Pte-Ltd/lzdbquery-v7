@@ -118,6 +118,18 @@ function openTab(evt, tabName) {
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
 }
+async function createNewSession() {
+    const res = await fetch('/new-session', { method: 'POST' });
+    if (!res.ok) return;
+
+    // Reload sessions list
+    await loadSessions();
+
+    // Clear UI
+    document.getElementById("chat-messages").innerHTML = "";
+    document.getElementById("tables_container").innerHTML = "";
+    document.getElementById("xlsx-btn").innerHTML = "";
+}
 
 // Optionally, you can set the default active tab using JavaScript:
 // Modify the DOMContentLoaded event listener
@@ -127,14 +139,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector(`input[name="questionType"][value="${initialQuestionType}"]`).checked = true;
 
     // Reset session on page load
-    fetch('/new-session', { method: 'POST' })
-        .then(response => {
-            if (!response.ok) throw new Error('Session reset failed');
-            console.log('Session has been reset on page load.');
-        })
-        .catch(error => {
-            console.error('Error resetting session on page load:', error);
-        });
+    // fetch('/new-session', { method: 'POST' })
+    //     .then(response => {
+    //         if (!response.ok) throw new Error('Session reset failed');
+    //         console.log('Session has been reset on page load.');
+    //     })
+        // .catch(error => {
+        //     console.error('Error resetting session on page load:', error);
+        // });
 
     // Set default tab
     document.getElementsByClassName("tablinks")[0]?.click();
@@ -1127,7 +1139,7 @@ async function loadSessions() {
     sessions.forEach(s => {
         const div = document.createElement("div");
         div.className = "session-item";
-        div.innerText = s.label;
+        div.innerText = s.title;
         div.onclick = () => loadSessionMessages(s.session_id);
         list.appendChild(div);
     });
