@@ -165,7 +165,6 @@ pyOpenSSL==24.1.0
 pyparsing==3.2.3
 PyPika==0.48.9
 pyproject_hooks==1.0.0
-pyreadline3==3.4.1
 pysbd==0.3.4
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
